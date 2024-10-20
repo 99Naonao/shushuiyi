@@ -33,7 +33,7 @@
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "连接设备"
 			}
-		}, ]
+		}]
 	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",

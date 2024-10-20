@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<image class="back" mode="widthFix" src="../../static/SMY_01_bg.png"></image>
-		<view class="connect-btn">连接助眠仪</view>
+		<view class="connect-btn" @click="connectHandler">连接助眠仪</view>
 		<view class="start-btn">开始设置</view>
 		<view class="bar">
 			<view class="bar-left flex just-center align-center">
@@ -41,7 +41,11 @@
 
 		},
 		methods: {
-
+			connectHandler() {
+				uni.navigateTo({
+					url: "/page_subject/work/work"
+				})
+			}
 		}
 	}
 </script>

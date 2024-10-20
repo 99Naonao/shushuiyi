@@ -3,33 +3,36 @@
 		title='连接设备'></z-nav-bar>
 	<public-module></public-module>
 	<!-- <page-meta :page-style="'overflow:'+(show?'hidden':'visible')"></page-meta> -->
-	<view class="">
+	<view class="main-container">
 		<image class="topKV" :style="menuStyle" mode="widthFix" src="/static/work/SMY_04_01.png"></image>
-		<view class="tips" for="">监测到以下设备</view>
-		<view class="tips" v-if="deviceIdList.length == 0">暂无设备</view>
-		<view v-for="(item,index) in deviceIdList" :key="index">
-			<view class="device-item">
-				<view class="item-name">
-					{{item.name}}
-				</view>
-				<view class="blue-tooth">
-					<image mode="widthFix" :src="checkConnectList(item)">
+		<view class="info-part">
+
+			<view class="tips" for="">监测到以下设备</view>
+			<view class="tips" v-if="deviceIdList.length == 0">暂无设备</view>
+			<view v-for="(item,index) in deviceIdList" :key="index">
+				<view class="device-item">
+					<image class="device-icon" mode="widthFix" src="/page_subject/static/work/SMY_04_IconYJ.png">
 					</image>
-				</view>
-				<!-- 				<view class="wifi" v-if="false">
-					<image mode="widthFix" :src="(checkWifiConnectList(item))" @click="connectWifiSleepHandler(item)">
-					</image>
+					<view class="item-name">
+						{{item.name}}
+					</view>
+					<view class="blue-tooth">
+						<image mode="widthFix" :src="checkConnectList(item)">
+						</image>
+					</view>
+					<!-- 				<view class="wifi" v-if="false">
 				</view> -->
-				<view class="connect-btn" @click="connectBlueToothSleepHandler(item)">连接</view>
-				<!-- 				<image :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn">
+					<view class="connect-btn" @click="connectBlueToothSleepHandler(item)">连接</view>
+					<!-- 				<image :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn">
 				</image> -->
+				</view>
 			</view>
 		</view>
 		<view class="spetips">
 			<div class="item" style="margin-left: 42rpx;">特别说明:</div>
 			<div class="item flex align-center" style="padding-bottom: 60rpx;">
 				<image class="iconblue" mode="widthFix" src="../static/SY_01_IconLY.png"></image>
-				<div>睡眠枕基本使用功能，需要蓝牙连接</div>
+				<div>浅针仪基本使用功能，需要蓝牙连接</div>
 			</div>
 		</view>
 		<!-- 		<view class="device-item">
@@ -40,6 +43,8 @@
 				@click="adjustHighSleepHandler(item)">
 			</image>
 		</view> -->
+
+
 		<uni-popup ref="ppp" style="z-index: 10000; position: absolute;" border-radius="40rpx 40rpx 0rpx 0rpx"
 			background-color='white' safe-area="false" class="popup" :mask-click="false" @change="change">
 			<view class="container">
@@ -50,17 +55,17 @@
 				<view class="touch">
 					<view class="item" @click="autoHandler">
 						<!-- <image class="item-btn" src="@/page_subject/static/adjust/SY_02_button01a.png"></image> -->
-						<image class="icon1" src="@/page_subject/static/adjust/SY_02_Icon01.png" mode=""></image>
+						<!-- <image class="icon1" src="@/page_subject/static/adjust/SY_02_Icon01.png" mode=""></image> -->
 						<label>AI识别全自动设置</label>
 					</view>
 					<view class="item" @click="showAdjustHandler">
 						<!-- <image class="item-btn" src="@/page_subject/static/adjust/SY_02_button01a.png"></image> -->
-						<image class="icon2" src="@/page_subject/static/adjust/SY_02_Icon02.png" mode=""></image>
+						<!-- <image class="icon2" src="@/page_subject/static/adjust/SY_02_Icon02.png" mode=""></image> -->
 						<label>手动调整</label>
 					</view>
 					<view class="item" @click="showModeHandler">
 						<!-- <image class="item-btn" src="@/page_subject/static/adjust/SY_02_button01a.png"></image> -->
-						<image class="icon3" src="@/page_subject/static/adjust/SY_02_Icon03.png" mode=""></image>
+						<!-- <image class="icon3" src="@/page_subject/static/adjust/SY_02_Icon03.png" mode=""></image> -->
 						<label>选择已有数据</label>
 					</view>
 				</view>
@@ -242,7 +247,9 @@
 				searching: false, // 搜索中
 				deviceId: '', // 连接的蓝牙id
 				serviceId: '', // 连接的服务id
-				deviceIdList: [], // 检测列表
+				deviceIdList: [{
+					name: 'test'
+				}], // 检测列表
 				// deviceIdList: [],
 				connectList: [], // 连接列表
 			}
@@ -792,10 +799,21 @@
 </script>
 
 <style lang="scss">
-	.topKV {
-		width: 100%;
-		padding-top: var(--menuButtonTop);
+	.main-container {
+		background-color: rgb(34, 49, 73);
+		height: 100%;
+
+		.topKV {
+			width: 100%;
+			padding-top: var(--menuButtonTop);
+			display: block;
+		}
+
+		.info-part {
+			margin-top: -160rpx;
+		}
 	}
+
 
 	.header {
 		height: 80rpx;
@@ -803,7 +821,7 @@
 
 	.tips {
 		text-align: center;
-		color: #5B7897;
+		color: #fff;
 		font-size: 32rpx;
 		padding: 20rpx;
 	}
@@ -848,6 +866,7 @@
 		line-height: 118rpx;
 		display: flex;
 		align-items: center;
+		background-color: rgb(213, 224, 247);
 
 		.connect-btn {
 			width: 225rpx;
@@ -921,6 +940,10 @@
 
 	}
 
+	.device-icon {
+		width: 73rpx;
+		height: 47rpx;
+	}
 
 	.container {
 		background-color: white;
@@ -949,6 +972,8 @@
 			top: 20rpx;
 			position: absolute;
 		}
+
+
 
 
 
