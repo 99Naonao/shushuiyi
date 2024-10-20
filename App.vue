@@ -24,4 +24,16 @@
 	view {
 		display: block;
 	}
+
+	.flex {
+		display: flex;
+	}
+
+	.just-center {
+		justify-content: center;
+	}
+
+	.align-center {
+		align-items: center;
+	}
 </style>

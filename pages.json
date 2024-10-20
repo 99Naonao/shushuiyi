@@ -25,6 +25,16 @@
 			}
 		}
 	],
+	"subPackages": [{
+		"root": "page_subject",
+		"pages": [{
+			"path": "work/work",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "连接设备"
+			}
+		}, ]
+	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "助眠仪",
