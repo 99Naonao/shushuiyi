@@ -14,7 +14,7 @@
 
 <style>
 	/*每个页面公共css */
-	/* @import './common/uni.css'; */
+	@import 'common/uni.css';
 
 	page {
 		width: 100%;
@@ -25,8 +25,20 @@
 		display: block;
 	}
 
+	.flex1 {
+		flex: 1;
+	}
+
 	.flex {
 		display: flex;
+	}
+
+	.space-round {
+		justify-content: space-around;
+	}
+
+	.space-between {
+		justify-content: space-between;
 	}
 
 	.just-center {

@@ -33,6 +33,12 @@
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "连接设备"
 			}
+		}, {
+			"path": "adjust/adjust",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "手动调整"
+			}
 		}]
 	}],
 	"globalStyle": {

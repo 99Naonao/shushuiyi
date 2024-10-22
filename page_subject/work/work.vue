@@ -291,8 +291,8 @@
 					blue_class.getInstance().write2tooth(shake1)
 					console.log('第一次握手', ab2hex(shake1))
 				} else if (arrayBuffer.length == 2) {
-					console.log('接收到回复数据:', mark)
-					if (ab2hex(res.value) == '0f55') {
+					console.log('接收到回复数据2:', mark, ab2hex(res.value))
+					if (ab2hex(res.value) == '0x55') {
 						console.log('接收到回复数据', ab2hex(res.value))
 						// console.log('校验长度', parseInt('0x' + len))
 						console.log('握手成功可以发送ssid了')
@@ -664,6 +664,10 @@
 			},
 			// 连接蓝牙
 			connectBlueToothSleepHandler(item) {
+				uni.navigateTo({
+					url: '/page_subject/adjust/adjust'
+				})
+				return;
 				uni.showLoading({
 					title: '连接蓝牙设备中...',
 				})
@@ -797,7 +801,6 @@
 		}
 	}
 </script>
-
 <style lang="scss">
 	.main-container {
 		background-color: rgb(34, 49, 73);
