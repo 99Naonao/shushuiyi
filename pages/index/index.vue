@@ -76,7 +76,7 @@
 		height: 91rpx;
 		text-align: center;
 		background-color: rgb(28, 68, 133);
-		line-height: 78rpx;
+		line-height: 91rpx;
 		color: white;
 		margin: 20rpx;
 		border-radius: 25rpx;

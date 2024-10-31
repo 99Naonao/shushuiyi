@@ -99,8 +99,7 @@
 		changeSaveAdjustMode,
 		hand1Shake,
 		write2tooth,
-		parsePillowState,
-		saveRandomMode
+		parsePillowState
 	} from '@/common/util.js'
 	import {
 		version
@@ -223,13 +222,7 @@
 				this.$refs.popupSave.close();
 			},
 			saveHandler() {
-				saveRandomMode({
-					name: this.inputName,
-					headHeight: this.head,
-					neckHeight: this.neck,
-					sideHeadHeight: this.sideHead,
-					sideNeckHeight: this.sideNeck,
-				})
+
 
 				let changeAdjust = changeSaveAdjustMode();
 				blue_class.getInstance().write2tooth(changeAdjust);
