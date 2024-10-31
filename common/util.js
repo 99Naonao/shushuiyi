@@ -351,6 +351,17 @@ var ab2str = function(buf) {
 	return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
 
+var Uint8ArrayToString = function(fileData) {
+	var dataString = "";
+	for (var i = 0; i < fileData.byteLength; i++) {
+		dataString += String.fromCharCode(fileData[i]);
+		console.log('dataString:', dataString)
+	}
+
+	return dataString
+
+}
+
 var str2ab = function(str) {
 	var buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
 	var bufView = new Uint16Array(buf);
@@ -400,6 +411,19 @@ var hexStringToArrayBuffer = function(str) {
 	}
 	return buffer;
 }
+
+// hex转json字符串,16进制ASCII
+var hex2String = function(hex) {
+	var arr = hex.split("")
+	var out = ""
+	for (var i = 0; i < arr.length / 2; i++) {
+		var tmp = "0x" + arr[i * 2] + arr[i * 2 + 1]
+		var charValue = String.fromCharCode(tmp);
+		out += charValue
+	}
+	return out
+};
+
 // 将字节流转为字符串
 var hexCharCodeToStr = function(hexCharCodeStr) {
 	let str = hexCharCodeStr.toString(16);
@@ -651,5 +675,7 @@ export {
 	parseTime,
 	ab2str,
 	str2ab,
+	hex2String,
+	Uint8ArrayToString,
 	dateUtils
 }

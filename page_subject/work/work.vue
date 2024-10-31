@@ -77,18 +77,47 @@
 <script>
 	import {
 		object2Query,
+		hexCharCodeToStr,
+		appAnswer,
+		parseTime,
+		ab2hex,
+		ab2str,
+		hex2String,
+		Uint8ArrayToString,
 	} from '@/common/util.js'
 	import blue_class from '../../utils/BlueManager';
-	import {
-		appAnswer,
-		parseTime
-	} from '../../common/util';
 	import {
 		nextTick
 	} from 'vue';
 	export default {
 		components: {
 
+		},
+		data() {
+			return {
+				menuStyle: {
+					'--menuButtonTop': "0",
+				},
+				currentItem: {},
+				onShowing: false, //页面是否显示
+				show: false,
+				success: false, //第一次握手成功
+				characteristicId: '6E400004-B5A3-F393-E0A9-E50E24DCCA9E', //特征值
+				characteristicStringId: '6E400002-B5A3-F393-E0A9-E50E24DCCA9E', //write，string，rx；
+				searching: false, // 搜索中
+				deviceId: '', // 连接的蓝牙id
+				serviceId: '', // 连接的服务id
+				deviceIdList: [{
+					name: 'test'
+				}], // 检测列表
+				// deviceIdList: [],
+				connectList: [], // 连接列表
+				service_1: '0001FFE7-6865-6F6E-652D-7A732D717A10',
+				service_charactor1: '0001FFE7-6865-6F6E-652D-7A732D717A11',
+				service_charactor2: '0001FFE7-6865-6F6E-652D-7A732D717A12',
+				service_charactor3: '0001FFE7-6865-6F6E-652D-7A732D717A13',
+				service_charactor4: '0001FFE7-6865-6F6E-652D-7A732D717A14',
+			}
 		},
 		onShow() {
 			this.onShowing = true;
@@ -233,274 +262,84 @@
 				}
 			})
 		},
-		data() {
-			return {
-				menuStyle: {
-					'--menuButtonTop': "0",
-				},
-				currentItem: {},
-				onShowing: false, //页面是否显示
-				show: false,
-				success: false, //第一次握手成功
-				characteristicId: '6E400004-B5A3-F393-E0A9-E50E24DCCA9E', //特征值
-				characteristicStringId: '6E400002-B5A3-F393-E0A9-E50E24DCCA9E', //write，string，rx；
-				searching: false, // 搜索中
-				deviceId: '', // 连接的蓝牙id
-				serviceId: '', // 连接的服务id
-				deviceIdList: [{
-					name: 'test'
-				}], // 检测列表
-				// deviceIdList: [],
-				connectList: [], // 连接列表
-			}
-		},
-		methods: {
-			handleMessage(res) {
-				if (this.onShowing) {
 
-				} else {
-					console.log('[no showing]')
-					return;
+		methods: {
+			handleHardMessage(characteristic) {
+				switch (characteristic.characteristicId) {
+					case this.service_charactor1:
+						// 型号
+						let a = ab2hex(characteristic.value)
+						console.log('型号:', hex2String(a), ab2hex(characteristic.value))
+						break;
+					case this.service_charactor2:
+						// 型号
+						let b = ab2hex(characteristic.value)
+						console.log('SN:', hex2String(b), ab2hex(characteristic.value))
+						break;
+					case this.service_charactor3:
+						// 型号
+						let c = ab2hex(characteristic.value)
+						console.log('硬件版本:', hex2String(c), ab2hex(characteristic.value))
+						break;
+					case this.service_charactor4:
+						// 型号
+						let d = ab2hex(characteristic.value)
+						console.log('固件版本:', hex2String(d), ab2hex(characteristic.value))
+						break;
 				}
+			},
+			handleValueMessage(characteristic) {
+				// 处理消息
+				console.log('characteristic value comed:', characteristic)
+				console.log('readBLECharacteristicValue:', characteristic.value)
+				if (characteristic.serviceId == this.service_1) {
+					this.handleHardMessage(characteristic)
+				}
+			},
+			readMessage(deviceId, serviceId, characteristicId) {
+				console.log('readMessage', deviceId, serviceId, characteristicId)
+
+				// 必须在这里的回调才能获取
+				uni.onBLECharacteristicValueChange(this.handleValueMessage)
+
+				uni.readBLECharacteristicValue({
+					// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+					deviceId: deviceId,
+					// 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
+					serviceId: serviceId,
+					// 这里的 characteristicId 需要在 getBLEDeviceCharacteristics 接口中获取
+					characteristicId: characteristicId,
+					success(res) {
+						console.log('readBLECharacteristicValue:', res, res.errCode)
+					},
+					fail(res) {
+						console.log('fail!', res)
+					}
+				})
+			},
+			handleMessage(res) {
 				console.log(`characteristic ${res.characteristicId} has changed, now is ${res.value}`)
 				let arrayBuffer = new Uint8Array(res.value);
-				let mark = arrayBuffer[0];
-				console.log('接收到数据', ab2hex(res.value), arrayBuffer.length)
+
+				let info = hexCharCodeToStr(res.value)
+
+				console.log('接收到数据', ab2hex(res.value), info, arrayBuffer.length)
 				// 如果收到数据是4个字节,虽然发的是8个字节，但是只有后4个字节有数据
 				if (arrayBuffer.length == 4) {
-					let receive16 = ab2hex(res.value);
-					let last = '0x' + receive16
-					let total = 0;
-					Array.prototype.map.call(
-						arrayBuffer,
-						function(bit) {
-							total += Number(bit.toString(10))
-							return ('00' + bit.toString(16)).slice(-2)
-						}
-					)
-					let shake1 = hand1Shake(Number(
-						total), arrayBuffer)
-					console.log("total:", total, shake1)
-					if (blue_class.getInstance().loginSuccess) {
-						console.log('已经握手成功了!')
 
-
-						// this.showAdjustHandler()
-						return;
-					}
-					blue_class.getInstance().write2tooth(shake1)
-					console.log('第一次握手', ab2hex(shake1))
 				} else if (arrayBuffer.length == 2) {
-					console.log('接收到回复数据2:', mark, ab2hex(res.value))
-					if (ab2hex(res.value) == '0x55') {
-						console.log('接收到回复数据', ab2hex(res.value))
-						// console.log('校验长度', parseInt('0x' + len))
-						console.log('握手成功可以发送ssid了')
-						blue_class.getInstance().loginSuccess = true
-
-						// 连接成功，跳转调整界面
-						nextTick(() => {
-							this.showAdjustHandler()
-						})
-						// blue_class.getInstance().write2tooth(this.characteristicStringId,
-						// 	hexStringToArrayBuffer('jimlee'))
-					} else if (mark == '66') {
-						console.log('握手成功可以发送ssid密码了')
-						// 发送wifi密码
-						// blue_class.getInstance().write2tooth(this.characteristicStringId,
-						// 	hexStringToArrayBuffer('lijiming'))
-					} else if (mark == 'aa') {
-						console.log('发送成功了ssid了')
-					} else if (mark == '33') {
-						console.log('收到成功调整枕头')
-						console.log('8个字节指令的校验和', parseInt('0x' + len))
-						console.log('后四位', receive16, receive16.slice(4, 1), receive16.slice(5, 1))
-					}
+					console.log('接收到回复数据2:', ab2hex(res.value))
 				} else {
-					mark = arrayBuffer[0];
-					let length = arrayBuffer[1];
-					let arrayBuffer_order = new ArrayBuffer(length);
-					let receive_dataView = new DataView(arrayBuffer_order);
-					for (var index = 0; index < arrayBuffer_order.byteLength; index++) {
-						receive_dataView.setUint8(index, arrayBuffer[index + 2])
-					}
-					console.log('handleMessage 接收到数据 mark:', parseInt(mark))
-					switch (parseInt(mark)) {
-						case 1:
-							let result = receive_dataView.getUint8(0)
-							switch (parseInt(result)) {
-								case 0:
-									console.log("[调整模式成功]")
-									break;
-								case 1:
-									console.log("[调整模式参数非法]")
-									break;
-								case 2:
-									console.log("[不支持的指令]")
-									break;
-							}
-							break;
-						case 2:
-							break;
-						case 4:
-							let result4 = receive_dataView.getUint8(0)
-							switch (parseInt(result4)) {
-								case 0:
-									console.log("[调整枕头成功]")
-									break;
-								case 1:
-									console.log("[调整模式参数非法]")
-									break;
-								case 2:
-									console.log("[不支持的指令]")
-									break;
-							}
-							break;
-						case 5:
-							this.parsePillowSleepData(arrayBuffer_order)
-							break;
-						case 6:
-							this.parsePillowStatus(arrayBuffer_order)
-							// this.parsePillowSleepData(null)
-							break;
-						case 88:
-							break;
-					}
-					return;
-					//默认是枕头状态 5s收到一次
-					let receive16 = ab2hex(res.value);
-					// （0：0--空闲，1--平躺，2--侧卧；1：（备用）2：头部气囊高度值；3：颈部气囊高度值；4:固件版本； 5是否校准；6~7：电池电压值）
-					let status = receive16.slice(0, 2);
-					let status1 = '0x' + status;
 
-					let status10 = parseInt(status1);
-					switch (status10) {
-						case 0:
-							console.log('枕头空闲状态')
-							break;
-						case 1:
-							console.log('枕头平躺状态')
-							break;
-						case 2:
-							console.log('枕头侧卧状态')
-							break;
-					}
-					let headHeight = receive16.slice(4, 6);
-					let headHeight10 = parseInt('0x' + headHeight);
-					let neckHeight = receive16.slice(6, 8);
-					let neckHeight10 = parseInt('0x' + neckHeight);
-					let vesrion = receive16.slice(8, 10);
-					let vesrion10 = parseInt('0x' + vesrion);
-					let isright = receive16.slice(10, 12);
-					let isright10 = parseInt('0x' + isright);
-					let press = receive16.slice(12, 14);
-					let press10 = parseInt('0x' + press);
-					//保存版本号
-					blue_class.getInstance().version = vesrion10;
-					// let status1 = '0x' + status;
-
-					console.log('枕头状态=>', status, headHeight, neckHeight, vesrion, isright, press)
-					console.log('枕头状态=>', status10, headHeight10, neckHeight10, vesrion10, isright10, press10)
 				}
 			},
 			parsePillowStatus(arraybuffer) {
-				// //默认是枕头状态 5s收到一次
-				let receive16 = ab2hex(arraybuffer);
-				// （0：0--空闲，1--平躺，2--侧卧；1：（备用）2：头部气囊高度值；3：颈部气囊高度值；4:固件版本； 5是否校准；6~7：电池电压值）
-				let status = receive16.slice(0, 2);
-				let status1 = '0x' + status;
 
-				let status10 = parseInt(status1);
-				switch (status10) {
-					case 0:
-						console.log('枕头空闲状态')
-						break;
-					case 1:
-						console.log('枕头平躺状态')
-						break;
-					case 2:
-						console.log('枕头侧卧状态')
-						break;
-				}
-				let detail_status_16 = receive16.slice(2, 4);
-				let detail_status = '0x' + detail_status_16;
-				let n1 = (detail_status & 0x03);
-				// 0--空闲，1--充电中，2--充电完成
-				switch (n1) {
-					case 0:
-						console.log('枕头在空闲状态');
-						break;
-					case 1:
-						console.log('枕头在充电中状态');
-						break;
-					case 2:
-						console.log('枕头在充电完成状态');
-						break;
-				}
-				let n2 = (detail_status >> 2) & 0x01;
-				console.log('泵1电流:', n2);
-				let n3 = (detail_status >> 3) & 0x01;
-				console.log('泵2电流:', n3);
-				let n4 = (detail_status >> 4) & 0x01;
-				console.log('气囊1升高超时:', n4);
-				let n5 = (detail_status >> 5) & 0x01;
-				console.log('气囊2升高超时:', n5);
-				let n6 = (detail_status >> 6) & 0x01;
-				console.log('气囊1气压超高:', n6);
-				let n7 = (detail_status >> 7) & 0x01;
-				console.log('气囊2气压超高:', n7);
-				let headHeight = receive16.slice(4, 6);
-				let headHeight10 = parseInt('0x' + headHeight);
-				let neckHeight = receive16.slice(6, 8);
-				let neckHeight10 = parseInt('0x' + neckHeight);
-				let vesrion = receive16.slice(8, 10);
-				let vesrion10 = parseInt('0x' + vesrion);
-				let isright = receive16.slice(10, 12);
-				let isright10 = parseInt('0x' + isright);
-				let press = receive16.slice(12, 16);
-				let press10 = parseInt('0x' + press);
-
-
-				// 0100970d030101f3
-				// dataView.setUint32(0, second | (minutes << 6) | (hours << 12) | (days << 17) | (months << 22) | ((year -
-				// 		2020) <<
-				// 	26))
-
-				blue_class.getInstance().setPillowCharging(n1)
-				blue_class.getInstance().setPillowHeight(headHeight10)
-				blue_class.getInstance().setPillowSideHeight(neckHeight10)
-				blue_class.getInstance().setPillowPower(press10)
-				// work 枕头状态 mm=> 1 height:151mm neckheight:13mm version:3 校准:1 电池:1
-				// console.log('work 枕头状态 =>', 'height:' + headHeight, 'neckheight:' + neckHeight, vesrion, isright, press)
-				console.log('work 枕头状态 mm=>', status10, 'height:' + headHeight10 + 'mm', 'neckheight:' + neckHeight10 +
-					'mm', 'version:' +
-					vesrion10,
-					'校准:' + isright10,
-					'电池:' + press10)
 			},
 			parsePillowSleepData(array_buffer) {
 
 				blue_class.getInstance().write2tooth(appAnswer(5))
-				//02123c2356123c2363
-				// let temp = new ArrayBuffer(9)
-				// let dataView2 = new DataView(temp);
-				// dataView2.setUint8(8, 0x63)
-				// dataView2.setUint8(7, 0x23)
-				// dataView2.setUint8(6, 0x3c)
-				// dataView2.setUint8(5, 0x12)
-				// dataView2.setUint8(4, 0x56)
-				// dataView2.setUint8(3, 0x23)
-				// dataView2.setUint8(2, 0x3c)
-				// dataView2.setUint8(1, 0x12)
-				// dataView2.setUint8(0, 0x02)
-				// console.log('姿态:', dataView2.getUint8(0));
-				// let uint32_s = dataView2.getUint32(1);
-				// let unit32_e = dataView2.getUint32(5);
-				// // parseTime(uint32_s)
-				// // 秒：0-5bit，分：6-11bit，时：12-16bit，日：17-21bit，月：22-25bit，年：26-31bit），年基于2020，月取值1-12
-				// console.log('开始时间:', uint32_s, parseTime(uint32_s))
-				// console.log('结束时间:', unit32_e, parseTime(unit32_e))
-				// return;
+
 				//解析枕头睡眠阶段状态	
 				// 数据1-姿态（U8）(1--平躺，2--侧卧) + 数据2开始时间（T4）+数据3结束时间（T4）+ 数据4-姿态（U8）(1--平躺，2--侧卧) + 数据5开始时间（T4）+数据6结束时间（T4）+ ... ,关于该指令的说明，是多个姿态+开始时间和结束时间的条目的组合，根据数据长度计算一条指令中包含多少组数据
 				let receive8 = new ArrayBuffer(array_buffer);
@@ -510,98 +349,7 @@
 				let unit32_e = dataView.getUint32(5);
 				// parseTime(uint32_s)
 				// 秒：0-5bit，分：6-11bit，时：12-16bit，日：17-21bit，月：22-25bit，年：26-31bit），年基于2020，月取值1-12
-				console.log('开始时间:', uint32_s, parseTime(uint32_s))
-				console.log('结束时间:', unit32_e, parseTime(unit32_e))
-				// let uint32_s = dataView.getUint32(1);
-				// let unit32_e = dataView.getUint32(5);
-				// // parseTime(uint32_s)
-				// // 秒：0-5bit，分：6-11bit，时：12-16bit，日：17-21bit，月：22-25bit，年：26-31bit），年基于2020，月取值1-12
-				// console.log('开始时间:', uint32_s, parseTime(uint32_s))
-				// console.log('结束时间:', unit32_e, parseTime(unit32_e))
-			},
-			// ai识别
-			autoHandler() {
-				// let action = 0
-				// // 如果选择的侧卧
-				// let arraybuffer = handPillowFrontState(action, 0)
-				// console.log('停止调高侧卧:', ab2hex(arraybuffer))
 
-				// // console.log('调高:', ab2hex(arraybuffer))
-				// blue_class.getInstance().write2tooth(arraybuffer)
-				// return;
-				this.closePopUpHandle()
-				var url_ = '/page_subject/measure/measure' + object2Query({
-					pillowName: '',
-					deviceId: this.deviceId,
-					serviceId: this.serviceId
-				})
-				console.log('url:', url_)
-				uni.navigateTo({
-					url: url_
-				})
-			},
-			// 我的模式
-			showModeHandler() {
-				// let action = 2
-				// // 如果选择的侧卧
-				// let arraybuffer = handPillowFrontState(action, 0)
-				// console.log('调高侧卧:', ab2hex(arraybuffer))
-
-				// // console.log('调高:', ab2hex(arraybuffer))
-				// blue_class.getInstance().write2tooth(arraybuffer)
-				// return;
-				this.closePopUpHandle()
-				var url_ = '/page_subject/mode/mode' + object2Query({
-					pillowName: '自定义模式',
-					deviceId: this.deviceId,
-					serviceId: this.serviceId
-				})
-				console.log('url:', url_)
-				uni.navigateTo({
-					url: url_
-				})
-			},
-			// 跳转手动调整
-			showAdjustHandler() {
-				// let arraybuffer = changeAdjustMode()
-				// blue_class.getInstance().write2tooth(arraybuffer)
-				// return;
-				this.closePopUpHandle()
-				uni.switchTab({
-					url: "/pages/status/status"
-				})
-				// var url_ = '/pages/status/status';
-				// console.log('url:', url_)
-				// uni.navigateTo({
-				// 	url: url_
-				// })
-			},
-			// 调低枕头
-			adjustLowSleepHandler() {
-				this.head -= 1
-				if (this.head <= 0) {
-					this.head = 0
-				}
-				console.log('调低:', this.head, this.neck)
-				let arraybuffer = handPillowFrontState(this.head, this
-					.neck)
-				console.log('调低:', ab2hex(arraybuffer))
-				write2tooth(this.deviceId, this.serviceId, this.characteristicId, arraybuffer)
-			},
-			// 调高枕头
-			adjustHighSleepHandler() {
-				this.head += 1
-				if (this.head >= 100) {
-					this.head = 100
-				}
-				console.log('调高:', this.head, this.neck)
-				let arraybuffer = handPillowFrontState(this.head, this
-					.neck)
-				console.log('调高:', ab2hex(arraybuffer))
-				write2tooth(this.deviceId, this.serviceId, this.characteristicId, arraybuffer)
-			},
-			closePopUpHandle() {
-				this.$refs.ppp.close()
 			},
 			// 停止蓝牙
 			stopBlueTooth() {
@@ -614,11 +362,6 @@
 						console.log("stopBlueTooth fail!")
 					}
 				})
-				// uni.closeBluetoothAdapter({
-				// 	success() {
-				// 		console.log('closeBluetoothAdapter success!')
-				// 	}
-				// })
 			},
 
 			reconnect() {
@@ -664,10 +407,6 @@
 			},
 			// 连接蓝牙
 			connectBlueToothSleepHandler(item) {
-				uni.navigateTo({
-					url: '/page_subject/adjust/adjust'
-				})
-				return;
 				uni.showLoading({
 					title: '连接蓝牙设备中...',
 				})
@@ -689,28 +428,25 @@
 
 						blue_class.getInstance().deviceId = deviceId;
 
-
 						console.log('connectBluetooth success!:', deviceId, res)
-
 
 						uni.getBLEDeviceServices({
 							deviceId,
 							success: (res) => {
-								console.log('getBLEDeviceServices success:', res)
 								console.log('getBLEDeviceServices res.services:', res
 									.services)
 								for (let i = 0; i < res.services.length; i++) {
+									console.log("service:", res.services[i])
+									// 监听变化
+									blue_class.getInstance().startValueChange();
 									if (res.services[i].isPrimary) {
-										// this.addNotify(deviceId, res.services[i]
-										// 	.uuid, '6E400003-B5A3-F393-E0A9-E50E24DCCA9E')
-										this.getBLEDeviceCharacteristics(deviceId, res
-											.services[i]
-											.uuid)
-										//这里只取第一个哈！！！！！！！！
+										this.getBLEDeviceCharacteristics(deviceId,
+											'0001FFE7-6865-6F6E-652D-7A732D717A10')
 										break;
-										// 可根据具体业务需要，选择一个主服务进行通信
 									}
 								}
+
+
 
 							},
 							fail: (res) => {
@@ -729,50 +465,53 @@
 			// 获取蓝牙设备某个服务中所有特征值(characteristic)。
 			getBLEDeviceCharacteristics(deviceId, serviceId) {
 				let that = this
-				// serviceId = '6E400003-B5A3-F393-E0A9-E50E24DCCA9E'
 				console.log('getBLEDeviceCharacteristics123:', deviceId, serviceId)
-				uni.getBLEDeviceCharacteristics({
-					deviceId: deviceId,
-					serviceId: serviceId,
-					success: (res) => {
-						console.log("%c getBLEDeviceCharacteristics success", "color:red;", res
-							.characteristics);
-						let notify_character = ''
-						if (res.characteristics[1]) {
-							// 启用notify
-							notify_character = res.characteristics[1].uuid
-							blue_class.getInstance().startNotice({
-								deviceUUID: deviceId,
-								serviceUUID: serviceId,
-								notifyUUID: notify_character
-							})
-							// uni.notifyBLECharacteristicValueChange({
-							// 	state: true,
-							// 	deviceId: deviceId,
-							// 	serviceId: serviceId,
-							// 	characteristicId: notify_character,
-							// 	success: (res) => {
-							// 		that.deviceId = deviceId
-							// 		that.serviceId = serviceId;
-							// 		let app = getApp();
-							// 		app.globalData.serviceId = serviceId;
-							// 		console.log('启用notify成功：', deviceId, serviceId,
-							// 			notify_character)
-							// 	}
-							// })
+				try {
+					uni.getBLEDeviceCharacteristics({
+						deviceId: deviceId,
+						serviceId: serviceId,
+						success: (res) => {
+							console.log("%c getBLEDeviceCharacteristics success", "color:red;", res
+								.characteristics);
+
+							for (var item in res.characteristics) {
+								// 是否支持读
+								if (res.characteristics[item].uuid && res.characteristics[item].properties
+									.read) {
+									that.readMessage(deviceId,
+										'0001FFE7-6865-6F6E-652D-7A732D717A10',
+										res.characteristics[item].uuid)
+								}
+							}
+
+
+							// that.readMessage(deviceId,
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A10',
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A12')
+							// that.readMessage(deviceId,
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A30',
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A31')
+							// that.readMessage(deviceId,
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A30',
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A31'
+							// )
+							// that.readMessage(deviceId,
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A30',
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A32'
+							// )
+							// that.readMessage(deviceId,
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A30',
+							// 	'0001FFE7-6865-6F6E-652D-7A732D717A33'
+							// )
+						},
+						fail: (res) => {
+							console.log("%c getBLEDeviceCharacteristics fail", "color:red;", res);
 						}
-					},
-					fail: (res) => {
-						console.log("%c getBLEDeviceCharacteristics fail", "color:red;", res);
-					}
-				})
-			},
-			// wifi界面
-			connectWifiSleepHandler(item) {
-				let url = '/pages/initWifi/initWifi' + '?pillowName=' + item.name
-				uni.navigateTo({
-					url: url
-				})
+					})
+				} catch (e) {
+					//TODO handle the exception
+					console.log('error:', e)
+				}
 			},
 			// 检测是否
 			checkConnectList(item) {

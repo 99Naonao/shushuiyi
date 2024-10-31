@@ -1,3 +1,15 @@
+import {
+	object2Query,
+	handPillowFrontState,
+	handlePillowDelayState,
+	hexStringToArrayBuffer,
+	ab2hex,
+	hand1Shake,
+	write2tooth,
+	changeAdjustMode,
+	handPillowSideState,
+	parsePillowState
+} from '@/common/util.js'
 class blue_class {
 	static instance = null; // 静态属性，用于存储单例  
 	// 私有构造函数，防止外部通过 new 关键字创建实例  
@@ -104,12 +116,16 @@ class blue_class {
 	updateVersion(v) {
 		this.version = v;
 	}
+	startValueChange() {
+		this.onBLECharacteristicValueChange();
+	}
 	// 启用 notify 功能
 	startNotice(uuid) {
 		// 预防重复启动
 		if (this.isNotify) {
 			console.log('已经启用过 notify 功能');
 		} else {
+			this.onBLECharacteristicValueChange();
 			uni.notifyBLECharacteristicValueChange({
 				state: true, // 启用 notify 功能
 				deviceId: uuid.deviceUUID,
@@ -123,7 +139,7 @@ class blue_class {
 					this.notifyCount = this.notifyCount + 1;
 					this.serviceId = uuid.serviceUUID;
 					this.deviceId = uuid.deviceUUID;
-					this.onBLECharacteristicValueChange();
+
 				},
 				fail: (res) => {
 					console.log('启用 notify 功能失败', res)
