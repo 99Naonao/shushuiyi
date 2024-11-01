@@ -22,7 +22,8 @@
 					</view>
 					<!-- 				<view class="wifi" v-if="false">
 				</view> -->
-					<view class="connect-btn" @click="connectBlueToothSleepHandler(item)">连接</view>
+					<view class="connect-btn" @click="connectBlueToothSleepHandler(item)">{{loginStatus?'已连接':'未连接'}}
+					</view>
 					<!-- 				<image :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn">
 				</image> -->
 				</view>
@@ -103,6 +104,7 @@
 				currentItem: {},
 				onShowing: false, //页面是否显示
 				show: false,
+				loginStatus: false,
 				success: false, //第一次握手成功
 				characteristicId: '6E400004-B5A3-F393-E0A9-E50E24DCCA9E', //特征值
 				characteristicStringId: '6E400002-B5A3-F393-E0A9-E50E24DCCA9E', //write，string，rx；
@@ -128,6 +130,7 @@
 			this.onShowing = true;
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 80) + 'px');
+			this.loginStatus = blue_class.getInstance().loginSuccess
 			// let app = getApp();
 			// this.deviceId = app.globalData.deviceId;
 			// this.characteristicId = app.globalData.characteristicId;
@@ -448,6 +451,7 @@
 			},
 			// 连接蓝牙
 			connectBlueToothSleepHandler(item) {
+				if (this.loginStatus) return;
 				uni.showLoading({
 					title: '连接蓝牙设备中...',
 				})
@@ -468,8 +472,15 @@
 						app.globalData.deviceId = deviceId;
 
 						blue_class.getInstance().deviceId = deviceId;
+						// 链接成功
+						blue_class.getInstance().loginSuccess = true;
 
 						console.log('connectBluetooth success!:', deviceId, res)
+						// 跳转首页
+						uni.switchTab({
+							url: "/pages/index/index"
+						})
+						return;
 
 						uni.getBLEDeviceServices({
 							deviceId,

@@ -2,14 +2,17 @@
 	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#000' transparentFixedFontColor='#000'
 		title=''></z-nav-bar>
 	<view class="main">
-		<view class="select-part">
+		<view class="select-part" :style="menuStyle">
 			<view class="border">
 
 				<view class="title">选择助眠模式</view>
 				<view class="flex space-round">
-					<image mode="widthFix" class="icon2" :src="'../static/adjust/SMY_05_Icon5Ma.png'"></image>
-					<image mode="widthFix" class="icon2" :src="'../static/adjust/SMY_05_Icon10Mb.png'"></image>
-					<image mode="widthFix" class="icon2" :src="'../static/adjust/SMY_05_Icon20Mb.png'"></image>
+					<image @click="selectMode(1)" mode="widthFix" class="icon2"
+						:src="'../static/adjust/SMY_05_Icon5Ma.png'"></image>
+					<image @click="selectMode(2)" mode="widthFix" class="icon2"
+						:src="'../static/adjust/SMY_05_Icon10Mb.png'"></image>
+					<image @click="selectMode(3)" mode="widthFix" class="icon2"
+						:src="'../static/adjust/SMY_05_Icon20Mb.png'"></image>
 				</view>
 			</view>
 		</view>
@@ -52,7 +55,7 @@
 
 		</view>
 		<view class="opt-part">
-			<view class="opt-btn opt-btn-top" @touchstart="adjustHighSleepHandler" @touchend="stopAdjustHighHandler">
+			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
 				<label>下一步</label>
 			</view>
 		</view>
@@ -112,6 +115,7 @@
 		components: {},
 		data() {
 			return {
+				menuStyle: {},
 				inputName: '模式',
 				pillowVersion: '固件版本:0.1',
 				pillowStatus: '未连接',
@@ -159,44 +163,28 @@
 			// 监听低功耗蓝牙设备的特征值变化事件.必须先启用 notifyBLECharacteristicValueChange 接口才能接收到设备推送的 notification。
 			// uni.onBLECharacteristicValueChange(this.handleMessage)
 			uni.$on('xx', this.handleMessage);
-			// this.requestStatus()
-			let arraybuffer = changeAdjustMode();
-			// let app = getApp()
-			blue_class.getInstance().write2tooth(arraybuffer)
-
-			if (this.initHeadHeight > 0 && this.initNeckHeight > 0) {
-				// let init_arraybuffer = initPillow(this.initHeadHeight, this.initNeckHeight, this.initWidthHeight, this
-				// 	.initSideHeadHeight, this.initSideNeckHeight, this.initSideWdithHeight);
-				// // let app = getApp()
-				// blue_class.getInstance().write2tooth(init_arraybuffer);
-				this.showMeasure = true;
-				// 如果有数据，默认调整枕头
-				let init_arraybuffer = initPillow(this.initHeadHeight, this.initNeckHeight, 200, this
-					.initSideHeadHeight, this.initSideNeckHeight, 200);
-				// let app = getApp()
-				blue_class.getInstance().write2tooth(init_arraybuffer);
-				// this.$refs.inputView.showParams(this.saveOptions);
-			} else {
-				this.showMeasure = false;
-			}
+			let app = getApp();
+			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 20) + 'px');
+			console.log('app.globalData.top:', app.globalData)
 		},
 		onUnload() {
 			console.log('adjust on onUnload!')
-			// 把模式还原成自动
-			let arraybuffer = changeAdjustMode(0);
-			blue_class.getInstance().write2tooth(arraybuffer)
 
 			uni.$off('xx', this.handleMessage);
 		},
 		onHide() {
 			console.log('adjust on hide!')
-			// 把模式还原成自动
-			let arraybuffer = changeAdjustMode(0);
-			blue_class.getInstance().write2tooth(arraybuffer)
 
 			uni.$off('xx', this.handleMessage);
 		},
 		methods: {
+			nextStepHandle() {
+
+			},
+			selectMode(index) {
+				// 选择模式
+
+			},
 			uploadDataHandle() {
 				let upload_data = uploadDataRequest(5)
 				blue_class.getInstance().write2tooth(upload_data)
@@ -669,7 +657,7 @@
 
 		.select-part {
 			background-color: rgb(221, 224, 226);
-			padding-top: 120rpx;
+			padding-top: var(--menuButtonTop);
 
 			.border {
 				background-color: #eff2f6;

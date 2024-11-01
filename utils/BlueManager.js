@@ -8,6 +8,7 @@ import {
 	write2tooth,
 	changeAdjustMode,
 	handPillowSideState,
+	str2ab,
 	parsePillowState
 } from '@/common/util.js'
 class blue_class {
@@ -17,6 +18,16 @@ class blue_class {
 	pillowSideHeight = 2;
 	pillowPower = 0;
 	chargingStatus = 0; // 0--空闲，1--充电中，2--充电完成
+
+	service_1 = '0001FFE7-6865-6F6E-652D-7A732D717A10';
+	service_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A11';
+	service_charactor2 = '0001FFE7-6865-6F6E-652D-7A732D717A12';
+	service_charactor3 = '0001FFE7-6865-6F6E-652D-7A732D717A13';
+	service_charactor4 = '0001FFE7-6865-6F6E-652D-7A732D717A14';
+	service_2 = '0001FFE7-6865-6F6E-652D-7A732D717A50';
+	service2_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A51';
+	service2_charactor2 = '0001FFE7-6865-6F6E-652D-7A732D717A52';
+
 	constructor() {
 		// 初始化蓝牙相关的状态或变量  
 		this.bluetoothStatus = null; // 蓝牙状态  
@@ -171,6 +182,33 @@ class blue_class {
 			fail() {
 				console.log('writeBLECharacteristicValue fail')
 				// reject()
+			}
+		})
+	}
+	// 更改模式
+	changeMode(status, time) {
+		let status_arraybuffer = str2ab(status);
+		console.log("[changeMode]", status, time, str2ab(status))
+		// 更改播放模式
+		uni.writeBLECharacteristicValue({
+			deviceId: blue_class.getInstance().deviceId,
+			serviceId: this.service_2,
+			characteristicId: this.service2_charactor1,
+			value: status_arraybuffer,
+			success: (res) => {
+				console.log('更改状态成功:', status, res)
+				uni.writeBLECharacteristicValue({
+					characteristicId: this.service2_charactor2,
+					deviceId: blue_class.getInstance().deviceId,
+					serviceId: this.service_2,
+					value: str2ab(time),
+					success: (res2) => {
+						console.log('更改播放时长状态成功:', res2)
+					}
+				})
+			},
+			fail: (res) => {
+				console.log('更改状态失败:', status, res)
 			}
 		})
 	}

@@ -1,19 +1,19 @@
 <template>
 	<view class="content">
 		<image class="back" mode="widthFix" src="../../static/SMY_01_bg.png"></image>
-		<view class="connect-btn" @click="connectHandler">连接助眠仪</view>
+		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">连接助眠仪</view>
 		<view class="start-btn">开始设置</view>
 		<view class="bar">
 			<view class="bar-left flex just-center align-center">
 				<image class="soundicon" mode="widthFix" src="../../static/index/SMY_02_IconEJ.png"></image>
 			</view>
-			<view class="bar-right">
+			<view class="bar-right" @click="enterDetailHandle">
 				<view class="subtitle">
 					眠加耳机
 				</view>
 				<view class="flex align-center just-center next-part">
 					<image class="blueicon" mode="widthFix" src="../../static/index/SMY_02_IconLY.png"></image>
-					未连接
+					{{loginStatus?'已连接':'未连接'}}
 				</view>
 			</view>
 		</view>
@@ -21,7 +21,9 @@
 </template>
 
 <script>
+	import blue_class from '../../utils/BlueManager';
 	export default {
+
 		onShow() {
 			let curPages = getCurrentPages()[0]
 			console.log("fuck:", curPages)
@@ -31,16 +33,26 @@
 					onshow: true
 				});
 			}
+
+			this.loginStatus = blue_class.getInstance().loginSuccess
 		},
 		data() {
 			return {
-				title: 'Hello'
+				title: 'Hello',
+				loginStatus: false,
 			}
 		},
 		onLoad() {
 
 		},
 		methods: {
+			enterDetailHandle() {
+				if (this.loginStatus) {
+					uni.navigateTo({
+						url: "/page_subject/adjust/adjust"
+					})
+				}
+			},
 			connectHandler() {
 				uni.navigateTo({
 					url: "/page_subject/work/work"
