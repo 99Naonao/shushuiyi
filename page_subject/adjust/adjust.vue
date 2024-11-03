@@ -46,11 +46,6 @@
 					</view>
 					<switch></switch>
 				</view>
-
-				<image class="up-icon" :class="touchingUp?['up-icon-effect']:[]" :src="'../static/adjust/SY_11_UP.png'">
-				</image>
-				<!-- 				<image class="bzb-icon" :src="'../static/adjust/SY_11_buttonBZb.png'"></image>
-				<image class="tzb-icon" :src="'../static/adjust/SY_11_buttonTZb.png'"></image> -->
 			</view>
 
 		</view>
@@ -61,25 +56,7 @@
 		</view>
 
 
-		<uni-popup ref="popupSave" type="bottom" background-color="#fff" border-radius="10px 10px 0 0"
-			:mask-click="false">
-			<view class="popup-container">
-				<view class="flex align-center" style="padding: 30rpx;padding-top: 90rpx;">
-					<image class='icon' src="../../static/adjust/sicon.png" mode="widthFix"></image>
-					<text class="icon-text">储存设定</text>
-				</view>
-				<view class="flex align-center" style="padding: 30rpx;">
-					<text class="">名称</text>
-					<input v-model="inputName" class="flex1 input-area" placeholder="输入我的模式" />
-				</view>
-				<view class="send-btn" @click="saveHandler">保存当前模式</view>
-				<image class="titleimg" src="../../static/adjust/SY_05_B001.png"></image>
-				<image class="close-btn" src="../../static/adjust/SY_05_buttonCOLa.png" mode="widthFix"
-					@click="closeSave">
-				</image>
-			</view>
 
-		</uni-popup>
 	</view>
 
 </template>
@@ -126,20 +103,7 @@
 				touchingUp: false,
 				deviceId: '', // 连接的蓝牙id
 				serviceId: '', // 连接的服务id
-				characteristicId: '6E400004-B5A3-F393-E0A9-E50E24DCCA9E', //特征值
-				characteristicStringId: '6E400002-B5A3-F393-E0A9-E50E24DCCA9E', //write，string，rx；
-				pillowName: '',
-				selectIndex: 1,
-				selectHead: true, // 是否选中调整头枕，否则是脖枕
-				head: 0, // 仰卧头部高度
-				sideHead: 0, // 侧卧头部高度
-				neck: 0, // 仰卧颈部高度
-				sideNeck: 0, // 侧卧颈部高度
-				initHeadHeight: 0,
-				initNeckHeight: 0,
-				initWidthHeight: 0,
-				initSideNeckHeight: 0,
-				initSideWdithHeight: 0,
+				time: 0,
 			}
 		},
 		onLoad(options) {
@@ -147,12 +111,7 @@
 			this.pillowName = decodeURIComponent(options.pillowName || '')
 			this.deviceId = options.deviceId || ''
 			this.serviceId = options.serviceId || ''
-			this.initHeadHeight = options.headHeight || 0
-			this.initNeckHeight = options.neckHeight || 0
-			this.initWidthHeight = options.shoulderHeight || 0
-			this.initSideNeckHeight = options.sideNeckHeight || 0
-			this.initSideHeadHeight = options.sideHeadHeight || 0
-			this.initSideWdithHeight = options.sideShoulderHeight || 0
+
 			this.saveOptions = options;
 			blue_class.getInstance().updateDeviceName(this.pillowName);
 			uni.setNavigationBarTitle({
@@ -166,6 +125,8 @@
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 20) + 'px');
 			console.log('app.globalData.top:', app.globalData)
+
+			this.time = 0;
 		},
 		onUnload() {
 			console.log('adjust on onUnload!')
@@ -179,32 +140,37 @@
 		},
 		methods: {
 			nextStepHandle() {
-
+				if (this.time == 0) {
+					uni.showToast({
+						title: '先选择时长'
+					})
+					return;
+				}
+				uni.navigateTo({
+					url: "/page_subject/play/play"
+				})
 			},
 			selectMode(index) {
 				// 选择模式
-
+				if (index == 1) {
+					this.time = 5 * 60;
+				} else if (index == 2) {
+					this.time = 10 * 60;
+				} else if (index == 2) {
+					this.time = 20 * 60
+				}
 			},
 			uploadDataHandle() {
 				let upload_data = uploadDataRequest(5)
 				blue_class.getInstance().write2tooth(upload_data)
 			},
-			restartHandle() {
-				let arraybuffer = restartPillow(77);
-				blue_class.getInstance().write2tooth(arraybuffer)
-			},
-			resetHandle() {
-				let reset_data = resetPillow(88);
-				blue_class.getInstance().write2tooth(reset_data)
-			},
+
 			// 请求枕头状态
 			requestStatus() {
 				let shake1 = handPillowStatus()
 				blue_class.getInstance().write2tooth(shake1)
 			},
-			saveModeHandler() {
-				this.$refs.popupSave.open('bottom');
-			},
+
 			// 关闭
 			closeSave() {
 				this.$refs.popupSave.close();
@@ -419,16 +385,6 @@
 				let isright10 = parseInt('0x' + isright);
 				let press = receive16.slice(12, 16);
 				let press10 = parseInt('0x' + press);
-
-				this.head = headHeight10;
-				this.neck = neckHeight10;
-
-				this.sideHead = headHeight10;
-				this.sideNeck = neckHeight10;
-				// let status1 = '0x' + status;
-				this.pillowVersion = '固件版本:' + vesrion10;
-
-
 				blue_class.getInstance().setPillowCharging(n1)
 				blue_class.getInstance().setPillowHeight(headHeight10)
 				blue_class.getInstance().setPillowSideHeight(neckHeight10)
@@ -542,37 +498,6 @@
 				let action = 1;
 				this.touchingUp = true
 
-				// 如果选择的仰卧
-				if (this.selectIndex == 1) {
-					if (this.selectHead) {
-						// this.head += 1
-						if (this.head >= 100) {
-							this.head = 100
-						}
-					} else {
-						// this.neck += 1
-						if (this.neck >= 100) {
-							this.neck = 100
-						}
-					}
-					arraybuffer = handPillowFrontState(action, this.selectHead)
-					console.log('调高仰卧:', this.selectHead ? '调整头部' : '调整颈部', ab2hex(arraybuffer))
-				} else {
-					if (this.selectHead) {
-						// this.sideHead += 1
-						if (this.sideHead >= 100) {
-							this.sideHead = 100
-						}
-					} else {
-						// this.sideNeck += 1
-						if (this.sideNeck >= 100) {
-							this.sideNeck = 100
-						}
-					}
-					// 如果选择的侧卧
-					arraybuffer = handPillowFrontState(action, this.selectHead)
-					console.log('调高侧卧:', action, ab2hex(arraybuffer))
-				}
 				// console.log('调高:', ab2hex(arraybuffer))
 				blue_class.getInstance().write2tooth(arraybuffer)
 			},
@@ -580,7 +505,7 @@
 	}
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	::v-deep(.input-part) {
 		bottom: 0 !important;
 	}

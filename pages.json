@@ -39,6 +39,24 @@
 				"navigationStyle": "custom",
 				"navigationBarTitleText": "手动调整"
 			}
+		}, {
+			"path": "play/play",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "播放"
+			}
+		}, {
+			"path": "selectMore/selectMore",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "请选择您喜爱的佩戴方式"
+			}
+		}, {
+			"path": "step/step",
+			"style": {
+				"navigationStyle": "custom",
+				"navigationBarTitleText": "进阶设置"
+			}
 		}]
 	}],
 	"globalStyle": {
