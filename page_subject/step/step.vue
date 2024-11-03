@@ -44,6 +44,7 @@
 		},
 		methods: {
 			nextStepHandle() {
+				console.log('nextStepHandle')
 				uni.navigateTo({
 					url: "/page_subject/selectMore/selectMore"
 				})

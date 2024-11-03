@@ -6,28 +6,76 @@
 			<view class="border">
 				<view class="flex">
 					<view>
-						<image class="icon1" mode="widthFix" src="../static/step/SMY_08_IconYL.png"></image>
+						<image class="icon1" mode="widthFix" :src="'../static/selectMore/SMY_08_IconYL.png'"></image>
+					</view>
+					<view class="flex1 border-right">
+						<view class="top-tips">
+							<view class="title">
+								自动启动压力控制
+							</view>
+							<view class="tips">
+								感受到这个压力后，将自动启动助眠程序
+							</view>
+							<switch class="opt-switch"></switch>
+						</view>
+						<view class="flex border-center">
+							<view>
+								<image class="icon-left" mode="widthFix"
+									:src="'../static/selectMore/SMY_08_IconSong.png'"></image>
+								<view class="sub-title">松</view>
+							</view>
+							<view class="flex1">
+								<slider class="flex1" block-size="18" activeColor="#194a94" value="5" min="1" max="10"
+									show-value @change="sliderChange" step="1" />
+								<view class="sub-title">默认</view>
+							</view>
+							<view>
+								<image class="icon-right" mode="widthFix"
+									:src="'../static/selectMore/SMY_08_IconJin.png'">
+								</image>
+								<view class="sub-title">紧</view>
+							</view>
+						</view>
+
+					</view>
+				</view>
+				<view class="flex" style="margin-top: 46rpx;">
+					<view>
+						<image class="icon2" mode="widthFix" :src="'../static/selectMore/SMY_08_IconQD.png'"></image>
 					</view>
 					<view class="flex1">
-						<view class="">
-							自动启动压力控制
+						<view class="top-tips">
+							<view class="title">
+								强度调整
+							</view>
+							<view class="tips">
+								感受到这个压力后，将自动启动助眠程序
+							</view>
+							<switch class="opt-switch"></switch>
 						</view>
-					</view>
-				</view>
-				<view class="flex">
-					<view>
-						<image class="icon2" mode="widthFix" src="../static/step/SMY_08_IconQD.png"></image>
-					</view>
-				</view>
-				<view class="flex space-round">
-					<view class="tips">
-						绑带内含压力感应器，佩戴时请不要设置过紧
-						或者过松，经过三五次佩戴即可精准定位穴位
+						<view class="flex border-center">
+							<view>
+								<image class="icon-left" mode="widthFix"
+									:src="'../static/selectMore/SMY_08_IconRuo.png'"></image>
+								<view class="sub-title">弱</view>
+							</view>
+							<view class="flex1">
+								<slider class="flex1" block-size="18" activeColor="#194a94" value="5" min="1" max="10"
+									show-value @change="sliderChange" step="1" />
+								<view class="sub-title">默认</view>
+							</view>
+							<view>
+								<image class="icon-right" mode="widthFix"
+									:src="'../static/selectMore/SMY_08_IconQiang.png'">
+								</image>
+								<view class="sub-title">强</view>
+							</view>
+						</view>
 					</view>
 				</view>
 			</view>
 		</view>
-		<view class="opt-part">
+		<view class="opt-part" v-if="false">
 			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
 				<label>进阶设置</label>
 			</view>
@@ -44,7 +92,7 @@
 		},
 		onShow() {
 			let app = getApp();
-			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 20) + 'px');
+			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
 		},
 		methods: {
 			nextStepHandle() {
@@ -58,6 +106,13 @@
 </script>
 
 <style lang="scss" scoped>
+	slider {
+		display: block;
+		margin: 0px 18px;
+		margin-top: 10rpx;
+		padding: 0;
+	}
+
 	.main {
 		background-color: rgb(221, 224, 226);
 
@@ -70,29 +125,92 @@
 
 			.icon1 {
 				width: 61rpx;
+				padding-right: 45rpx;
 			}
 
 			.icon2 {
 				width: 61rpx;
+				padding-right: 45rpx;
 			}
 
 			.border {
 				background-color: #eff2f6;
 				border-radius: 38rpx;
+				padding: 46rpx 38rpx 46rpx 38rpx;
 
 				margin: 32rpx;
 
-				.tips {
-					font-weight: 400;
-					font-size: 26rpx;
-					line-height: 30rpx;
-					color: #E24F36;
+				.top-tips {
+					position: relative;
 				}
 
-				.title {
-					padding: 20rpx;
+				.opt-switch {
+					position: absolute;
+					right: -10rpx;
+					top: 0px;
+				}
+
+				.icon-left {
+					width: 23rpx;
+				}
+
+				.icon-right {
+					width: 25rpx;
+				}
+
+				.border-center {
+					padding-top: 20rpx;
+					padding-bottom: 20rpx;
+				}
+
+				.border-right {
+					border-bottom: #dde0e2 1px solid;
+					margin-bottom: 10rpx;
+					padding-bottom: 10rpx;
+				}
+
+				.tips {
+					font-weight: 400;
+					font-size: 24rpx;
+					line-height: 70rpx;
+					color: #547896;
+				}
+
+				.sub-title {
+					font-weight: 400;
+					font-size: 26rpx;
+					color: #828282;
 					text-align: center;
-					width: 100%;
+				}
+
+
+
+				.title2 {}
+
+				.title {
+					font-family: YouYuan;
+					font-weight: 400;
+					font-size: 30rpx;
+					color: #3D3D3D;
+					line-height: 50rpx;
+				}
+
+				.progress-box {
+					display: flex;
+					height: 50rpx;
+					margin-bottom: 60rpx;
+				}
+
+				.uni-icon {
+					line-height: 1.5;
+				}
+
+				.progress-cancel {
+					margin-left: 40rpx;
+				}
+
+				.progress-control button {
+					margin-top: 20rpx;
 				}
 			}
 
