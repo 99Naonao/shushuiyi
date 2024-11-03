@@ -27,6 +27,11 @@ class blue_class {
 	service_2 = '0001FFE7-6865-6F6E-652D-7A732D717A50';
 	service2_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A51';
 	service2_charactor2 = '0001FFE7-6865-6F6E-652D-7A732D717A52';
+	service2_charactor4 = '0001FFE7-6865-6F6E-652D-7A732D717A54';
+	service_3 = '0001FFE7-6865-6F6E-652D-7A732D717A30';
+	service_3_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A31';
+	service_3_charactor2 = '0001FFE7-6865-6F6E-652D-7A732D717A32';
+	service_3_charactor3 = '0001FFE7-6865-6F6E-652D-7A732D717A33';
 
 	constructor() {
 		// 初始化蓝牙相关的状态或变量  
@@ -182,6 +187,60 @@ class blue_class {
 			fail() {
 				console.log('writeBLECharacteristicValue fail')
 				// reject()
+			}
+		})
+	}
+	// 更改强度
+	changeStrongMode(status) {
+		let status_arraybuffer = str2ab(status);
+		console.log("[changeStrongMode]", status, str2ab(status))
+		// 更改播放模式
+		uni.writeBLECharacteristicValue({
+			deviceId: blue_class.getInstance().deviceId,
+			serviceId: this.service_2,
+			characteristicId: this.service2_charactor4,
+			value: status_arraybuffer,
+			success: (res) => {
+				console.log('更改强度值成功:', status, res)
+				uni.writeBLECharacteristicValue({
+					characteristicId: this.service2_charactor4,
+					deviceId: blue_class.getInstance().deviceId,
+					serviceId: this.service_2,
+					value: str2ab(time),
+					success: (res2) => {
+						console.log('更改强度值成功:', res2)
+					}
+				})
+			},
+			fail: (res) => {
+				console.log('更改强度值失败:', status, res)
+			}
+		})
+	}
+	// 更改压力值
+	changeStressMode(status) {
+		let status_arraybuffer = str2ab(status);
+		console.log("[changeStressMode]", status, str2ab(status))
+		// 更改播放模式
+		uni.writeBLECharacteristicValue({
+			deviceId: blue_class.getInstance().deviceId,
+			serviceId: this.service_3,
+			characteristicId: this.service3_charactor3,
+			value: status_arraybuffer,
+			success: (res) => {
+				console.log('更改压力值成功:', status, res)
+				uni.writeBLECharacteristicValue({
+					characteristicId: this.service3_charactor3,
+					deviceId: blue_class.getInstance().deviceId,
+					serviceId: this.service_3,
+					value: str2ab(time),
+					success: (res2) => {
+						console.log('更改压力值成功:', res2)
+					}
+				})
+			},
+			fail: (res) => {
+				console.log('更改压力值失败:', status, res)
 			}
 		})
 	}

@@ -25,8 +25,8 @@
 								<view class="sub-title">松</view>
 							</view>
 							<view class="flex1">
-								<slider class="flex1" block-size="18" activeColor="#194a94" value="5" min="1" max="10"
-									show-value @change="sliderChange" step="1" />
+								<slider class="flex1" block-size="18" activeColor="#194a94" value="20" min="0" max="32"
+									show-value @change="strongSliderChange" step="1" />
 								<view class="sub-title">默认</view>
 							</view>
 							<view>
@@ -60,8 +60,8 @@
 								<view class="sub-title">弱</view>
 							</view>
 							<view class="flex1">
-								<slider class="flex1" block-size="18" activeColor="#194a94" value="5" min="1" max="10"
-									show-value @change="sliderChange" step="1" />
+								<slider class="flex1" block-size="18" activeColor="#194a94" value="100" min="50"
+									max="200" show-value @change="stressSliderChange" step="1" />
 								<view class="sub-title">默认</view>
 							</view>
 							<view>
@@ -84,6 +84,7 @@
 </template>
 
 <script>
+	import blue_class from '../../utils/BlueManager';
 	export default {
 		data() {
 			return {
@@ -95,6 +96,14 @@
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
 		},
 		methods: {
+			strongSliderChange(value) {
+				console.log('strong slider:', value.detail.value)
+				blue_class.getInstance().changeStrongMode(value.detail.value + '')
+			},
+			stressSliderChange(value) {
+				console.log('stress slider:', value.detail.value)
+				blue_class.getInstance().changeStressMode(value.detail.value + '')
+			},
 			nextStepHandle() {
 				uni.navigateTo({
 					url: "/page_subject/selectMore/selectMore"
