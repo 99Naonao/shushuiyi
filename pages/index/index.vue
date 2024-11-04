@@ -45,6 +45,9 @@
 		onLoad() {
 
 		},
+		onShareAppMessage() {
+
+		},
 		methods: {
 			enterDetailHandle() {
 				if (this.loginStatus) {

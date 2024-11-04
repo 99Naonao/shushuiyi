@@ -371,6 +371,21 @@ var str2ab = function(str) {
 	return buf;
 }
 
+var number2Uint = function(num) {
+	var buf = new ArrayBuffer(1);
+	var bufView = new Uint8Array(buf);
+	bufView[0] = num;
+	return buf;
+}
+
+var number2Uint2 = function(num) {
+	var buf = new ArrayBuffer(2);
+	var bufView = new Uint16Array(buf);
+	bufView[0] = num;
+	return buf;
+}
+
+
 var write2toothstr = async function(deviceId, serviceId, characteristicId, buffer) {
 	return new Promise((resolve, reject) => {
 		console.log('write2tooth,deviceId:,', deviceId, ',serviceId:,' + serviceId,
@@ -656,6 +671,8 @@ export {
 	parseTime,
 	ab2str,
 	str2ab,
+	number2Uint,
+	number2Uint2,
 	hex2String,
 	Uint8ArrayToString,
 	dateUtils

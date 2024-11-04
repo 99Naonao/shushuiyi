@@ -7,12 +7,13 @@
 
 				<view class="title">选择助眠模式</view>
 				<view class="flex space-round">
-					<image @click="selectMode(1)" mode="widthFix" class="icon2"
-						:src="'../static/adjust/SMY_05_Icon5Ma.png'"></image>
-					<image @click="selectMode(2)" mode="widthFix" class="icon2"
-						:src="'../static/adjust/SMY_05_Icon10Mb.png'"></image>
+					<image @click="selectMode(1)" mode="widthFix" class="icon2" :src="timeIndex==1?fiveSelected:five">
+					</image>
+					<image @click="selectMode(2)" mode="widthFix" class="icon2" :src="timeIndex==2?tenSelected:ten">
+					</image>
 					<image @click="selectMode(3)" mode="widthFix" class="icon2"
-						:src="'../static/adjust/SMY_05_Icon20Mb.png'"></image>
+						:src="timeIndex==3?twentySelected:twenty">
+					</image>
 				</view>
 			</view>
 		</view>
@@ -23,28 +24,40 @@
 						<view class='desc1'>平补平泻手法</view>
 						<view class='desc2'>新手建议模式，本手法非常舒适</view>
 					</view>
-					<switch></switch>
+					<switch :checked="mode_one" @change="(v)=>{
+						closeOthers()
+						mode_one = v.detail.value
+					}"></switch>
 				</view>
 				<view class="item flex">
 					<view class="flex1">
 						<view class='desc1'>补法</view>
 						<view class='desc2'>适合失眠多梦阳气失衡的用户</view>
 					</view>
-					<switch></switch>
+					<switch :checked="mode_two" @change="(v)=>{
+						closeOthers()
+						mode_two = v.detail.value
+					}"></switch>
 				</view>
 				<view class="item flex">
 					<view class="flex1">
 						<view class='desc1'>泻法</view>
 						<view class='desc2'>适合盗汗气虚怕冷体质的用户</view>
 					</view>
-					<switch></switch>
+					<switch :checked="mode_three" @change="(v)=>{
+						closeOthers()
+						mode_three = v.detail.value
+					}"></switch>
 				</view>
 				<view class="item flex">
 					<view class="flex1">
 						<view class='desc1'>专业浅针师手法</view>
 						<view class='desc2'>享受中国浅针大师的独特手法</view>
 					</view>
-					<switch></switch>
+					<switch :checked="mode_four" @change="(v)=>{
+						closeOthers()
+						mode_four = v.detail.value
+					}"></switch>
 				</view>
 			</view>
 
@@ -92,6 +105,17 @@
 		components: {},
 		data() {
 			return {
+				five: '../static/adjust/SMY_05_Icon5Ma.png',
+				fiveSelected: '../static/adjust/SMY_05_Icon5Mb.png',
+				ten: '../static/adjust/SMY_05_Icon10Mb.png',
+				tenSelected: '../static/adjust/SMY_05_Icon10Ma.png',
+				twenty: '../static/adjust/SMY_05_Icon20Mb.png',
+				twentySelected: '../static/adjust/SMY_05_Icon20Ma.png',
+				mode_one: true,
+				mode_two: false,
+				mode_three: false,
+				mode_four: false,
+				timeIndex: 0,
 				menuStyle: {},
 				inputName: '模式',
 				pillowVersion: '固件版本:0.1',
@@ -139,6 +163,15 @@
 			uni.$off('xx', this.handleMessage);
 		},
 		methods: {
+			closeOthers() {
+				this.mode_four = false;
+				this.mode_three = false;
+				this.mode_two = false;
+				this.mode_one = false;
+			},
+			modeChange(value) {
+				console.log('value:', value)
+			},
 			nextStepHandle() {
 				if (this.time == 0) {
 					uni.showToast({
@@ -146,19 +179,31 @@
 					})
 					return;
 				}
-				uni.navigateTo({
-					url: "/page_subject/play/play"
-				})
+				if (this.mode_one || this.mode_four || this.mode_three || this.mode_two) {
+					uni.navigateTo({
+						url: "/page_subject/play/play"
+					})
+
+					blue_class.getInstance().changeMode('start', this.time);
+				} else {
+					uni.showToast({
+						title: '请选择手法'
+					})
+				}
 			},
 			selectMode(index) {
 				// 选择模式
 				if (index == 1) {
 					this.time = 5 * 60;
+					this.timeIndex = 1;
 				} else if (index == 2) {
 					this.time = 10 * 60;
-				} else if (index == 2) {
+					this.timeIndex = 2;
+				} else if (index == 3) {
 					this.time = 20 * 60
+					this.timeIndex = 3;
 				}
+				console.log('timeIndex', index)
 			},
 			uploadDataHandle() {
 				let upload_data = uploadDataRequest(5)
@@ -523,6 +568,11 @@
 		width: 100%;
 		text-align: center;
 		font-size: 18rpx;
+	}
+
+	.icon-border {
+		border: #003C71 2px solid;
+		border-radius: 50%;
 	}
 
 	.select-btn {

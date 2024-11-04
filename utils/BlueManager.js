@@ -9,6 +9,8 @@ import {
 	changeAdjustMode,
 	handPillowSideState,
 	str2ab,
+	number2Uint2,
+	number2Uint,
 	parsePillowState
 } from '@/common/util.js'
 class blue_class {
@@ -192,8 +194,8 @@ class blue_class {
 	}
 	// 更改强度
 	changeStrongMode(status) {
-		let status_arraybuffer = str2ab(status);
-		console.log("[changeStrongMode]", status, str2ab(status))
+		let status_arraybuffer = number2Uint(status);
+		console.log("[changeStrongMode]", status, number2Uint(status))
 		// 更改播放模式
 		uni.writeBLECharacteristicValue({
 			deviceId: blue_class.getInstance().deviceId,
@@ -202,15 +204,6 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改强度值成功:', status, res)
-				uni.writeBLECharacteristicValue({
-					characteristicId: this.service2_charactor4,
-					deviceId: blue_class.getInstance().deviceId,
-					serviceId: this.service_2,
-					value: str2ab(time),
-					success: (res2) => {
-						console.log('更改强度值成功:', res2)
-					}
-				})
 			},
 			fail: (res) => {
 				console.log('更改强度值失败:', status, res)
@@ -219,25 +212,16 @@ class blue_class {
 	}
 	// 更改压力值
 	changeStressMode(status) {
-		let status_arraybuffer = str2ab(status);
-		console.log("[changeStressMode]", status, str2ab(status))
+		let status_arraybuffer = number2Uint2(status);
+		console.log("[changeStressMode]", status, number2Uint2(status))
 		// 更改播放模式
 		uni.writeBLECharacteristicValue({
 			deviceId: blue_class.getInstance().deviceId,
 			serviceId: this.service_3,
-			characteristicId: this.service3_charactor3,
+			characteristicId: this.service_3_charactor3,
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改压力值成功:', status, res)
-				uni.writeBLECharacteristicValue({
-					characteristicId: this.service3_charactor3,
-					deviceId: blue_class.getInstance().deviceId,
-					serviceId: this.service_3,
-					value: str2ab(time),
-					success: (res2) => {
-						console.log('更改压力值成功:', res2)
-					}
-				})
 			},
 			fail: (res) => {
 				console.log('更改压力值失败:', status, res)

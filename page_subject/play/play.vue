@@ -4,9 +4,41 @@
 	<view class="container">
 		<view class="top-part" :style="menuStyle">
 			<image mode="widthFix" class="cover" :src="'../static/SMY_06_playMAC.png'"></image>
+			<view class="sound-name">In a time Lastpast</view>
+			<view class="sound-sub-name">时光飞逝</view>
+			<view class="play-part ">
+				<view class="flex align-center">
+					<view class="time-left">0:1</view>
+					<view class="progress-box flex1">
+						<progress :percent="0" activeColor="#E24F36" stroke-width="3" />
+					</view>
+					<view class="time-full">3:26</view>
+				</view>
+				<view class="flex space-round align-center" style="margin-top: 10rpx;">
+					<image class="circle-mode" mode="widthFix" :src="'../static/SMY_06_play04.png'">
+					</image>
+					<image class="play-back" mode="widthFix" :src="'../static/SMY_06_play05.png'">
+					</image>
+					<image class="play-mode pause-icon" mode="widthFix" :src="'../static/SMY_06_playB.png'">
+					</image>
+					<image class="next-mode" mode="widthFix" :src="'../static/SMY_06_play06.png'">
+					</image>
+					<image class="list-mode" mode="widthFix" :src="'../static/SMY_06_play07.png'">
+					</image>
+				</view>
+			</view>
 		</view>
 		<view class="center-part">
-
+			<view class="border">
+				<view class="title">
+					如何使用热敷?
+				</view>
+				<view class="flex just-center align-center" style="padding: 20rpx;">
+					<image class="tip-img" mode="widthFix" :src="'../static/SMY_06_RF01.png'"></image>
+					<view class="tips">需要热敷时<br>
+						请开启这个按钮</view>
+				</view>
+			</view>
 		</view>
 		<view class="opt-part">
 			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
@@ -58,6 +90,97 @@
 				margin: 0 auto;
 				display: block;
 			}
+
+			.pause-icon {
+				width: 86rpx;
+				display: block;
+			}
+
+			.sound-name {
+				font-weight: 400;
+				font-size: 24rpx;
+				color: #3D3D3D;
+				text-align: center;
+				padding: 10rpx;
+			}
+
+			.sound-sub-name {
+				font-weight: 400;
+				font-size: 24rpx;
+				color: #828282;
+				text-align: center;
+				padding: 10rpx;
+			}
+
+			.play-part {
+				margin-left: 50rpx;
+				margin-right: 50rpx;
+
+				.time-left {
+					width: 50rpx;
+					font-size: 28rpx;
+					color: #E24F36;
+					text-align: center;
+				}
+
+				.time-full {
+					text-align: center;
+					width: 50rpx;
+					font-size: 28rpx;
+					color: #828282;
+				}
+
+				.circle-mode {
+					width: 38rpx;
+					display: block;
+				}
+
+				.play-back {
+					width: 24rpx;
+					display: block;
+				}
+
+				.next-mode {
+					width: 24rpx;
+					display: block;
+				}
+
+				.list-mode {
+					width: 36rpx;
+					display: block;
+				}
+			}
+		}
+
+		.center-part {
+			.border {
+				background-color: #eff2f6;
+				border-radius: 38rpx;
+
+				margin: 32rpx;
+
+				.tip-img {
+					width: 349rpx;
+				}
+
+				.tips {
+					font-family: YouYuan;
+					font-weight: 400;
+					font-size: 28rpx;
+					color: #3D3D3D;
+					line-height: 34rpx;
+				}
+
+				.title {
+					font-family: YouYuan;
+					font-weight: 400;
+					font-size: 28rpx;
+					color: #3D3D3D;
+					line-height: 50rpx;
+					text-align: center;
+					padding-top: 20rpx;
+				}
+			}
 		}
 
 		.opt-part {
@@ -67,7 +190,7 @@
 			margin-bottom: 42rpx;
 
 			.opt-btn {
-				width: 284rpx;
+				width: 484rpx;
 				height: 90rpx;
 				display: flex;
 				justify-content: space-around;

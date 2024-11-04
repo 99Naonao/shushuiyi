@@ -111,9 +111,8 @@
 				searching: false, // 搜索中
 				deviceId: '', // 连接的蓝牙id
 				serviceId: '', // 连接的服务id
-				deviceIdList: [{
-					name: 'test'
-				}], // 检测列表
+				findingIndex: 0,
+				deviceIdList: [], // 检测列表
 				// deviceIdList: [],
 				connectList: [], // 连接列表
 				service_1: '0001FFE7-6865-6F6E-652D-7A732D717A10',
@@ -124,6 +123,7 @@
 				service_2: '0001FFE7-6865-6F6E-652D-7A732D717A50',
 				service2_charactor1: '0001FFE7-6865-6F6E-652D-7A732D717A51',
 				service2_charactor2: '0001FFE7-6865-6F6E-652D-7A732D717A52',
+				service_3: '0001FFE7-6865-6F6E-652D-7A732D717A30',
 			}
 		},
 		onShow() {
@@ -299,9 +299,9 @@
 			handlePlayMessage(characteristic) {
 				let d = ab2hex(characteristic.value)
 				console.log('播放状态版本:', hex2String(d), ab2hex(characteristic.value), characteristic.characteristicId)
-				if (characteristic.characteristicId == this.service2_charactor1) {
-					this.changeMode('start', "30")
-				}
+				// if (characteristic.characteristicId == this.service2_charactor1) {
+				// 	this.changeMode('start', "30")
+				// }
 			},
 			changeMode(status, time) {
 				let status_arraybuffer = str2ab(status);
@@ -476,11 +476,8 @@
 						blue_class.getInstance().loginSuccess = true;
 
 						console.log('connectBluetooth success!:', deviceId, res)
-						// 跳转首页
-						uni.switchTab({
-							url: "/pages/index/index"
-						})
-						return;
+
+						this.findingIndex = 0;
 
 						uni.getBLEDeviceServices({
 							deviceId,
@@ -496,6 +493,8 @@
 											this.service_1)
 										this.getBLEDeviceCharacteristics(deviceId,
 											this.service_2)
+										this.getBLEDeviceCharacteristics(deviceId,
+											this.service_3)
 										break;
 									}
 								}
@@ -527,7 +526,6 @@
 						success: (res) => {
 							console.log("%c getBLEDeviceCharacteristics success", "color:red;", res
 								.characteristics);
-
 							for (var item in res.characteristics) {
 								// 是否支持读
 								if (res.characteristics[item].uuid && res.characteristics[item].properties
@@ -536,6 +534,17 @@
 										serviceId,
 										res.characteristics[item].uuid)
 								}
+							}
+
+							// 三个service都读取成功后，跳转首页
+							that.findingIndex += 1;
+							if (that.findingIndex == 3) {
+								// 跳转首页
+								uni.switchTab({
+									url: "/pages/index/index"
+								})
+								return;
+
 							}
 						},
 						fail: (res) => {
