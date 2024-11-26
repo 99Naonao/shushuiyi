@@ -7,7 +7,7 @@ function formatTime(time) {
 	time = time % 3600
 	var minute = parseInt(time / 60)
 	time = time % 60
-	var second = time
+	var second = parseInt(time)
 
 	return ([hour, minute, second]).map(function(n) {
 		n = n.toString()
@@ -370,6 +370,7 @@ var str2ab = function(str) {
 	}
 	return buf;
 }
+
 
 var number2Uint = function(num) {
 	var buf = new ArrayBuffer(1);

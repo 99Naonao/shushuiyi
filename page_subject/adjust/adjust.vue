@@ -27,6 +27,7 @@
 					<switch :checked="mode_one" @change="(v)=>{
 						closeOthers()
 						mode_one = v.detail.value
+						hand_name = '平补平泻.qzd'
 					}"></switch>
 				</view>
 				<view class="item flex">
@@ -36,7 +37,8 @@
 					</view>
 					<switch :checked="mode_two" @change="(v)=>{
 						closeOthers()
-						mode_two = v.detail.value
+						mode_two = v.detail.value;
+						hand_name = '补法.qzd'
 					}"></switch>
 				</view>
 				<view class="item flex">
@@ -47,6 +49,7 @@
 					<switch :checked="mode_three" @change="(v)=>{
 						closeOthers()
 						mode_three = v.detail.value
+						hand_name = '泻法.qzd'
 					}"></switch>
 				</view>
 				<view class="item flex">
@@ -57,6 +60,7 @@
 					<switch :checked="mode_four" @change="(v)=>{
 						closeOthers()
 						mode_four = v.detail.value
+						hand_name = '手法z.qzs'
 					}"></switch>
 				</view>
 			</view>
@@ -115,6 +119,7 @@
 				mode_two: false,
 				mode_three: false,
 				mode_four: false,
+				hand_name: '',
 				timeIndex: 0,
 				menuStyle: {},
 				inputName: '模式',
@@ -184,7 +189,9 @@
 						url: "/page_subject/play/play"
 					})
 
-					blue_class.getInstance().changeMode('start', this.time);
+					blue_class.getInstance().changePlayFile(this.hand_name, () => {
+						blue_class.getInstance().changeMode('start', this.time);
+					});
 				} else {
 					uni.showToast({
 						title: '请选择手法'
@@ -221,8 +228,6 @@
 				this.$refs.popupSave.close();
 			},
 			saveHandler() {
-
-
 				let changeAdjust = changeSaveAdjustMode();
 				blue_class.getInstance().write2tooth(changeAdjust);
 				uni.showToast({
@@ -439,19 +444,6 @@
 					isright10,
 					press10)
 			},
-			parsePillowSleepData(array_buffer) {
-				//解析枕头睡眠阶段状态	
-				// 数据1-姿态（U8）(1--平躺，2--侧卧) + 数据2开始时间（T4）+数据3结束时间（T4）+ 数据4-姿态（U8）(1--平躺，2--侧卧) + 数据5开始时间（T4）+数据6结束时间（T4）+ ... ,关于该指令的说明，是多个姿态+开始时间和结束时间的条目的组合，根据数据长度计算一条指令中包含多少组数据
-				// let receive8 = new Uint8Array(array_buffer);
-				// console.log('姿态:', receive8.getUint8(0))
-				blue_class.getInstance().write2tooth(appAnswer(5))
-			},
-			selectHeadHandler(bool) {
-				this.selectHead = bool
-			},
-			selectHandler(index) {
-				this.selectIndex = index
-			},
 			// 调低枕头
 			adjustLowSleepHandler() {
 				this.touchingDown = true
@@ -531,18 +523,6 @@
 						.selectHead)
 					console.log('停止调节侧卧:', action, ab2hex(arraybuffer))
 				}
-				// console.log('调高:', ab2hex(arraybuffer))
-				blue_class.getInstance().write2tooth(arraybuffer)
-			},
-			// 调高枕头
-			adjustHighSleepHandler() {
-				// uni.showLoading({
-				// 	title: '调高中'
-				// })
-				let arraybuffer
-				let action = 1;
-				this.touchingUp = true
-
 				// console.log('调高:', ab2hex(arraybuffer))
 				blue_class.getInstance().write2tooth(arraybuffer)
 			},

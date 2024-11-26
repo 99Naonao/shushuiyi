@@ -29,6 +29,7 @@ class blue_class {
 	service_2 = '0001FFE7-6865-6F6E-652D-7A732D717A50';
 	service2_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A51';
 	service2_charactor2 = '0001FFE7-6865-6F6E-652D-7A732D717A52';
+	service2_charactor3 = '0001FFE7-6865-6F6E-652D-7A732D717A53';
 	service2_charactor4 = '0001FFE7-6865-6F6E-652D-7A732D717A54';
 	service_3 = '0001FFE7-6865-6F6E-652D-7A732D717A30';
 	service_3_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A31';
@@ -204,9 +205,15 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改强度值成功:', status, res)
+				uni.showToast({
+					title: '更改强度值成功'
+				})
 			},
 			fail: (res) => {
 				console.log('更改强度值失败:', status, res)
+				uni.showToast({
+					title: '更改强度值失败'
+				})
 			}
 		})
 	}
@@ -222,11 +229,42 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改压力值成功:', status, res)
+				uni.showToast({
+					title: '更改压力值成功'
+				})
 			},
 			fail: (res) => {
 				console.log('更改压力值失败:', status, res)
+				uni.showToast({
+					title: '更改压力值失败'
+				})
 			}
 		})
+	}
+	changePlayFile(name, callBack) {
+		// 更改当前播放文件名
+		let status_arraybuffer = str2ab(name);
+		console.log("[changePlayFile]", name, str2ab(name))
+		// 更改播放模式
+		uni.writeBLECharacteristicValue({
+			deviceId: blue_class.getInstance().deviceId,
+			serviceId: this.service_2,
+			characteristicId: this.service2_charactor3,
+			value: status_arraybuffer,
+			success: (res) => {
+				console.log('更改文件名成功:', name, res)
+				uni.showToast({
+					title: '更改文件名成功'
+				})
+				if (callBack) callBack()
+			},
+			fail: (res) => {
+				console.log('更改文件名失败:', name, res)
+			}
+		})
+	}
+	readPlayFile() {
+
 	}
 	// 更改模式
 	changeMode(status, time) {
@@ -240,6 +278,9 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改状态成功:', status, res)
+				uni.showToast({
+					title: '更改状态成功'
+				})
 				uni.writeBLECharacteristicValue({
 					characteristicId: this.service2_charactor2,
 					deviceId: blue_class.getInstance().deviceId,

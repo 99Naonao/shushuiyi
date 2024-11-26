@@ -8,18 +8,22 @@
 			<view class="sound-sub-name">时光飞逝</view>
 			<view class="play-part ">
 				<view class="flex align-center">
-					<view class="time-left">0:1</view>
+					<view class="time-left">{{currentTime}}</view>
 					<view class="progress-box flex1">
-						<progress :percent="0" activeColor="#E24F36" stroke-width="3" />
+						<progress :percent="progress" activeColor="#E24F36" stroke-width="3" />
 					</view>
-					<view class="time-full">3:26</view>
+					<view class="time-full">{{duration}}</view>
 				</view>
 				<view class="flex space-round align-center" style="margin-top: 10rpx;">
 					<image class="circle-mode" mode="widthFix" :src="'../static/SMY_06_play04.png'">
 					</image>
 					<image class="play-back" mode="widthFix" :src="'../static/SMY_06_play05.png'">
 					</image>
-					<image class="play-mode pause-icon" mode="widthFix" :src="'../static/SMY_06_playB.png'">
+					<image class="play-mode pause-icon" mode="widthFix" @click="playHandle"
+						v-if="(audio&&paused == true)" :src="'../static/SMY_06_playA.png'">
+					</image>
+					<image class="play-mode pause-icon" mode="widthFix" @click="pauseHandle"
+						v-if="(audio&&paused == false)" :src="'../static/SMY_06_playB.png'">
 					</image>
 					<image class="next-mode" mode="widthFix" :src="'../static/SMY_06_play06.png'">
 					</image>
@@ -49,21 +53,97 @@
 </template>
 
 <script>
+	import {
+		formatTime
+	} from '@/common/util.js'
+	const audio = uni.createInnerAudioContext({
+		useWebAudioImplement: true
+	})
 	export default {
+		computed: {
+
+		},
 		data() {
 			return {
+				pauseIcon: '../static/SMY_06_playB.png',
+				playIcon: '../static/SMY_06_playA.png',
+				audio: null,
+				paused: true,
+				duration: "00:00",
+				currentTime: "00:00",
+				progress: 0,
 				menuStyle: {}
 			}
 		},
 		mounted() {
-			let audio = uni.createInnerAudioContext()
-			audio.src = "https://jinqiu.bytedance.com/sounds/bgm.mp3"
+
 		},
 		onShow() {
+			if (this.audio) {
+				try {
+					this.audio.pause();
+					this.audio.destroy()
+					this.audio = null
+				} catch (e) {
+					//TODO handle the exception
+				}
+			}
+
+			setInterval(() => {
+				console.log("audio.paused:", audio.paused)
+			}, 1000)
+
 			let app = getApp();
-			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 20) + 'px');
+			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
+
+			this.audio = audio
+			console.log('audio:', this.audio)
+			audio.src = "https://jinqiu.bytedance.com/sounds/bgm.mp3"
+			audio.loop = true;
+			audio.volume = 1;
+			audio.onPlay(() => {
+				console.log('play!:')
+			})
+			audio.onError(() => {
+				console.log('onError!:')
+			})
+			audio.onTimeUpdate(() => {
+				this.currentTime = formatTime(audio.currentTime)
+				this.progress = audio.currentTime * 100 / audio.duration
+				console.log('onTimeUpdate!:', this.progress, audio.currentTime, audio.duration)
+			})
+			audio.onCanplay(() => {
+				let intervalID = setInterval(() => {
+					if (audio.duration !== 0) {
+						clearInterval(intervalID); // 清除定时器
+						console.log("音频时长", audio.duration);
+						this.duration = formatTime(audio.duration)
+					}
+				}, 500);
+			})
 		},
 		methods: {
+			playHandle() {
+				if (audio && audio.paused) {
+					audio.play()
+					this.paused = false;
+				} else {
+					audio.pause()
+					this.paused = true;
+				}
+				this.paused = audio.paused;
+				console.log('playHandle...', audio.paused)
+			},
+			pauseHandle() {
+				if (audio && audio.paused) {
+					audio.play()
+					this.paused = true;
+				} else {
+					audio.pause()
+				}
+				this.paused = audio.paused;
+				console.log('pauseHandle...', audio.paused)
+			},
 			nextStepHandle() {
 				uni.navigateTo({
 					url: "/page_subject/step/step"
@@ -113,20 +193,20 @@
 			}
 
 			.play-part {
-				margin-left: 50rpx;
-				margin-right: 50rpx;
+				margin-left: 20rpx;
+				margin-right: 20rpx;
 
 				.time-left {
-					width: 50rpx;
-					font-size: 28rpx;
+					width: 95rpx;
+					font-size: 22rpx;
 					color: #E24F36;
 					text-align: center;
 				}
 
 				.time-full {
 					text-align: center;
-					width: 50rpx;
-					font-size: 28rpx;
+					width: 65rpx;
+					font-size: 22rpx;
 					color: #828282;
 				}
 
