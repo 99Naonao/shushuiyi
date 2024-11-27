@@ -173,6 +173,7 @@
 
 			.pause-icon {
 				width: 86rpx;
+				height: 86rpx;
 				display: block;
 			}
 
@@ -195,6 +196,7 @@
 			.play-part {
 				margin-left: 20rpx;
 				margin-right: 20rpx;
+				height: 120rpx;
 
 				.time-left {
 					width: 95rpx;
