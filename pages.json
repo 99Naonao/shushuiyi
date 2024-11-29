@@ -25,6 +25,7 @@
 			}
 		}
 	],
+	"requiredBackgroundModes": ["audio"],
 	"subPackages": [{
 		"root": "page_subject",
 		"pages": [{

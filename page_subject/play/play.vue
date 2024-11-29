@@ -3,9 +3,9 @@
 		title=''></z-nav-bar>
 	<view class="container">
 		<view class="top-part" :style="menuStyle">
-			<image mode="widthFix" class="cover" :src="'../static/SMY_06_playMAC.png'"></image>
-			<view class="sound-name">In a time Lastpast</view>
-			<view class="sound-sub-name">时光飞逝</view>
+			<image mode="widthFix" class="cover" :src="poster"></image>
+			<view class="sound-name">{{soundName}}</view>
+			<view class="sound-sub-name">{{authName}}</view>
 			<view class="play-part ">
 				<view class="flex align-center">
 					<view class="time-left">{{currentTime}}</view>
@@ -27,7 +27,7 @@
 					</image>
 					<image class="next-mode" mode="widthFix" :src="'../static/SMY_06_play06.png'">
 					</image>
-					<image class="list-mode" mode="widthFix" :src="'../static/SMY_06_play07.png'">
+					<image class="list-mode" @click="listHandle" mode="widthFix" :src="'../static/SMY_06_play07.png'">
 					</image>
 				</view>
 			</view>
@@ -49,6 +49,31 @@
 				<label>下一步</label>
 			</view>
 		</view>
+
+		<uni-popup ref="popupSave" type="bottom" background-color="#fff" border-radius="10px 10px 0 0"
+			:mask-click="false">
+			<view class="popup-container">
+				<view class="flex align-center" style="padding: 30rpx;padding-top: 90rpx;">
+					<text class="icon-text">曲目列表</text>
+				</view>
+				<view>
+					<view v-for="(item,index) in SleepMusicInfo" :key="index" @click="changeMusic(item, index)">
+						<view class="list-item flex center-part align-center">
+							<view class="num">{{item.id}}</view>
+							<view>
+								<image class="item" :src="item.png"></image>
+							</view>
+							<view class="title">
+								{{item.name}}
+							</view>
+						</view>
+					</view>
+				</view>
+				<image class="close-btn" src="../../static/adjust/SY_05_buttonCOLa.png" mode="widthFix"
+					@click="closeList">
+				</image>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -56,9 +81,7 @@
 	import {
 		formatTime
 	} from '@/common/util.js'
-	const audio = uni.createInnerAudioContext({
-		useWebAudioImplement: true
-	})
+	const audio = uni.getBackgroundAudioManager({})
 	export default {
 		computed: {
 
@@ -72,6 +95,11 @@
 				duration: "00:00",
 				currentTime: "00:00",
 				progress: 0,
+				soundName: '',
+				SleepMusicInfo: [],
+				poster: '',
+				currentIndex: 0,
+				authName: '',
 				menuStyle: {}
 			}
 		},
@@ -79,6 +107,7 @@
 
 		},
 		onShow() {
+			this.start();
 			if (this.audio) {
 				try {
 					this.audio.pause();
@@ -89,23 +118,25 @@
 				}
 			}
 
-			setInterval(() => {
-				console.log("audio.paused:", audio.paused)
-			}, 1000)
-
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
 
 			this.audio = audio
-			console.log('audio:', this.audio)
-			audio.src = "https://jinqiu.bytedance.com/sounds/bgm.mp3"
-			audio.loop = true;
-			audio.volume = 1;
+			// console.log('audio:', this.audio)
+			// audio.src = "https://jinqiu.bytedance.com/sounds/bgm.mp3"
+			// audio.src = "https://sleepfu.oss-cn-fuzhou.aliyuncs.com/music/mp3/Carlab.mp3"
+			// audio.loop = true;
+			// audio.volume = 1;
 			audio.onPlay(() => {
 				console.log('play!:')
+				this.paused = false;
 			})
 			audio.onError(() => {
 				console.log('onError!:')
+			})
+			audio.onPause(() => {
+				console.log('onPause!:')
+				this.paused = true;
 			})
 			audio.onTimeUpdate(() => {
 				this.currentTime = formatTime(audio.currentTime)
@@ -123,6 +154,62 @@
 			})
 		},
 		methods: {
+			async changeMusic(data, index) {
+				audio.autoplay = true;
+				audio.loop = true;
+				audio.volume = 1;
+				audio.title = data.name;
+				audio.singer = data.auth;
+				audio.coverImgUrl = data.png;
+				audio.src = data.mp3;
+
+				this.currentIndex = index;
+				this.poster = data.png;
+				this.soundName = data.name;
+				this.authName = data.auth;
+				this.closeList()
+			},
+			async start() {
+				let url = 'https://sleep1.oss-rg-china-mainland.aliyuncs.com/sleepmusic.json?v=' + Math.random()
+				let that = this;
+				wx.request({
+					url: url,
+					header: {
+						'content-type': 'application/json'
+					},
+					success: function(res) {
+						console.log(res.data)
+						let result = res.data;
+						let music = result.sleepmusic;
+						let SleepMusic = music.SleepMusic;
+						let SleepMusicInfo = SleepMusic.SleepMusicInfo;
+						that.SleepMusicInfo = SleepMusicInfo;
+
+						that.changeMusic(that.SleepMusicInfo[0], 0);
+					}
+				})
+
+				// uni.downloadFile({
+				// 	url: url,
+				// 	success: (res) => {
+				// 		if (res.statusCode === 200) {
+				// 			console.log('下载成功');
+				// 			console.log(res)
+				// 		}
+				// 	},
+				// 	fail: (res) => {
+				// 		uni.showToast({
+				// 			title: '加载失败'
+				// 		})
+				// 	}
+				// })
+			},
+			listHandle() {
+				this.$refs.popupSave.open('bottom');
+			},
+			closeList() {
+				this.$refs.popupSave.close()
+			},
 			playHandle() {
 				if (audio && audio.paused) {
 					audio.play()
@@ -160,12 +247,80 @@
 		width: 100%;
 		height: 100%;
 
+		.list-item {
+			background-color: #f0f2f7;
+			border-radius: 20rpx;
+			padding: 20rpx;
+			margin: 20rpx;
+
+			.item {
+				border-radius: 50%;
+				width: 100rpx;
+				height: 100rpx;
+				margin: 20rpx;
+			}
+		}
+
+		.popup-container {
+			position: relative;
+			margin: 20rpx;
+
+			.titleimg {
+				width: 106rpx;
+				height: 95rpx;
+				position: absolute;
+				left: 50%;
+				top: -50rpx;
+				margin-left: -53rpx;
+			}
+
+			.send-btn {
+				background-color: #ff8000;
+				margin: 20rpx;
+				color: white;
+				line-height: 80rpx;
+				padding-left: 50rpx;
+				padding-right: 50rpx;
+				border-radius: 15rpx;
+				text-align: center;
+			}
+
+			.close-btn {
+				width: 26rpx;
+				height: 27rpx;
+				right: 30rpx;
+				top: 20rpx;
+				position: absolute;
+			}
+
+			.icon {
+				width: 42rpx;
+				height: 42rpx;
+			}
+
+			.input-area {
+				margin-left: 20rpx;
+				letter-spacing: 2rpx;
+				background-color: #DEDEDE;
+				padding: 20rpx;
+				color: rgba(91, 120, 151, 1)
+			}
+
+			.icon-text {
+				// line-height: 42rpx;
+				margin-left: 20rpx;
+				letter-spacing: 5rpx;
+			}
+		}
+
+
 		.top-part {
 			background-color: rgb(221, 224, 226);
 			padding-top: var(--menuButtonTop);
 
 			.cover {
 				width: 164rpx;
+				height: 164rpx;
 				border-radius: 50%;
 				margin: 0 auto;
 				display: block;
@@ -199,7 +354,7 @@
 				height: 120rpx;
 
 				.time-left {
-					width: 95rpx;
+					width: 125rpx;
 					font-size: 22rpx;
 					color: #E24F36;
 					text-align: center;
@@ -207,7 +362,7 @@
 
 				.time-full {
 					text-align: center;
-					width: 65rpx;
+					width: 125rpx;
 					font-size: 22rpx;
 					color: #828282;
 				}
