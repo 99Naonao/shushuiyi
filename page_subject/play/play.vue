@@ -138,6 +138,12 @@
 				console.log('onPause!:')
 				this.paused = true;
 			})
+
+			audio.onEnded(() => {
+				console.log('onPause!:')
+
+				this.changeMusic(that.SleepMusicInfo[this.currentIndex], this.currentIndex);
+			})
 			audio.onTimeUpdate(() => {
 				this.currentTime = formatTime(audio.currentTime)
 				this.progress = audio.currentTime * 100 / audio.duration
