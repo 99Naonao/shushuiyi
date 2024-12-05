@@ -22,6 +22,9 @@
 
 <script>
 	import blue_class from '../../utils/BlueManager';
+	import {
+		utf8to16
+	} from "../../common/util.js"
 	export default {
 
 		onShow() {
@@ -43,7 +46,8 @@
 			}
 		},
 		onLoad() {
-
+			// let test = utf8to16([228, 184, 173, 230, 150, 135, 97, 98, 99]);
+			// console.log("onload!!!", test)
 		},
 		onShareAppMessage() {
 

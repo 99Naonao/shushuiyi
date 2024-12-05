@@ -351,14 +351,17 @@ var ab2str = function(buf) {
 	return String.fromCharCode.apply(null, new Uint16Array(buf));
 }
 
-var Uint8ArrayToString = function(fileData) {
-	var dataString = "";
-	for (var i = 0; i < fileData.byteLength; i++) {
-		dataString += String.fromCharCode(fileData[i]);
-		console.log('dataString:', dataString)
-	}
+var Uint8ArrayToString = function(unit8Array) {
+	// var dataString = "";
+	// for (var i = 0; i < fileData.byteLength; i++) {
+	// 	dataString += String.fromCharCode(fileData[i]);
+	// 	console.log('dataString:', dataString)
+	// }
 
-	return dataString
+	var encodedString = String.fromCharCode.apply(null, unit8Array)
+	var decodedString = decodeURIComponent(escape(encodedString))
+
+	return decodedString
 
 }
 
@@ -426,6 +429,22 @@ var hexStringToArrayBuffer = function(str) {
 		ind++
 	}
 	return buffer;
+}
+import {
+	TextEncoder,
+	TextDecoder
+} from 'text-decoding'
+var utf8to16 = function(utf8s) {
+	const gbkBuf = new Uint8Array(utf8s)
+
+	let apps = getApp();
+
+	//TextEncoder
+	// unescape(encodeURIComponent(inputString)).split("").map(val => val.charCodeAt());
+	//TextDecoder
+	// return decodeURIComponent(escape(String.fromCharCode(...gbkBuf)));
+	console.log('utf8to16:::')
+	return new TextDecoder('gb2312').decode(gbkBuf)
 }
 
 // hex转json字符串,16进制ASCII
@@ -675,6 +694,7 @@ export {
 	number2Uint,
 	number2Uint2,
 	hex2String,
+	utf8to16,
 	Uint8ArrayToString,
 	dateUtils
 }

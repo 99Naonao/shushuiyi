@@ -87,6 +87,7 @@
 		hex2String,
 		Uint8ArrayToString,
 		hexStringToArrayBuffer,
+		utf8to16,
 	} from '@/common/util.js'
 	import blue_class from '../../utils/BlueManager';
 	import {
@@ -123,6 +124,9 @@
 				service_2: '0001FFE7-6865-6F6E-652D-7A732D717A50',
 				service2_charactor1: '0001FFE7-6865-6F6E-652D-7A732D717A51',
 				service2_charactor2: '0001FFE7-6865-6F6E-652D-7A732D717A52',
+				service2_charactor3: '0001FFE7-6865-6F6E-652D-7A732D717A56',
+				service2_charactor4: '0001FFE7-6865-6F6E-652D-7A732D717A54',
+				service2_charactor5: '0001FFE7-6865-6F6E-652D-7A732D717A53',
 				service_3: '0001FFE7-6865-6F6E-652D-7A732D717A30',
 			}
 		},
@@ -297,8 +301,49 @@
 				}
 			},
 			handlePlayMessage(characteristic) {
-				let d = ab2hex(characteristic.value)
-				console.log('播放状态版本:', hex2String(d), ab2hex(characteristic.value), characteristic.characteristicId)
+				let d = ab2hex(characteristic.value);
+				if (characteristic.characteristicId == this.service2_charactor5) {
+					// 如果是读取的模式
+					console.log('模式返回21:', d, utf8to16(characteristic.value))
+				} else if (characteristic.characteristicId == this.service2_charactor4) {
+					console.log('强度返回2:', ab2hex(characteristic.value))
+				} else if (characteristic.characteristicId == this.service2_charactor3) {
+					console.log('按键通知:readBLECharacteristicValue:')
+					// 收到按键通知
+					if (d == '01') {
+						uni.readBLECharacteristicValue({
+							// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+							deviceId: blue_class.getInstance().deviceId,
+							// 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
+							serviceId: this.service_2,
+							// 这里的 characteristicId 需要在 getBLEDeviceCharacteristics 接口中获取
+							characteristicId: this.service2_charactor5,
+							success(res) {
+								console.log('模式:readBLECharacteristicValue:', res, res.errCode)
+							},
+							fail(res) {
+								console.log('fail!', res)
+							}
+						})
+					} else if (d == '02') {
+						uni.readBLECharacteristicValue({
+							// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+							deviceId: blue_class.getInstance().deviceId,
+							// 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
+							serviceId: this.service_2,
+							// 这里的 characteristicId 需要在 getBLEDeviceCharacteristics 接口中获取
+							characteristicId: this.service2_charactor4,
+							success(res) {
+								console.log('强度:readBLECharacteristicValue:', res, res.errCode)
+							},
+							fail(res) {
+								console.log('fail!', res)
+							}
+						})
+					}
+				}
+
+				console.log('播放状态版本13211:', ab2hex(characteristic.value), characteristic.characteristicId)
 				// if (characteristic.characteristicId == this.service2_charactor1) {
 				// 	this.changeMode('start', "30")
 				// }
@@ -534,6 +579,15 @@
 										serviceId,
 										res.characteristics[item].uuid)
 								}
+							}
+
+							if (serviceId == this.service_2) {
+								// 开启监听
+								blue_class.getInstance().startNotice({
+									deviceUUID: deviceId,
+									serviceUUID: serviceId,
+									notifyUUID: this.service2_charactor3
+								})
 							}
 
 							// 三个service都读取成功后，跳转首页
