@@ -16,7 +16,7 @@
 							<view class="tips">
 								感受到这个压力后，将自动启动助眠程序
 							</view>
-							<switch class="opt-switch"></switch>
+							<switch class="opt-switch" v-if="false"></switch>
 						</view>
 						<view class="flex border-center">
 							<view>
@@ -25,7 +25,7 @@
 								<view class="sub-title">松</view>
 							</view>
 							<view class="flex1">
-								<slider class="flex1" block-size="18" activeColor="#194a94" value="100" min="50"
+								<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="50"
 									max="200" show-value @change="stressSliderChange" step="1" />
 								<view class="sub-title">默认</view>
 							</view>
@@ -51,7 +51,7 @@
 							<view class="tips">
 								感受到这个压力后，将自动启动助眠程序
 							</view>
-							<switch class="opt-switch"></switch>
+							<switch class="opt-switch" v-if="false"></switch>
 						</view>
 						<view class="flex border-center">
 							<view>
@@ -60,8 +60,8 @@
 								<view class="sub-title">弱</view>
 							</view>
 							<view class="flex1">
-								<slider class="flex1" block-size="18" activeColor="#194a94" value="20" min="0" max="32"
-									show-value @change="strongSliderChange" step="1" />
+								<slider class="flex1" block-size="18" activeColor="#194a94" :value="strength" min="0"
+									max="32" show-value @change="strongSliderChange" step="1" />
 
 								<view class="sub-title">默认</view>
 							</view>
@@ -89,12 +89,17 @@
 	export default {
 		data() {
 			return {
-				menuStyle: {}
+				menuStyle: {},
+				press: 100,
+				strength: 20,
 			}
 		},
 		onShow() {
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
+
+			this.press = blue_class.getInstance().getPress();
+			this.strength = blue_class.getInstance().getStrength();
 		},
 		methods: {
 			strongSliderChange(value) {

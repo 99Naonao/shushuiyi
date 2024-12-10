@@ -128,6 +128,7 @@
 				service2_charactor4: '0001FFE7-6865-6F6E-652D-7A732D717A54',
 				service2_charactor5: '0001FFE7-6865-6F6E-652D-7A732D717A53',
 				service_3: '0001FFE7-6865-6F6E-652D-7A732D717A30',
+				service_3_press: '0001FFE7-6865-6F6E-652D-7A732D717A33',
 			}
 		},
 		onShow() {
@@ -276,6 +277,17 @@
 		},
 
 		methods: {
+			handlePressMessage(characteristic) {
+				// 处理压力
+				switch (characteristic.characteristicId) {
+					case this.service_3_press:
+						let a = ab2hex(characteristic.value)
+						let press = parseInt('0x' + a);
+						console.log('压力:', press, ab2hex(characteristic.value))
+						blue_class.getInstance().setPress(press);
+						break;
+				}
+			},
 			handleHardMessage(characteristic) {
 				switch (characteristic.characteristicId) {
 					case this.service_charactor1:
@@ -304,9 +316,12 @@
 				let d = ab2hex(characteristic.value);
 				if (characteristic.characteristicId == this.service2_charactor5) {
 					// 如果是读取的模式
-					console.log('模式返回21:', d, utf8to16(characteristic.value))
+					let handstyle = utf8to16(characteristic.value);
+					console.log('模式返回21:', d, handstyle)
+					blue_class.getInstance().setHandStyle(handstyle);
 				} else if (characteristic.characteristicId == this.service2_charactor4) {
 					console.log('强度返回2:', ab2hex(characteristic.value))
+					blue_class.getInstance().setStrength(ab2hex(characteristic.value));
 				} else if (characteristic.characteristicId == this.service2_charactor3) {
 					console.log('按键通知:readBLECharacteristicValue:')
 					// 收到按键通知
@@ -383,6 +398,8 @@
 					this.handleHardMessage(characteristic)
 				} else if (characteristic.serviceId == this.service_2) {
 					this.handlePlayMessage(characteristic)
+				} else if (characteristic.serviceId == this.service_3) {
+					this.handlePressMessage(characteristic)
 				}
 			},
 			readMessage(deviceId, serviceId, characteristicId) {
@@ -573,7 +590,8 @@
 								.characteristics);
 							for (var item in res.characteristics) {
 								// 是否支持读
-								if (res.characteristics[item].uuid && res.characteristics[item].properties
+								if (res.characteristics[item].uuid && res.characteristics[item]
+									.properties
 									.read) {
 									that.readMessage(deviceId,
 										serviceId,

@@ -17,6 +17,9 @@
 				</view>
 			</view>
 		</view>
+		<view class="" style="text-align: center;">
+			上次选择手法:{{hand_name}}
+		</view>
 		<view class="info-part">
 			<view class="info-second-part">
 				<view class="item flex">
@@ -119,7 +122,7 @@
 				mode_two: false,
 				mode_three: false,
 				mode_four: false,
-				hand_name: '',
+				hand_name: '空',
 				timeIndex: 0,
 				menuStyle: {},
 				inputName: '模式',
@@ -134,6 +137,9 @@
 				serviceId: '', // 连接的服务id
 				time: 0,
 			}
+		},
+		computed: {
+
 		},
 		onLoad(options) {
 			console.log('options:', options)
@@ -154,6 +160,21 @@
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 20) + 'px');
 			console.log('app.globalData.top:', app.globalData)
+
+			let last_hand_name = blue_class.getInstance().getHandStyle();
+			this.hand_name = last_hand_name;
+
+			if (this.hand_name == '平补平泻.qzd') {
+				this.mode_one = true;
+			} else if (this.hand_name == '补法.qzd') {
+				this.mode_two = true;
+			} else if (this.hand_name == '泻法.qzd') {
+				this.mode_three = true;
+			} else if (this.hand_name == '手法z.qzs') {
+				this.mode_four = true;
+			} else {
+				this.hand_name = '空'
+			}
 
 			this.time = 0;
 		},

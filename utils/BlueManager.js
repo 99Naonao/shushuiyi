@@ -21,6 +21,11 @@ class blue_class {
 	pillowPower = 0;
 	chargingStatus = 0; // 0--空闲，1--充电中，2--充电完成
 
+
+	strength = 0; // 强度 UUID:0001ffe7-6865-6f6e-652d-7a732d717a54
+	press = 0; // 压力电阻阈值 UUID:0001ffe7-6865-6f6e-652d-7a732d717a33
+	handStyle = ''; // 手动模式
+
 	service_1 = '0001FFE7-6865-6F6E-652D-7A732D717A10';
 	service_charactor1 = '0001FFE7-6865-6F6E-652D-7A732D717A11';
 	service_charactor2 = '0001FFE7-6865-6F6E-652D-7A732D717A12';
@@ -55,6 +60,28 @@ class blue_class {
 			blue_class.instance = new blue_class(); // 注意这里使用了 private constructor  
 		}
 		return blue_class.instance;
+	}
+
+	setPress(value) {
+		this.press = value;
+	}
+	getPress() {
+		return this.press;
+	}
+	setStrength(value) {
+		this.strength = value;
+	}
+
+	getStrength() {
+		return this.strength;
+	}
+
+	setHandStyle(value) {
+		this.handStyle = value;
+	}
+
+	getHandStyle(value) {
+		return this.handStyle;
 	}
 
 

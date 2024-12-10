@@ -431,6 +431,10 @@
 			justify-content: space-around;
 			margin-top: 42rpx;
 			margin-bottom: 42rpx;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 100rpx;
 
 			.opt-btn {
 				width: 484rpx;
