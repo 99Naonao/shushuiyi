@@ -64,12 +64,14 @@ class blue_class {
 
 	setPress(value) {
 		this.press = value;
+		uni.$emit('update_strength')
 	}
 	getPress() {
 		return this.press;
 	}
 	setStrength(value) {
 		this.strength = value;
+		uni.$emit('update_strength')
 	}
 
 	getStrength() {

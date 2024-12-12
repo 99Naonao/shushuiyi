@@ -100,8 +100,17 @@
 
 			this.press = blue_class.getInstance().getPress();
 			this.strength = blue_class.getInstance().getStrength();
+
+			uni.on('update_strength', this.updateStrengthHandle)
+		},
+		onHide() {
+			uni.off('update_strength', this.updateStrengthHandle)
 		},
 		methods: {
+			updateStrengthHandle() {
+				this.press = blue_class.getInstance().getPress();
+				this.strength = blue_class.getInstance().getStrength();
+			},
 			strongSliderChange(value) {
 				console.log('strong slider:', value.detail.value)
 				blue_class.getInstance().changeStrongMode(value.detail.value + '')
