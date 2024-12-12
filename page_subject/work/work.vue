@@ -320,8 +320,8 @@
 					console.log('模式返回21:', d, handstyle)
 					blue_class.getInstance().setHandStyle(handstyle);
 				} else if (characteristic.characteristicId == this.service2_charactor4) {
-					console.log('强度返回2:', ab2hex(characteristic.value))
-					blue_class.getInstance().setStrength(ab2hex(characteristic.value));
+					console.log('强度返回2:', parseInt('0x' + ab2hex(characteristic.value)), ab2hex(characteristic.value))
+					blue_class.getInstance().setStrength(parseInt('0x' + ab2hex(characteristic.value)));
 				} else if (characteristic.characteristicId == this.service2_charactor3) {
 					console.log('按键通知:readBLECharacteristicValue:')
 					// 收到按键通知

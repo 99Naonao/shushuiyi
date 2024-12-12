@@ -147,7 +147,7 @@
 			audio.onTimeUpdate(() => {
 				this.currentTime = formatTime(audio.currentTime)
 				this.progress = audio.currentTime * 100 / audio.duration
-				console.log('onTimeUpdate!:', this.progress, audio.currentTime, audio.duration)
+				// console.log('onTimeUpdate!:', this.progress, audio.currentTime, audio.duration)
 			})
 			audio.onCanplay(() => {
 				let intervalID = setInterval(() => {

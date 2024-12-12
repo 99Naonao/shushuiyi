@@ -101,13 +101,14 @@
 			this.press = blue_class.getInstance().getPress();
 			this.strength = blue_class.getInstance().getStrength();
 
-			uni.on('update_strength', this.updateStrengthHandle)
+			uni.$on('update_strength', this.updateStrengthHandle)
 		},
 		onHide() {
-			uni.off('update_strength', this.updateStrengthHandle)
+			uni.$off('update_strength', this.updateStrengthHandle)
 		},
 		methods: {
 			updateStrengthHandle() {
+				console.log("updateStrengthHandle")
 				this.press = blue_class.getInstance().getPress();
 				this.strength = blue_class.getInstance().getStrength();
 			},
