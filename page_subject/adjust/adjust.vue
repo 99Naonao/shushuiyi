@@ -157,24 +157,12 @@
 			// 监听低功耗蓝牙设备的特征值变化事件.必须先启用 notifyBLECharacteristicValueChange 接口才能接收到设备推送的 notification。
 			// uni.onBLECharacteristicValueChange(this.handleMessage)
 			uni.$on('xx', this.handleMessage);
+			uni.$on('update_handstyle', this.handleStyleChange);
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 20) + 'px');
 			console.log('app.globalData.top:', app.globalData)
 
-			let last_hand_name = blue_class.getInstance().getHandStyle();
-			this.hand_name = last_hand_name;
-
-			if (this.hand_name == '平补平泻.qzd') {
-				this.mode_one = true;
-			} else if (this.hand_name == '补法.qzd') {
-				this.mode_two = true;
-			} else if (this.hand_name == '泻法.qzd') {
-				this.mode_three = true;
-			} else if (this.hand_name == '手法z.qzs') {
-				this.mode_four = true;
-			} else {
-				this.hand_name = '空'
-			}
+			this.handleStyleChange()
 
 			this.time = 0;
 		},
@@ -187,8 +175,26 @@
 			console.log('adjust on hide!')
 
 			uni.$off('xx', this.handleMessage);
+			uni.$off('update_handstyle', this.handleStyleChange);
 		},
 		methods: {
+			handleStyleChange() {
+				// 更新手法模式
+				let last_hand_name = blue_class.getInstance().getHandStyle();
+				this.hand_name = last_hand_name;
+
+				if (this.hand_name == '平补平泻.qzd') {
+					this.mode_one = true;
+				} else if (this.hand_name == '补法.qzd') {
+					this.mode_two = true;
+				} else if (this.hand_name == '泻法.qzd') {
+					this.mode_three = true;
+				} else if (this.hand_name == '手法z.qzs') {
+					this.mode_four = true;
+				} else {
+					this.hand_name = '空'
+				}
+			},
 			closeOthers() {
 				this.mode_four = false;
 				this.mode_three = false;

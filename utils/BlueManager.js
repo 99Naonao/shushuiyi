@@ -80,6 +80,7 @@ class blue_class {
 
 	setHandStyle(value) {
 		this.handStyle = value;
+		uni.$emit('update_handstyle')
 	}
 
 	getHandStyle(value) {
