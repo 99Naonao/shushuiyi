@@ -18,22 +18,31 @@
 							</view>
 							<switch class="opt-switch" v-if="false"></switch>
 						</view>
-						<view class="flex border-center">
-							<view>
-								<image class="icon-left" mode="widthFix"
-									:src="'../static/selectMore/SMY_08_IconSong.png'"></image>
-								<view class="sub-title">松</view>
+						<view class="flex border-center strength-part">
+							<view class="flex space-between tick">
+								<view class="sub-title">1</view>
+								<view class="sub-title">2</view>
+								<view class="sub-title">3</view>
+								<view class="sub-title">4</view>
+								<view class="sub-title">5</view>
 							</view>
-							<view class="flex1">
-								<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="50"
-									max="200" show-value @change="stressSliderChange" step="1" />
-								<view class="sub-title">默认</view>
-							</view>
-							<view>
-								<image class="icon-right" mode="widthFix"
-									:src="'../static/selectMore/SMY_08_IconJin.png'">
-								</image>
-								<view class="sub-title">紧</view>
+							<view class="flex info" style="margin-top: 30rpx;">
+								<view>
+									<image class="icon-left" mode="widthFix"
+										:src="'../static/selectMore/SMY_08_IconSong.png'"></image>
+									<view class="sub-title">松</view>
+								</view>
+								<view class="flex1">
+									<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="50"
+										max="200" @change="stressSliderChange" step="1" />
+									<view class="sub-title">默认</view>
+								</view>
+								<view>
+									<image class="icon-right" mode="widthFix"
+										:src="'../static/selectMore/SMY_08_IconJin.png'">
+									</image>
+									<view class="sub-title">紧</view>
+								</view>
 							</view>
 						</view>
 
@@ -59,7 +68,7 @@
 								<view class="sub-title flex1">2</view>
 								<view class="sub-title">3</view>
 							</view>
-							<view class="info flex ">
+							<view class="info flex" style="margin-top: 20rpx;">
 								<view>
 									<image class="icon-left" mode="widthFix"
 										:src="'../static/selectMore/SMY_08_IconRuo.png'"></image>
