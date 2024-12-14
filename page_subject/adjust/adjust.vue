@@ -18,7 +18,7 @@
 			</view>
 		</view>
 		<view class="" style="text-align: center;">
-			上次选择手法:{{hand_name}}
+			上次选择手法:{{styleName}}
 		</view>
 		<view class="info-part">
 			<view class="info-second-part">
@@ -139,7 +139,20 @@
 			}
 		},
 		computed: {
+			styleName() {
+				if (this.hand_name) {
+					if (this.hand_name.includes('.', 0)) {
 
+						return this.hand_name.split('.')[0]
+					} else {
+						return ''
+					}
+
+				} else {
+					return '';
+				}
+				return hand_name;
+			}
 		},
 		onLoad(options) {
 			console.log('options:', options)
@@ -182,18 +195,25 @@
 				// 更新手法模式
 				let last_hand_name = blue_class.getInstance().getHandStyle();
 				this.hand_name = last_hand_name;
-
-				if (this.hand_name == '平补平泻.qzd') {
+				this.closeOthers();
+				console.log('handleStyleChange:', this.hand_name, this.hand_name.length, this.hand_name.trim());
+				if (this.hand_name.includes('平补平泻.qzd', 0)) {
 					this.mode_one = true;
-				} else if (this.hand_name == '补法.qzd') {
+					console.log('handleStyleChange 1:', this.hand_name);
+				} else if (this.hand_name.includes('补法.qzd', 0)) {
 					this.mode_two = true;
-				} else if (this.hand_name == '泻法.qzd') {
+					console.log('handleStyleChange 2:', this.hand_name);
+				} else if (this.hand_name.includes('泻法.qzd', 0)) {
 					this.mode_three = true;
-				} else if (this.hand_name == '手法z.qzs') {
+					console.log('handleStyleChange 3:', this.hand_name);
+				} else if (this.hand_name.includes('手法z.qzs', 0)) {
 					this.mode_four = true;
+					console.log('handleStyleChange 4:', this.hand_name);
 				} else {
 					this.hand_name = '空'
+					console.log('handleStyleChange 5:', this.hand_name);
 				}
+				console.log('handleStyleChange:', this.mode_one, this.mode_two, this.mode_three, this.mode_four)
 			},
 			closeOthers() {
 				this.mode_four = false;

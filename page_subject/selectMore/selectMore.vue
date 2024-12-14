@@ -19,7 +19,7 @@
 							<switch class="opt-switch" v-if="false"></switch>
 						</view>
 						<view class="flex border-center strength-part">
-							<view class="flex space-between tick">
+							<view class="flex space-between tick" style="margin: 0 58rpx 0 58rpx;">
 								<view class="sub-title">1</view>
 								<view class="sub-title">2</view>
 								<view class="sub-title">3</view>
@@ -34,7 +34,7 @@
 								</view>
 								<view class="flex1">
 									<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="50"
-										max="200" @change="stressSliderChange" step="1" />
+										max="200" @change="stressSliderChange" step="37.5" />
 									<view class="sub-title">默认</view>
 								</view>
 								<view>
@@ -76,7 +76,7 @@
 								</view>
 								<view class="flex1">
 									<slider class="flex1" block-size="18" activeColor="#194a94" :value="strength"
-										min="0" max="32" @change="strongSliderChange" step="1" />
+										min="0" max="32" @change="strongSliderChange" step="16" />
 
 									<view class="sub-title">默认</view>
 								</view>
@@ -134,7 +134,8 @@
 			},
 			stressSliderChange(value) {
 				console.log('stress slider:', value.detail.value)
-				blue_class.getInstance().changeStressMode(value.detail.value + '')
+				// 取整间隔是37.5
+				blue_class.getInstance().changeStressMode(Math.floor(value.detail.value) + '')
 			},
 			nextStepHandle() {
 				uni.navigateTo({
