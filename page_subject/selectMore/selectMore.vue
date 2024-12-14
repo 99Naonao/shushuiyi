@@ -49,27 +49,34 @@
 								强度调整
 							</view>
 							<view class="tips">
-								感受到这个压力后，将自动启动助眠程序
+								调整适合您的按摩强度
 							</view>
 							<switch class="opt-switch" v-if="false"></switch>
 						</view>
-						<view class="flex border-center">
-							<view>
-								<image class="icon-left" mode="widthFix"
-									:src="'../static/selectMore/SMY_08_IconRuo.png'"></image>
-								<view class="sub-title">弱</view>
+						<view class="border-center strength-part">
+							<view class="flex tick">
+								<view class="sub-title">1</view>
+								<view class="sub-title flex1">2</view>
+								<view class="sub-title">3</view>
 							</view>
-							<view class="flex1">
-								<slider class="flex1" block-size="18" activeColor="#194a94" :value="strength" min="0"
-									max="32" show-value @change="strongSliderChange" step="1" />
+							<view class="info flex ">
+								<view>
+									<image class="icon-left" mode="widthFix"
+										:src="'../static/selectMore/SMY_08_IconRuo.png'"></image>
+									<view class="sub-title">弱</view>
+								</view>
+								<view class="flex1">
+									<slider class="flex1" block-size="18" activeColor="#194a94" :value="strength"
+										min="0" max="32" @change="strongSliderChange" step="1" />
 
-								<view class="sub-title">默认</view>
-							</view>
-							<view>
-								<image class="icon-right" mode="widthFix"
-									:src="'../static/selectMore/SMY_08_IconQiang.png'">
-								</image>
-								<view class="sub-title">强</view>
+									<view class="sub-title">默认</view>
+								</view>
+								<view>
+									<image class="icon-right" mode="widthFix"
+										:src="'../static/selectMore/SMY_08_IconQiang.png'">
+									</image>
+									<view class="sub-title">强</view>
+								</view>
 							</view>
 						</view>
 					</view>
@@ -239,6 +246,24 @@
 				}
 			}
 
+		}
+
+		.strength-part {
+			position: relative;
+		}
+
+		.tick {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 10rpx;
+			margin: 0 50rpx 0 50rpx;
+		}
+
+		.info {
+			width: 100%;
+			margin-top: 20rpx;
 		}
 
 		.opt-part {
