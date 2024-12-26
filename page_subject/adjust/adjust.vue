@@ -27,7 +27,7 @@
 						<view class='desc1'>平补平泻手法</view>
 						<view class='desc2'>新手建议模式，本手法非常舒适</view>
 					</view>
-					<switch :checked="mode_one" @change="(v)=>{
+					<switch color='#4d7ec9' :checked="mode_one" @change="(v)=>{
 						closeOthers()
 						mode_one = v.detail.value
 						hand_name = '平补平泻.qzd'
@@ -38,7 +38,7 @@
 						<view class='desc1'>补法</view>
 						<view class='desc2'>适合失眠多梦阳气失衡的用户</view>
 					</view>
-					<switch :checked="mode_two" @change="(v)=>{
+					<switch color='#4d7ec9' :checked="mode_two" @change="(v)=>{
 						closeOthers()
 						mode_two = v.detail.value;
 						hand_name = '补法.qzd'
@@ -49,7 +49,7 @@
 						<view class='desc1'>泻法</view>
 						<view class='desc2'>适合盗汗气虚怕冷体质的用户</view>
 					</view>
-					<switch :checked="mode_three" @change="(v)=>{
+					<switch color='#4d7ec9' :checked="mode_three" @change="(v)=>{
 						closeOthers()
 						mode_three = v.detail.value
 						hand_name = '泻法.qzd'
@@ -60,7 +60,7 @@
 						<view class='desc1'>专业浅针师手法</view>
 						<view class='desc2'>享受中国浅针大师的独特手法</view>
 					</view>
-					<switch :checked="mode_four" @change="(v)=>{
+					<switch color='#4d7ec9' :checked="mode_four" @change="(v)=>{
 						closeOthers()
 						mode_four = v.detail.value
 						hand_name = '手法z.qzs'
@@ -123,7 +123,7 @@
 				mode_three: false,
 				mode_four: false,
 				hand_name: '空',
-				timeIndex: 0,
+				timeIndex: 2,
 				menuStyle: {},
 				inputName: '模式',
 				pillowVersion: '固件版本:0.1',
@@ -177,7 +177,7 @@
 
 			this.handleStyleChange()
 
-			this.time = 0;
+			this.time = 10;
 		},
 		onUnload() {
 			console.log('adjust on onUnload!')
@@ -210,7 +210,9 @@
 					this.mode_four = true;
 					console.log('handleStyleChange 4:', this.hand_name);
 				} else {
-					this.hand_name = '空'
+					// 默认
+					this.hand_name = '平补平泻.qzd'
+					this.mode_one = true;
 					console.log('handleStyleChange 5:', this.hand_name);
 				}
 				console.log('handleStyleChange:', this.mode_one, this.mode_two, this.mode_three, this.mode_four)

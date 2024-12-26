@@ -1,7 +1,7 @@
 <template>
 	<view class="content">
 		<image class="back" mode="widthFix" src="../../static/SMY_01_bg.png"></image>
-		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">连接助眠仪</view>
+		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">开始使用</view>
 		<view class="start-btn">开始设置</view>
 		<view class="bar">
 			<view class="bar-left flex just-center align-center">
@@ -9,7 +9,7 @@
 			</view>
 			<view class="bar-right" @click="enterDetailHandle">
 				<view class="subtitle">
-					眠加耳机
+					眠加眼罩
 				</view>
 				<view class="flex align-center just-center next-part">
 					<image class="blueicon" mode="widthFix" src="../../static/index/SMY_02_IconLY.png"></image>

@@ -33,8 +33,8 @@
 									<view class="sub-title">松</view>
 								</view>
 								<view class="flex1">
-									<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="50"
-										max="200" @change="stressSliderChange" step="37.5" />
+									<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="1"
+										max="5" @change="stressSliderChange" step="1" />
 									<view class="sub-title">默认</view>
 								</view>
 								<view>
@@ -64,9 +64,9 @@
 						</view>
 						<view class="border-center strength-part">
 							<view class="flex tick">
-								<view class="sub-title">1</view>
-								<view class="sub-title flex1">2</view>
-								<view class="sub-title">3</view>
+								<view class="sub-title"></view>
+								<view class="sub-title flex1">{{strength}}</view>
+								<view class="sub-title"></view>
 							</view>
 							<view class="info flex" style="margin-top: 20rpx;">
 								<view>
@@ -76,9 +76,9 @@
 								</view>
 								<view class="flex1">
 									<slider class="flex1" block-size="18" activeColor="#194a94" :value="strength"
-										min="0" max="32" @change="strongSliderChange" step="16" />
+										min="0" max="32" @change="strongSliderChange" step="1" />
 
-									<view class="sub-title">默认</view>
+									<view class="sub-title" v-if="false">默认</view>
 								</view>
 								<view>
 									<image class="icon-right" mode="widthFix"
@@ -130,6 +130,7 @@
 			},
 			strongSliderChange(value) {
 				console.log('strong slider:', value.detail.value)
+				this.strength = value.detail.value
 				blue_class.getInstance().changeStrongMode(value.detail.value + '')
 			},
 			stressSliderChange(value) {
