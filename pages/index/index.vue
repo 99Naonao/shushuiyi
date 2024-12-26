@@ -1,11 +1,19 @@
 <template>
 	<view class="content">
 		<image class="back" mode="widthFix" src="../../static/SMY_01_bg.png"></image>
-		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">开始使用</view>
-		<view class="start-btn">开始设置</view>
+		<view class="battery">
+			<image class="back-img" mode="widthFix" src="../../static/index/SMY_02_DCyanjing.png"></image>
+			<view class="info">
+				<view class="fillprogress" :style="menuInfo"></view>
+				<image class="battery-icon" mode="widthFix" src="../../static/index/SMY_02_IconDC1.png"></image>
+				<view class="battery-info">{{(battery/50).toFixed(2) * 100}}%</view>
+			</view>
+		</view>
+		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">连接主机</view>
+		<view class="connect-btn" @click="useHandler" v-else>开始使用</view>
 		<view class="bar">
 			<view class="bar-left flex just-center align-center">
-				<image class="soundicon" mode="widthFix" src="../../static/index/SMY_02_IconEJ.png"></image>
+				<image class="soundicon" mode="widthFix" src="../../static/index/SMY_02_IconYZ.png"></image>
 			</view>
 			<view class="bar-right" @click="enterDetailHandle">
 				<view class="subtitle">
@@ -26,10 +34,8 @@
 		utf8to16
 	} from "../../common/util.js"
 	export default {
-
 		onShow() {
 			let curPages = getCurrentPages()[0]
-			console.log("fuck:", curPages)
 			if (typeof curPages.getTabBar === 'function' && curPages.getTabBar()) {
 				curPages.getTabBar().setData({
 					selected: 0,
@@ -37,26 +43,62 @@
 				});
 			}
 
+			uni.$on('update_pillow_info', this.updateInfo);
+			this.updateInfo()
+
+			const deviceInfo = uni.getDeviceInfo();
+			this.system = deviceInfo.system;
+			console.log({
+				deviceInfo
+			})
 			this.loginStatus = blue_class.getInstance().loginSuccess
 		},
 		data() {
 			return {
-				title: 'Hello',
+				menuInfo: {
+					'--menuButtonTop': '30px',
+					'--bateryWidth': '0rpx',
+				},
+				battery: 10,
 				loginStatus: false,
+				system: '',
 			}
 		},
 		onLoad() {
 			// let test = utf8to16([228, 184, 173, 230, 150, 135, 97, 98, 99]);
 			// console.log("onload!!!", test)
 		},
+		onHide() {
+			uni.$off('update_pillow_info', this.updateInfo);
+		},
 		onShareAppMessage() {
 
 		},
 		methods: {
-			enterDetailHandle() {
+			useHandler() {
 				if (this.loginStatus) {
 					uni.navigateTo({
 						url: "/page_subject/adjust/adjust"
+					})
+				}
+			},
+			updateInfo() {
+				// this.$set(this.menuInfo, '--bateryWidth', (blue_class.getInstance().pillowPower * 50 / 1000) + 'rpx');
+				this.$set(this.menuInfo, '--bateryWidth', this.battery + 'rpx');
+				console.log('fuck updateInfo!', this.menuInfo)
+			},
+			enterDetailHandle() {
+				console.log('fuck:', this.system)
+				if (this.system.indexOf('IOS') > -1) {
+					uni.showToast({
+						title: '先选择时长'
+					})
+				} else {
+
+					wx.openSystemBluetoothSetting({
+						success(res) {
+							console.log(res)
+						}
 					})
 				}
 			},
@@ -73,6 +115,48 @@
 	.content {
 		background-color: rgb(5, 12, 21);
 		height: 100%;
+		position: relative;
+	}
+
+	.battery {
+		position: absolute;
+		top: 120rpx;
+		left: 40rpx;
+
+		.back-img {
+			width: 120rpx;
+		}
+
+		.info {
+			margin-top: -80rpx;
+			margin-left: 30rpx;
+			overflow: hidden;
+		}
+
+		.battery-info {
+			font-size: 22rpx;
+			color: #FFFFFF;
+			line-height: 22rpx;
+		}
+
+
+		.fillprogress {
+			position: absolute;
+			width: 50rpx;
+			height: 20rpx;
+			top: 18rpx;
+			left: 28rpx;
+			width: var(--bateryWidth);
+			background-color: green;
+			border-radius: 2rpx;
+			z-index: 99;
+		}
+
+		.battery-icon {
+			width: 55rpx;
+			position: relative;
+			z-index: 100;
+		}
 	}
 
 	.back {
@@ -88,6 +172,8 @@
 		font-size: 36rpx;
 		color: #8f8f94;
 	}
+
+
 
 
 	.connect-btn {
@@ -159,6 +245,8 @@
 			width: 57rpx;
 			height: 45rpx;
 		}
+
+
 
 
 	}
