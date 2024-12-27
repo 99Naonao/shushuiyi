@@ -6,7 +6,7 @@
 			<view class="info">
 				<view class="fillprogress" :style="menuInfo"></view>
 				<image class="battery-icon" mode="widthFix" src="../../static/index/SMY_02_IconDC1.png"></image>
-				<view class="battery-info">{{(battery/50).toFixed(2) * 100}}%</view>
+				<view class="battery-info">{{(battery)}}%</view>
 			</view>
 		</view>
 		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">连接主机</view>
@@ -83,9 +83,10 @@
 				}
 			},
 			updateInfo() {
+
 				// this.$set(this.menuInfo, '--bateryWidth', (blue_class.getInstance().pillowPower * 50 / 1000) + 'rpx');
 				this.battery = blue_class.getInstance().getBattery();
-				this.$set(this.menuInfo, '--bateryWidth', this.battery + 'rpx');
+				this.$set(this.menuInfo, '--bateryWidth', (Number(this.battery) / 100) * 50 + 'rpx');
 				console.log('fuck updateInfo!', this.menuInfo)
 			},
 			enterDetailHandle() {

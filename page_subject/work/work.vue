@@ -129,8 +129,8 @@
 				service2_charactor5: '0001FFE7-6865-6F6E-652D-7A732D717A53',
 				service_3: '0001FFE7-6865-6F6E-652D-7A732D717A30',
 				service_3_press: '0001FFE7-6865-6F6E-652D-7A732D717A33',
-				service_battery: '0x180F',
-				service_battery_c1: '0x2A19',
+				service_battery: '0000180F-0000-1000-8000-00805F9B34FB',
+				service_battery_c1: '00002A19-0000-1000-8000-00805F9B34FB',
 			}
 		},
 		onShow() {
@@ -366,12 +366,12 @@
 				// }
 			},
 			handleBatteryMessage(characteristic) {
+				console.log('电池百分比返回132:', characteristic)
 				let d = ab2hex(characteristic.value);
 				if (characteristic.characteristicId == this.service_battery_c1) {
 					// 如果是读取的模式
-					let handstyle = utf8to16(characteristic.value);
-					console.log('电池百分比返回1:', d, handstyle)
-					blue_class.getInstance().setHandStyle(handstyle);
+					console.log('电池百分比返回1:', d)
+					blue_class.getInstance().setBattery(d);
 				}
 			},
 			changeMode(status, time) {
@@ -450,6 +450,10 @@
 					console.log('接收到回复数据2:', ab2hex(res.value))
 				} else {
 
+				}
+
+				if (res.characteristicId == this.service_battery_c1) {
+					this.handleBatteryMessage(res)
 				}
 			},
 			parsePillowStatus(arraybuffer) {
@@ -620,6 +624,13 @@
 									deviceUUID: deviceId,
 									serviceUUID: serviceId,
 									notifyUUID: this.service2_charactor3
+								})
+							} else if (serviceId == this.service_battery) {
+								// 开启监听
+								blue_class.getInstance().startNotice({
+									deviceUUID: deviceId,
+									serviceUUID: serviceId,
+									notifyUUID: this.service_battery_c1
 								})
 							}
 
