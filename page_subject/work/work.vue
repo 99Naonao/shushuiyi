@@ -129,6 +129,8 @@
 				service2_charactor5: '0001FFE7-6865-6F6E-652D-7A732D717A53',
 				service_3: '0001FFE7-6865-6F6E-652D-7A732D717A30',
 				service_3_press: '0001FFE7-6865-6F6E-652D-7A732D717A33',
+				service_battery: '0x180F',
+				service_battery_c1: '0x2A19',
 			}
 		},
 		onShow() {
@@ -363,6 +365,15 @@
 				// 	this.changeMode('start', "30")
 				// }
 			},
+			handleBatteryMessage(characteristic) {
+				let d = ab2hex(characteristic.value);
+				if (characteristic.characteristicId == this.service_battery_c1) {
+					// 如果是读取的模式
+					let handstyle = utf8to16(characteristic.value);
+					console.log('电池百分比返回1:', d, handstyle)
+					blue_class.getInstance().setHandStyle(handstyle);
+				}
+			},
 			changeMode(status, time) {
 				let status_arraybuffer = str2ab(status);
 				console.log("[changeMode]", status, time, str2ab(status))
@@ -400,6 +411,8 @@
 					this.handlePlayMessage(characteristic)
 				} else if (characteristic.serviceId == this.service_3) {
 					this.handlePressMessage(characteristic)
+				} else if (characteristic.serviceId == this.service_battery) {
+					this.handleBatteryMessage(characteristic)
 				}
 			},
 			readMessage(deviceId, serviceId, characteristicId) {
@@ -557,6 +570,8 @@
 											this.service_2)
 										this.getBLEDeviceCharacteristics(deviceId,
 											this.service_3)
+										this.getBLEDeviceCharacteristics(deviceId,
+											this.service_battery)
 										break;
 									}
 								}

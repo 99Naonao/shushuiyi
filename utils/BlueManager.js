@@ -47,6 +47,7 @@ class blue_class {
 		this.isNotify = false; //用于防止重复启动notify功能
 		this.notifyCount = 0; //用于判断启动了几次notify功能
 		this.serviceId = '';
+		this.battery = 0;
 		this.deviceName = ''; // 设备名称
 		this.version = 0; // 版本号
 		this.characteristicId = '6E400004-B5A3-F393-E0A9-E50E24DCCA9E';
@@ -60,6 +61,15 @@ class blue_class {
 			blue_class.instance = new blue_class(); // 注意这里使用了 private constructor  
 		}
 		return blue_class.instance;
+	}
+
+	setBattery(value) {
+		this.battery = value;
+		uni.$emit('update_pillow_info');
+	}
+
+	getBattery() {
+		return this.battery;
 	}
 
 	setPress(value) {

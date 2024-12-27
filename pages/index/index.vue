@@ -84,6 +84,7 @@
 			},
 			updateInfo() {
 				// this.$set(this.menuInfo, '--bateryWidth', (blue_class.getInstance().pillowPower * 50 / 1000) + 'rpx');
+				this.battery = blue_class.getInstance().getBattery();
 				this.$set(this.menuInfo, '--bateryWidth', this.battery + 'rpx');
 				console.log('fuck updateInfo!', this.menuInfo)
 			},
