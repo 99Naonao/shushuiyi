@@ -9,6 +9,7 @@ import {
 	changeAdjustMode,
 	handPillowSideState,
 	str2ab,
+	utf8toGBK,
 	number2Uint2,
 	number2Uint,
 	parsePillowState
@@ -245,6 +246,7 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改强度值成功:', status, res)
+				this.setStrength(status);
 				uni.showToast({
 					title: '更改强度值成功'
 				})
@@ -269,6 +271,7 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改压力值成功:', status, res)
+				this.setPress(status);
 				uni.showToast({
 					title: '更改压力值成功'
 				})
@@ -283,8 +286,8 @@ class blue_class {
 	}
 	changePlayFile(name, callBack) {
 		// 更改当前播放文件名
-		let status_arraybuffer = str2ab(name);
-		console.log("[changePlayFile]", name, str2ab(name))
+		let status_arraybuffer = utf8toGBK(name);
+		console.log("[changePlayFile]", name, utf8toGBK(name), ab2hex(status_arraybuffer))
 		// 更改播放模式
 		uni.writeBLECharacteristicValue({
 			deviceId: blue_class.getInstance().deviceId,
@@ -293,6 +296,7 @@ class blue_class {
 			value: status_arraybuffer,
 			success: (res) => {
 				console.log('更改文件名成功:', name, res)
+				this.setHandStyle(name)
 				uni.showToast({
 					title: '更改文件名成功'
 				})
@@ -309,7 +313,7 @@ class blue_class {
 	// 更改模式
 	changeMode(status, time) {
 		let status_arraybuffer = str2ab(status);
-		console.log("[changeMode]", status, time, str2ab(status))
+		console.log("[changeMode]", status, time, str2ab(status), str2ab(time.toString()))
 		// 更改播放模式
 		uni.writeBLECharacteristicValue({
 			deviceId: blue_class.getInstance().deviceId,
@@ -325,9 +329,29 @@ class blue_class {
 					characteristicId: this.service2_charactor2,
 					deviceId: blue_class.getInstance().deviceId,
 					serviceId: this.service_2,
-					value: str2ab(time),
+					value: str2ab(time.toString()),
 					success: (res2) => {
-						console.log('更改播放时长状态成功:', res2)
+						console.log('更改播放时长状态成功1:', res2)
+						// setTimeout(() => { // 读取一下试试
+						// 	uni.readBLECharacteristicValue({
+						// 		// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+						// 		deviceId: blue_class.getInstance().deviceId,
+						// 		// 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
+						// 		serviceId: this.service_2,
+						// 		// 这里的 characteristicId 需要在 getBLEDeviceCharacteristics 接口中获取
+						// 		characteristicId: this.service2_charactor1,
+						// 		success(res) {
+						// 			console.log(
+						// 				'readBLECharacteristicValue:',
+						// 				res, res
+						// 				.errCode)
+						// 		},
+						// 		fail(res) {
+						// 			console.log('fail!', res)
+						// 		}
+						// 	})
+						// }, 10);
+
 					}
 				})
 			},

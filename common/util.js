@@ -436,15 +436,31 @@ import {
 } from 'text-decoding'
 var utf8to16 = function(utf8s) {
 	const gbkBuf = new Uint8Array(utf8s)
-
-	let apps = getApp();
-
 	//TextEncoder
 	// unescape(encodeURIComponent(inputString)).split("").map(val => val.charCodeAt());
 	//TextDecoder
 	// return decodeURIComponent(escape(String.fromCharCode(...gbkBuf)));
 	console.log('utf8to16:::')
 	return new TextDecoder('gb2312').decode(gbkBuf)
+}
+
+var utf8toGBK = function(utf8s) {
+	//TextEncoder
+	// unescape(encodeURIComponent(inputString)).split("").map(val => val.charCodeAt());
+	//TextDecoder
+	// return decodeURIComponent(escape(String.fromCharCode(...gbkBuf)));
+
+	var gbk = new TextEncoder('gb2312', {
+		NONSTANDARD_allowLegacyEncoding: true
+	}).encode(utf8s);
+
+	console.log('utf8toGBK:::', gbk);
+	var buf = new ArrayBuffer(gbk.length);
+	let dataView = new DataView(buf)
+	for (var index = 0; index < gbk.length; index++) {
+		dataView.setUint8(index, gbk[index])
+	}
+	return buf
 }
 
 // hex转json字符串,16进制ASCII
@@ -695,6 +711,7 @@ export {
 	number2Uint2,
 	hex2String,
 	utf8to16,
+	utf8toGBK,
 	Uint8ArrayToString,
 	dateUtils
 }

@@ -177,7 +177,7 @@
 
 			this.handleStyleChange()
 
-			this.time = 10;
+			this.time = 10 * 60;
 		},
 		onUnload() {
 			console.log('adjust on onUnload!')

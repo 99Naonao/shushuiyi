@@ -370,8 +370,8 @@
 				let d = ab2hex(characteristic.value);
 				if (characteristic.characteristicId == this.service_battery_c1) {
 					// 如果是读取的模式
-					console.log('电池百分比返回1:', d)
-					blue_class.getInstance().setBattery(d);
+					console.log('电池百分比返回1:', d, parseInt('0x' + d))
+					blue_class.getInstance().setBattery(parseInt('0x' + d));
 				}
 			},
 			changeMode(status, time) {
@@ -452,9 +452,19 @@
 
 				}
 
-				if (res.characteristicId == this.service_battery_c1) {
+				if (res.serviceId == this.service_1) {
+					this.handleHardMessage(res)
+				} else if (res.serviceId == this.service_2) {
+					this.handlePlayMessage(res)
+				} else if (res.serviceId == this.service_3) {
+					this.handlePressMessage(res)
+				} else if (res.serviceId == this.service_battery) {
 					this.handleBatteryMessage(res)
 				}
+
+				// if (res.characteristicId == this.service_battery_c1) {
+				// 	this.handleBatteryMessage(res)
+				// }
 			},
 			parsePillowStatus(arraybuffer) {
 
