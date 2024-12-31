@@ -135,7 +135,7 @@
 				touchingUp: false,
 				deviceId: '', // 连接的蓝牙id
 				serviceId: '', // 连接的服务id
-				time: 0,
+				time: 10 * 60,
 			}
 		},
 		computed: {
@@ -176,8 +176,6 @@
 			console.log('app.globalData.top:', app.globalData)
 
 			this.handleStyleChange()
-
-			this.time = 10 * 60;
 		},
 		onUnload() {
 			console.log('adjust on onUnload!')
