@@ -12,6 +12,7 @@ import {
 	utf8toGBK,
 	number2Uint2,
 	number2Uint,
+	number2Uint3,
 	parsePillowState
 } from '@/common/util.js'
 class blue_class {
@@ -262,7 +263,7 @@ class blue_class {
 	// 更改压力值
 	changeStressMode(status) {
 		let status_arraybuffer = number2Uint2(status);
-		console.log("[changeStressMode]", status, number2Uint2(status))
+		console.log("[changeStressMode]", status, number2Uint2(status), this.ab2hex(status_arraybuffer))
 		// 更改播放模式
 		uni.writeBLECharacteristicValue({
 			deviceId: blue_class.getInstance().deviceId,
@@ -313,7 +314,8 @@ class blue_class {
 	// 更改模式
 	changeMode(status, time) {
 		let status_arraybuffer = str2ab(status);
-		console.log("[changeMode]", status, time, str2ab(status), str2ab(time.toString()))
+		console.log("[changeMode]", status, time, str2ab(status), number2Uint3(Number(time)), this.ab2hex(
+			number2Uint3(Number(time))))
 		// 更改播放模式
 		uni.writeBLECharacteristicValue({
 			deviceId: blue_class.getInstance().deviceId,
@@ -329,29 +331,12 @@ class blue_class {
 					characteristicId: this.service2_charactor2,
 					deviceId: blue_class.getInstance().deviceId,
 					serviceId: this.service_2,
-					value: str2ab(time.toString()),
+					value: number2Uint3(Number(time)),
 					success: (res2) => {
 						console.log('更改播放时长状态成功1:', res2)
-						// setTimeout(() => { // 读取一下试试
-						// 	uni.readBLECharacteristicValue({
-						// 		// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
-						// 		deviceId: blue_class.getInstance().deviceId,
-						// 		// 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
-						// 		serviceId: this.service_2,
-						// 		// 这里的 characteristicId 需要在 getBLEDeviceCharacteristics 接口中获取
-						// 		characteristicId: this.service2_charactor1,
-						// 		success(res) {
-						// 			console.log(
-						// 				'readBLECharacteristicValue:',
-						// 				res, res
-						// 				.errCode)
-						// 		},
-						// 		fail(res) {
-						// 			console.log('fail!', res)
-						// 		}
-						// 	})
-						// }, 10);
-
+					},
+					fail: (res) => {
+						console.log('更改播放时长失败:', res)
 					}
 				})
 			},

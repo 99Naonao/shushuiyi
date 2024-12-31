@@ -384,8 +384,15 @@ var number2Uint = function(num) {
 
 var number2Uint2 = function(num) {
 	var buf = new ArrayBuffer(2);
-	var bufView = new Uint16Array(buf);
-	bufView[0] = num;
+	var bufView = new Uint8Array(buf);
+	bufView[1] = num;
+	return buf;
+}
+
+var number2Uint3 = function(num) {
+	var buf = new ArrayBuffer(2);
+	var bufView = new DataView(buf);
+	bufView.setInt16(0, num, false);
 	return buf;
 }
 
@@ -712,6 +719,7 @@ export {
 	hex2String,
 	utf8to16,
 	utf8toGBK,
+	number2Uint3,
 	Uint8ArrayToString,
 	dateUtils
 }
