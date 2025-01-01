@@ -238,6 +238,14 @@
 
 					blue_class.getInstance().changePlayFile(this.hand_name, () => {
 						blue_class.getInstance().changeMode('start', this.time);
+						addLog({
+							'time': this.time,
+							'handStyle': this.hand_name,
+							'battery': blue_class.getInstance().getBattery(),
+							'press': blue_class.getInstance().getPress(),
+							'streath': blue_class.getInstance().getStrength(),
+							'music': ''
+						});
 					});
 				} else {
 					uni.showToast({
@@ -274,19 +282,6 @@
 			closeSave() {
 				this.$refs.popupSave.close();
 			},
-			saveHandler() {
-				let changeAdjust = changeSaveAdjustMode();
-				blue_class.getInstance().write2tooth(changeAdjust);
-				uni.showToast({
-					title: '保存中',
-					success() {
-						uni.switchTab({
-							url: '/pages/status/status'
-						})
-					}
-				})
-				// uni.navigateBack()
-			},
 			handleMessage(res) {
 				// console.log(`value:`, res.value)
 				let arrayBuffer_res = new Uint8Array(res.value);
@@ -321,15 +316,7 @@
 					case 4:
 						let result4 = receive_dataView.getUint8(0)
 						switch (parseInt(result4)) {
-							case 0:
-								console.log("[调整枕头成功]")
-								break;
-							case 1:
-								console.log("[调整模式参数非法]")
-								break;
-							case 2:
-								console.log("[不支持的指令]")
-								break;
+
 						}
 						break;
 					case 5:
@@ -342,236 +329,16 @@
 						break;
 				}
 				return;
-				// 如果收到数据是4个字节,虽然发的是8个字节，但是只有后4个字节有数据
-				if (arrayBuffer.length == 4) {
-					let receive16 = ab2hex(res.value);
-					let ask = receive16.slice(0, 2);
-					let len = receive16.slice(2, 4);
-					let result = receive16.slice(4, 6);
-					let mark = receive16.slice(6, 8);
-
-					console.log('数据长度:', len, result, ('0x' + result).toString(10), mark)
-					//指令应答
-					if (mark == '33') {
-						switch (parseInt(ask)) {
-							case 1:
-								console.log('33 => 1:', result);
-								break;
-							case 4:
-								console.log('33 => 4:', result);
-								break;
-						}
-					}
-				} else if (arrayBuffer.length == 2) {
-					let receive16 = ab2hex(res.value);
-					let mark = receive16.slice(2, 4)
-					let len = receive16.slice(0, 2)
-					console.log('接收到回复数据:', mark, len)
-					if (mark == '55') {
-						console.log('接收到回复数据', ab2hex(res.value))
-						console.log('校验长度', parseInt('0x' + len))
-						console.log('握手成功可以发送ssid了')
-						write2tooth(this.deviceId, this.serviceId, this.characteristicStringId,
-							hexStringToArrayBuffer('jimlee'))
-					} else if (mark == '66') {
-						console.log('握手成功可以发送ssid密码了')
-						// 发送wifi密码
-						write2tooth(this.deviceId, this.serviceId, this.characteristicStringId,
-							hexStringToArrayBuffer('lijiming'))
-					} else if (mark == 'aa') {
-						console.log('发送成功了ssid了')
-					} else if (mark == '33') {
-						console.log('收到成功调整枕头')
-						console.log('8个字节指令的校验和', parseInt('0x' + len))
-					}
-				} else if (arrayBuffer.length == 8) {
-					// //默认是枕头状态 5s收到一次
-					let receive16 = ab2hex(res.value);
-					// （0：0--空闲，1--平躺，2--侧卧；1：（备用）2：头部气囊高度值；3：颈部气囊高度值；4:固件版本； 5是否校准；6~7：电池电压值）
-					let status = receive16.slice(0, 2);
-					let status1 = '0x' + status;
-
-					let status10 = parseInt(status1);
-					switch (status10) {
-						case 0:
-							console.log('枕头空闲状态')
-							break;
-						case 1:
-							console.log('枕头平躺状态')
-							break;
-						case 2:
-							console.log('枕头侧卧状态')
-							break;
-					}
-					let headHeight = receive16.slice(4, 6);
-					let headHeight10 = parseInt('0x' + headHeight);
-					let neckHeight = receive16.slice(6, 8);
-					let neckHeight10 = parseInt('0x' + neckHeight);
-					let vesrion = receive16.slice(8, 10);
-					let vesrion10 = parseInt('0x' + vesrion);
-					let isright = receive16.slice(10, 12);
-					let isright10 = parseInt('0x' + isright);
-					let press = receive16.slice(12, 14);
-					let press10 = parseInt('0x' + press);
-
-					this.head = headHeight10;
-					this.neck = neckHeight10;
-				}
 			},
 			parsePillowStatus(arraybuffer) {
-				// //默认是枕头状态 5s收到一次
-				let receive16 = ab2hex(arraybuffer);
-				// （0：0--空闲，1--平躺，2--侧卧；1：（备用）2：头部气囊高度值；3：颈部气囊高度值；4:固件版本； 5是否校准；6~7：电池电压值）
-				let status = receive16.slice(0, 2);
-				let status1 = '0x' + status;
 
-				let status10 = parseInt(status1);
-				this.pillowStatusNum = status10;
-				switch (status10) {
-					case 0:
-						console.log('枕头空闲状态');
-						this.pillowStatus = '枕头空闲状态';
-						this.selectIndex = 1;
-						break;
-					case 1:
-						console.log('枕头平躺状态')
-						this.pillowStatus = '枕头平躺状态';
-						this.selectIndex = 1;
-						break;
-					case 2:
-						console.log('枕头侧卧状态')
-						this.pillowStatus = '枕头侧卧状态';
-						this.selectIndex = 2;
-						break;
-				}
-
-				let detail_status_16 = receive16.slice(2, 4);
-				let detail_status = '0x' + detail_status_16;
-				let n1 = (detail_status & 0x03);
-				// 0--空闲，1--充电中，2--充电完成
-				switch (n1) {
-					case 0:
-						console.log('枕头在空闲状态');
-						break;
-					case 1:
-						console.log('枕头在充电中状态');
-						break;
-					case 2:
-						console.log('枕头在充电完成状态');
-						break;
-				}
-				let n2 = (detail_status >> 2) & 0x01;
-				console.log('泵1电流:', n2);
-				let n3 = (detail_status >> 3) & 0x01;
-				console.log('泵2电流:', n3);
-				let n4 = (detail_status >> 4) & 0x01;
-				console.log('气囊1升高超时:', n4);
-				let n5 = (detail_status >> 5) & 0x01;
-				console.log('气囊2升高超时:', n5);
-				let n6 = (detail_status >> 6) & 0x01;
-				console.log('气囊1气压超高:', n6);
-				let n7 = (detail_status >> 7) & 0x01;
-
-				let headHeight = receive16.slice(4, 6);
-				let headHeight10 = parseInt('0x' + headHeight);
-				let neckHeight = receive16.slice(6, 8);
-				let neckHeight10 = parseInt('0x' + neckHeight);
-				let vesrion = receive16.slice(8, 10);
-				let vesrion10 = parseInt('0x' + vesrion);
-				let isright = receive16.slice(10, 12);
-				let isright10 = parseInt('0x' + isright);
-				let press = receive16.slice(12, 16);
-				let press10 = parseInt('0x' + press);
-				blue_class.getInstance().setPillowCharging(n1)
-				blue_class.getInstance().setPillowHeight(headHeight10)
-				blue_class.getInstance().setPillowSideHeight(neckHeight10)
-				blue_class.getInstance().setPillowPower(press10)
-				console.log('adjust12 =>', status, headHeight, neckHeight, vesrion, isright, press)
-				console.log('adjust12 mm=>', status10, headHeight10 + 'mm', neckHeight10 + 'mm', 'v:' + vesrion10,
-					isright10,
-					press10)
 			},
 			// 调低枕头
 			adjustLowSleepHandler() {
-				this.touchingDown = true
-				let action = 2
-				let arraybuffer
-				// 如果选择的仰卧
-				if (this.selectIndex == 1) {
-					// 如果选择的是调整头枕
-					if (this.selectHead) {
-						// this.head -= 1
-						if (this.head <= 0) {
-							this.head = 0
-						}
-					} else {
-						// this.neck -= 1
-						if (this.neck <= 0) {
-							this.neck = 0
-						}
-					}
-					arraybuffer = handPillowFrontState(action, this.selectHead)
-					console.log('调低仰卧:', this.selectHead ? '调整头部' : '调整颈部', action, ab2hex(arraybuffer))
-				} else {
-					// 如果选择的侧卧
-					if (this.selectHead) {
-						// this.sideHead -= 1
-						if (this.sideHead <= 0) {
-							this.sideHead = 0
-						}
-					} else {
-						// this.sideNeck -= 1
-						if (this.sideNeck <= 0) {
-							this.sideNeck = 0
-						}
-					}
-					arraybuffer = handPillowFrontState(action, this
-						.selectHead)
-					console.log('调低侧卧:', action, ab2hex(arraybuffer))
-				}
-				// console.log('调低:', ab2hex(arraybuffer))
-				blue_class.getInstance().write2tooth(arraybuffer)
+
 			},
 			stopAdjustHighHandler() {
-				this.touchingDown = false;
-				this.touchingUp = false;
-				// 停止调节枕头
-				// 如果选择的仰卧
-				let action = 0
-				let arraybuffer = null;
-				if (this.selectIndex == 1) {
-					if (this.selectHead) {
-						// this.head += 1
-						if (this.head >= 100) {
-							this.head = 100
-						}
-					} else {
-						// this.neck += 1
-						if (this.neck >= 100) {
-							this.neck = 100
-						}
-					}
-					arraybuffer = handPillowFrontState(action, this.selectHead)
-					console.log('停止调节仰卧:', action, ab2hex(arraybuffer))
-				} else {
-					if (this.selectHead) {
-						// this.sideHead += 1
-						if (this.sideHead >= 100) {
-							this.sideHead = 100
-						}
-					} else {
-						// this.sideNeck += 1
-						if (this.sideNeck >= 100) {
-							this.sideNeck = 100
-						}
-					}
-					// 如果选择的侧卧
-					arraybuffer = handPillowFrontState(action, this
-						.selectHead)
-					console.log('停止调节侧卧:', action, ab2hex(arraybuffer))
-				}
-				// console.log('调高:', ab2hex(arraybuffer))
-				blue_class.getInstance().write2tooth(arraybuffer)
+
 			},
 		}
 	}

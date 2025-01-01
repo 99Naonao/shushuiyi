@@ -95,7 +95,7 @@ class blue_class {
 		uni.$emit('update_handstyle')
 	}
 
-	getHandStyle(value) {
+	getHandStyle() {
 		return this.handStyle;
 	}
 

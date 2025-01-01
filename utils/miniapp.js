@@ -11,7 +11,24 @@ const api = {
 	wxPay: '/ybGbUserOrder/pay',
 	qrCode: '/getWxQrCode',
 	fenxiaoRule: '/ybDictFenxiao/detail',
+	addLog: '/ybUserEyeMask/add',
 	withDrawListApi: '/user/fenxiao/yongjin/detail/page'
+}
+/**
+ * 同步枕头状态
+ * @param {Object} data
+ */
+export function addLog(data) {
+	let userId = '';
+	let userInfo = uni.getStorageInfoSync('userInfo');
+	if (userInfo && userInfo.token) {
+		userId = userInfo.userId;
+	}
+
+	return request_(base.baseUrl + api.addLog, {
+		userId: userId,
+		content: JSON.stringify(data)
+	})
 }
 
 export function getWxUserInfo() {

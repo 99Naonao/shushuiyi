@@ -35,6 +35,9 @@
 		utf8toGBK,
 		ab2hex
 	} from "../../common/util.js"
+	import {
+		addLog
+	} from '../../utils/miniapp';
 	export default {
 		onShow() {
 			let curPages = getCurrentPages()[0]
@@ -118,10 +121,19 @@
 				// this.$set(this.menuInfo, '--bateryWidth', (blue_class.getInstance().pillowPower * 50 / 1000) + 'rpx');
 				this.battery = blue_class.getInstance().getBattery();
 				this.$set(this.menuInfo, '--bateryWidth', (Number(this.battery) / 100) * 50 + 'rpx');
-				console.log('fuck updateInfo!', this.menuInfo)
+				console.log('updateInfo!', this.menuInfo)
+
+				addLog({
+					'time': this.time,
+					'handStyle': blue_class.getInstance().getHandStyle(),
+					'battery': blue_class.getInstance().getBattery(),
+					'press': blue_class.getInstance().getPress(),
+					'streath': blue_class.getInstance().getStrength(),
+					'music': ''
+				});
 			},
 			enterDetailHandle() {
-				console.log('fuck:', this.system)
+				console.log(':', this.system)
 				if (this.system.indexOf('IOS') > -1) {
 					uni.showToast({
 						title: '先选择时长'

@@ -79,6 +79,9 @@
 
 <script>
 	import {
+		addLog
+	} from '../../utils/miniapp';
+	import {
 		formatTime
 	} from '@/common/util.js'
 	const audio = uni.getBackgroundAudioManager({})
@@ -174,6 +177,17 @@
 				this.soundName = data.name;
 				this.authName = data.auth;
 				this.closeList()
+
+
+
+				addLog({
+					'time': this.time,
+					'handStyle': blue_class.getInstance().getHandStyle(),
+					'battery': blue_class.getInstance().getBattery(),
+					'press': blue_class.getInstance().getPress(),
+					'streath': blue_class.getInstance().getStrength(),
+					'music': this.soundName
+				});
 			},
 			async start() {
 				let url = 'https://sleep1.oss-rg-china-mainland.aliyuncs.com/sleepmusic.json?v=' + Math.random()

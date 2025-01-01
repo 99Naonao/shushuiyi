@@ -127,16 +127,44 @@
 				console.log("updateStrengthHandle")
 				this.press = blue_class.getInstance().getPress();
 				this.strength = blue_class.getInstance().getStrength();
+
+				addLog({
+					'time': this.time,
+					'handStyle': blue_class.getInstance().getHandStyle(),
+					'battery': blue_class.getInstance().getBattery(),
+					'press': blue_class.getInstance().getPress(),
+					'streath': blue_class.getInstance().getStrength(),
+					'music': ''
+				});
 			},
 			strongSliderChange(value) {
 				console.log('strong slider:', value.detail.value)
 				this.strength = value.detail.value
 				blue_class.getInstance().changeStrongMode(value.detail.value + '')
+
+				addLog({
+					'time': this.time,
+					'handStyle': blue_class.getInstance().getHandStyle(),
+					'battery': blue_class.getInstance().getBattery(),
+					'press': blue_class.getInstance().getPress(),
+					'streath': this.strength,
+					'music': ''
+				});
 			},
 			stressSliderChange(value) {
 				console.log('stress slider:', value.detail.value)
+				this.press = value.detail.value;
 				// 取整间隔是37.5
 				blue_class.getInstance().changeStressMode(Math.floor(value.detail.value) + '')
+
+				addLog({
+					'time': this.time,
+					'handStyle': blue_class.getInstance().getHandStyle(),
+					'battery': blue_class.getInstance().getBattery(),
+					'press': this.press,
+					'streath': blue_class.getInstance().getStrength(),
+					'music': ''
+				});
 			},
 			nextStepHandle() {
 				uni.navigateTo({
