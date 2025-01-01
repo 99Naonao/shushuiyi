@@ -20,10 +20,11 @@ const api = {
  */
 export function addLog(data) {
 	let userId = '';
-	let userInfo = uni.getStorageInfoSync('userInfo');
+	let userInfo = uni.getStorageSync('userInfo');
 	if (userInfo && userInfo.token) {
 		userId = userInfo.userId;
 	}
+	console.log('addlog:', userInfo)
 
 	return request_(base.baseUrl + api.addLog, {
 		userId: userId,
