@@ -37,6 +37,11 @@ export function getWxUserInfo() {
 		}
 	})
 }
+
+function setUserInfo(userInfo) {
+	//请求前加入token
+	uni.setStorageSync("userInfo", userInfo);
+}
 /**
  * 自动登录
  **/
@@ -54,28 +59,28 @@ export function autoLogin(callback) {
 			});
 			let userInfo = res
 			console.log('wxlogin:', userInfo)
-			this.setUserInfo(userInfo);
-			// uni.showToast({
-			// 	title: '登录成功',
-			// 	duration: 2000,
-			// 	success() {
+			setUserInfo(userInfo);
+			uni.showToast({
+				title: '登录成功',
+				duration: 2000,
+				success() {
 
-			// 		if (callback)
-			// 			callback()
-			// 	}
-			// });
+					if (callback)
+						callback()
+				}
+			});
 
 			//更新用户信息
-			this.updateUserInfo().then((res) => {
-				uni.showToast({
-					title: '登录成功',
-					duration: 2000,
-					success() {
-						if (callback)
-							callback()
-					}
-				});
-			})
+			// this.updateUserInfo().then((res) => {
+			// 	uni.showToast({
+			// 		title: '登录成功',
+			// 		duration: 2000,
+			// 		success() {
+			// 			if (callback)
+			// 				callback()
+			// 		}
+			// 	});
+			// })
 
 			// socket.init();
 			// userInfo.token = userInfo.token;
