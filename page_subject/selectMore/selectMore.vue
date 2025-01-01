@@ -129,7 +129,7 @@
 				this.strength = blue_class.getInstance().getStrength();
 
 				addLog({
-					'time': this.time,
+					'time': 0,
 					'handStyle': blue_class.getInstance().getHandStyle(),
 					'battery': blue_class.getInstance().getBattery(),
 					'press': blue_class.getInstance().getPress(),
@@ -143,7 +143,7 @@
 				blue_class.getInstance().changeStrongMode(value.detail.value + '')
 
 				addLog({
-					'time': this.time,
+					'time': 0,
 					'handStyle': blue_class.getInstance().getHandStyle(),
 					'battery': blue_class.getInstance().getBattery(),
 					'press': blue_class.getInstance().getPress(),
@@ -158,7 +158,7 @@
 				blue_class.getInstance().changeStressMode(Math.floor(value.detail.value) + '')
 
 				addLog({
-					'time': this.time,
+					'time': 0,
 					'handStyle': blue_class.getInstance().getHandStyle(),
 					'battery': blue_class.getInstance().getBattery(),
 					'press': this.press,

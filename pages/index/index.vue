@@ -49,7 +49,7 @@
 			}
 
 			uni.$on('update_pillow_info', this.updateInfo);
-			this.updateInfo()
+			this.updateInfo(false)
 
 			const deviceInfo = uni.getDeviceInfo();
 			this.system = deviceInfo.system;
@@ -84,8 +84,14 @@
 			// ]));
 			// console.log(decoded1)
 
-			// let status_arraybuffer1 = utf8toGBK('补法.qzd');
-			// console.log(status_arraybuffer1)
+			// addLog({
+			// 	'time': 300,
+			// 	'handStyle': '平补平泻.qzd',
+			// 	'battery': 80,
+			// 	'press': 1,
+			// 	'streath': 3,
+			// 	'music': ''
+			// });
 		},
 		data() {
 			return {
@@ -116,21 +122,24 @@
 					})
 				}
 			},
-			updateInfo() {
+			updateInfo(needlog = true) {
 
 				// this.$set(this.menuInfo, '--bateryWidth', (blue_class.getInstance().pillowPower * 50 / 1000) + 'rpx');
 				this.battery = blue_class.getInstance().getBattery();
 				this.$set(this.menuInfo, '--bateryWidth', (Number(this.battery) / 100) * 50 + 'rpx');
 				console.log('updateInfo!', this.menuInfo)
 
-				addLog({
-					'time': this.time,
-					'handStyle': blue_class.getInstance().getHandStyle(),
-					'battery': blue_class.getInstance().getBattery(),
-					'press': blue_class.getInstance().getPress(),
-					'streath': blue_class.getInstance().getStrength(),
-					'music': ''
-				});
+				if (needlog) {
+
+					addLog({
+						'time': 0,
+						'handStyle': blue_class.getInstance().getHandStyle(),
+						'battery': blue_class.getInstance().getBattery(),
+						'press': blue_class.getInstance().getPress(),
+						'streath': blue_class.getInstance().getStrength(),
+						'music': ''
+					});
+				}
 			},
 			enterDetailHandle() {
 				console.log(':', this.system)

@@ -67,6 +67,7 @@ class blue_class {
 
 	setBattery(value) {
 		this.battery = value;
+		console.log('setBattery')
 		uni.$emit('update_pillow_info');
 	}
 
@@ -128,6 +129,7 @@ class blue_class {
 	}
 	setPillowPower(value) {
 		this.pillowPower = value;
+		console.log('setPillowPower')
 		uni.$emit('update_pillow_info')
 	}
 

@@ -181,7 +181,7 @@
 
 
 				addLog({
-					'time': this.time,
+					'time': 0,
 					'handStyle': blue_class.getInstance().getHandStyle(),
 					'battery': blue_class.getInstance().getBattery(),
 					'press': blue_class.getInstance().getPress(),
