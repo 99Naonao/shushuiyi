@@ -49,6 +49,7 @@
 			}
 
 			uni.$on('update_pillow_info', this.updateInfo);
+			uni.$on('status_change', this.statusChange);
 			this.updateInfo(false)
 
 			const deviceInfo = uni.getDeviceInfo();
@@ -110,11 +111,15 @@
 		},
 		onHide() {
 			uni.$off('update_pillow_info', this.updateInfo);
+			uni.$off('status_change', this.statusChange);
 		},
 		onShareAppMessage() {
 
 		},
 		methods: {
+			statusChange() {
+				this.loginStatus = blue_class.getInstance().loginSuccess
+			},
 			useHandler() {
 				if (this.loginStatus) {
 					uni.navigateTo({

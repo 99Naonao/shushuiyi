@@ -102,6 +102,9 @@
 
 <script>
 	import blue_class from '../../utils/BlueManager';
+	import {
+		addLog
+	} from '../../utils/miniapp';
 	export default {
 		data() {
 			return {
@@ -142,14 +145,14 @@
 				this.strength = value.detail.value
 				blue_class.getInstance().changeStrongMode(value.detail.value + '')
 
-				addLog({
-					'time': 0,
-					'handStyle': blue_class.getInstance().getHandStyle(),
-					'battery': blue_class.getInstance().getBattery(),
-					'press': blue_class.getInstance().getPress(),
-					'streath': this.strength,
-					'music': ''
-				});
+				// addLog({
+				// 	'time': 0,
+				// 	'handStyle': blue_class.getInstance().getHandStyle(),
+				// 	'battery': blue_class.getInstance().getBattery(),
+				// 	'press': blue_class.getInstance().getPress(),
+				// 	'streath': this.strength,
+				// 	'music': ''
+				// });
 			},
 			stressSliderChange(value) {
 				console.log('stress slider:', value.detail.value)
@@ -157,14 +160,14 @@
 				// 取整间隔是37.5
 				blue_class.getInstance().changeStressMode(Math.floor(value.detail.value) + '')
 
-				addLog({
-					'time': 0,
-					'handStyle': blue_class.getInstance().getHandStyle(),
-					'battery': blue_class.getInstance().getBattery(),
-					'press': this.press,
-					'streath': blue_class.getInstance().getStrength(),
-					'music': ''
-				});
+				// addLog({
+				// 	'time': 0,
+				// 	'handStyle': blue_class.getInstance().getHandStyle(),
+				// 	'battery': blue_class.getInstance().getBattery(),
+				// 	'press': this.press,
+				// 	'streath': blue_class.getInstance().getStrength(),
+				// 	'music': ''
+				// });
 			},
 			nextStepHandle() {
 				uni.navigateTo({

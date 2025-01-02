@@ -108,6 +108,9 @@
 		appAnswer,
 		restartPillow
 	} from '../../common/util'
+	import {
+		addLog
+	} from '../../utils/miniapp'
 	export default {
 		components: {},
 		data() {

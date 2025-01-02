@@ -78,6 +78,7 @@
 </template>
 
 <script>
+	import blue_class from '../../utils/BlueManager';
 	import {
 		addLog
 	} from '../../utils/miniapp';

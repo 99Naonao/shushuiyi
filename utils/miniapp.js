@@ -342,9 +342,9 @@ function request_(url, sortData) {
 			// options.header['Cookie'] = '';  
 		};
 		console.log('header', header)
-		uni.showLoading({
-			title: '加载中'
-		})
+		// uni.showLoading({
+		// 	title: '加载中'
+		// })
 		uni.request({
 			url: url,
 			method: 'POST',
@@ -352,7 +352,7 @@ function request_(url, sortData) {
 			data: sortData,
 			success: res => {
 				// store.commit("setLoadingShow", false);
-				uni.hideLoading()
+				// uni.hideLoading()
 				console.log('====== params ======')
 				console.log(sortData)
 				console.log('====== result ======')
@@ -371,9 +371,9 @@ function request_(url, sortData) {
 				// }
 			},
 			fail: err => {
-				uni.hideLoading()
-				reject(err),
-					store.commit("setLoadingShow", false);
+				// uni.hideLoading()
+				reject(err);
+				// store.commit("setLoadingShow", false);
 			}
 		})
 		// uni.request({
