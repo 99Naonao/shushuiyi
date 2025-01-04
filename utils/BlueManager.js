@@ -187,7 +187,7 @@ class blue_class {
 			// 该方法回调中可以用于处理连接意外断开等异常情况
 			console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
 			if (res.deviceId == that.deviceId) {
-				that.loginSuccess = false; // 连接成功
+				that.loginSuccess = res.connected; // 连接成功
 				uni.$emit('status_change')
 				uni.showToast({
 					title: '连接断开'

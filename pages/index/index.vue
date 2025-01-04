@@ -17,7 +17,7 @@
 			</view>
 			<view class="bar-right" @click="enterDetailHandle">
 				<view class="subtitle">
-					眠加眼罩
+					助眠仪
 				</view>
 				<view class="flex align-center just-center next-part">
 					<image class="blueicon" mode="widthFix" src="../../static/index/SMY_02_IconLY.png"></image>
@@ -57,7 +57,8 @@
 			console.log({
 				deviceInfo
 			})
-			this.loginStatus = blue_class.getInstance().loginSuccess
+			this.loginStatus = blue_class.getInstance().loginSuccess;
+			console.log('onShow statusChange:', this.loginStatus)
 
 			// let name = '平补平泻.qzd';
 			// let status_arraybuffer = utf8toGBK(name);
@@ -118,7 +119,8 @@
 		},
 		methods: {
 			statusChange() {
-				this.loginStatus = blue_class.getInstance().loginSuccess
+				this.loginStatus = blue_class.getInstance().loginSuccess;
+				console.log('statusChange:', this.loginStatus)
 			},
 			useHandler() {
 				if (this.loginStatus) {
