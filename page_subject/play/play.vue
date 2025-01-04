@@ -35,12 +35,19 @@
 		<view class="center-part">
 			<view class="border">
 				<view class="title">
-					如何使用热敷?
+					如何使用音乐和热敷?
 				</view>
-				<view class="flex just-center align-center" style="padding: 20rpx;">
+				<view class="flex just-center align-center" style="padding: 20rpx;position: relative;">
+					<view class="tips1">长按3秒开启眼罩蓝牙<br>
+						耳机，在手机设置中连<br>
+						接Minga耳机<br>
+						<br>
+					</view>
 					<image class="tip-img" mode="widthFix" :src="'../static/SMY_06_RF01.png'"></image>
-					<view class="tips">需要热敷时<br>
-						请开启这个按钮</view>
+					<view class="tips">需要热敷<br>
+						时请长按此<br>
+						按钮3秒开启<br>
+					</view>
 				</view>
 			</view>
 		</view>
@@ -268,6 +275,8 @@
 		width: 100%;
 		height: 100%;
 
+
+
 		.list-item {
 			background-color: #f0f2f7;
 			border-radius: 20rpx;
@@ -421,12 +430,25 @@
 					width: 349rpx;
 				}
 
+				.tips1 {
+					width: 300rpx;
+					position: absolute;
+					font-family: YouYuan;
+					font-weight: 400;
+					font-size: 28rpx;
+					color: #3D3D3D;
+					line-height: 34rpx;
+					margin-left: -50%;
+				}
+
 				.tips {
 					font-family: YouYuan;
 					font-weight: 400;
 					font-size: 28rpx;
 					color: #3D3D3D;
 					line-height: 34rpx;
+					position: absolute;
+					right: 30rpx;
 				}
 
 				.title {

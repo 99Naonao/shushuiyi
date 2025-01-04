@@ -33,7 +33,7 @@
 			<div class="item" style="margin-left: 42rpx;">特别说明:</div>
 			<div class="item flex align-center" style="padding-bottom: 60rpx;">
 				<image class="iconblue" mode="widthFix" src="../static/SY_01_IconLY.png"></image>
-				<div>浅针仪基本使用功能，需要蓝牙连接</div>
+				<div>要使用助眠仪的基本功能，需要用到蓝牙连接</div>
 			</div>
 		</view>
 		<!-- 		<view class="device-item">
