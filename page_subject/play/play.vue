@@ -106,11 +106,11 @@
 				duration: "00:00",
 				currentTime: "00:00",
 				progress: 0,
-				soundName: '',
+				soundName: '选择曲目',
 				SleepMusicInfo: [],
 				poster: '',
 				currentIndex: 0,
-				authName: '',
+				authName: '未知',
 				menuStyle: {}
 			}
 		},
@@ -119,17 +119,23 @@
 		},
 		onShow() {
 			this.start();
-			if (this.audio) {
-				try {
-					this.audio.pause();
-					this.audio.destroy()
-					this.audio = null
-				} catch (e) {
-					//TODO handle the exception
-				}
-			}
+			const app = getApp();
+			// if (this.audio) {
+			// 	try {
+			// 		this.audio.pause();
+			// 		this.audio.destroy()
+			// 		this.audio = null
+			// 	} catch (e) {
+			// 		//TODO handle the exception
+			// 	}
+			// }
 
-			let app = getApp();
+			this.refreshInfo()
+			console.log('this.currentIndex:', this.currentIndex)
+			console.log('this.poster:', this.poster)
+			console.log('this.soundName:', this.soundName)
+			console.log('this.authName:', this.authName)
+
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
 
 			this.audio = audio
@@ -161,16 +167,28 @@
 				// console.log('onTimeUpdate!:', this.progress, audio.currentTime, audio.duration)
 			})
 			audio.onCanplay(() => {
+				const app = getApp();
 				let intervalID = setInterval(() => {
 					if (audio.duration !== 0) {
 						clearInterval(intervalID); // 清除定时器
 						console.log("音频时长", audio.duration);
 						this.duration = formatTime(audio.duration)
+						app.globalData.duration = this.duration;
 					}
 				}, 500);
 			})
 		},
 		methods: {
+			refreshInfo() {
+				const app = getApp();
+				this.currentIndex = app.globalData.currentIndex ? app.globalData.currentIndex : 0;
+				this.poster = app.globalData.poster ? app.globalData.poster : '';
+				this.soundName = app.globalData.soundName ? app.globalData.soundName : '选择曲目';
+				this.authName = app.globalData.authName ? app.globalData.authName : '未知';
+				this.duration = app.globalData.duration ? app.globalData.duration : '00:00';
+				// audio.src = app.globalData.src ? app.globalData.duration : '';
+				this.paused = audio.paused;
+			},
 			async changeMusic(data, index) {
 				audio.autoplay = true;
 				audio.loop = true;
@@ -180,10 +198,14 @@
 				audio.coverImgUrl = data.png;
 				audio.src = data.mp3;
 
-				this.currentIndex = index;
-				this.poster = data.png;
-				this.soundName = data.name;
-				this.authName = data.auth;
+				const app = getApp();
+
+				app.globalData.currentIndex = index;
+				app.globalData.poster = data.png;
+				app.globalData.soundName = data.name;
+				app.globalData.authName = data.auth;
+				app.globalData.src = data.mp3;
+				this.refreshInfo();
 				this.closeList()
 
 
@@ -213,7 +235,7 @@
 						let SleepMusicInfo = SleepMusic.SleepMusicInfo;
 						that.SleepMusicInfo = SleepMusicInfo;
 
-						that.changeMusic(that.SleepMusicInfo[0], 0);
+						// that.changeMusic(that.SleepMusicInfo[0], 0);
 					}
 				})
 
@@ -352,6 +374,7 @@
 				width: 164rpx;
 				height: 164rpx;
 				border-radius: 50%;
+				background: #3D3D3D;
 				margin: 0 auto;
 				display: block;
 			}
