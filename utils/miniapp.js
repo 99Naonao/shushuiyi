@@ -338,7 +338,7 @@ function request_(url, sortData) {
 
 		// console.log("token", storeUserInfo.token)
 		if (storeUserInfo.token) {
-			header['Authorization'] = storeUserInfo.token;
+			// header['Authorization'] = storeUserInfo.token;
 			// options.header['Cookie'] = '';  
 		};
 		console.log('header', header)
