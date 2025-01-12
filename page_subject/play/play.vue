@@ -52,6 +52,9 @@
 			</view>
 		</view>
 		<view class="opt-part">
+			<view class="opt-btn opt-btn-top" @click="tipsHandle">
+				<label>如何连接眠加耳机</label>
+			</view>
 			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
 				<label>下一步</label>
 			</view>
@@ -79,6 +82,58 @@
 				<image class="close-btn" src="../../static/adjust/SY_05_buttonCOLa.png" mode="widthFix"
 					@click="closeList">
 				</image>
+			</view>
+		</uni-popup>
+		<uni-popup class="m-popup" ref="popuptips" type="center">
+			<view class="popup__main">
+				<scroll-view class="popup_content" scroll-y='true'>
+					<view class="rule-title">手机系统连接眠加蓝牙耳机教程</view>
+					<view class="popup__body">
+						<view class="sub1"><text>1. 安卓手机连接蓝牙耳机\n\n</text></view>
+						<text>1. 打开蓝牙</text>
+						• 打开手机的“设置”应用。<br>
+						• 在设置菜单中，找到并点击“蓝牙”选项。<br>
+						• 开启蓝牙开关，确保蓝牙处于可发现模式。<br>
+
+						2. 进入蓝牙耳机配对模式<br>
+
+						• 将打开眠加助眠仪,蓝牙耳机置于配对模式。通常情况下，按住耳机的电源按钮3秒钟，直到耳机指示灯开始闪烁，表示进入配对模式。<br>
+
+						3. 在安卓手机上选择Minga蓝牙耳机<br>
+
+						• 在蓝牙设置界面，等待几秒钟，直到你的耳机出现在设备列表中。<br>
+						• 点击耳机名称进行配对。<br>
+
+
+						4. 完成配对<br>
+
+						<text>• 配对成功后，耳机指示灯将停止闪烁，进入稳定连接状态。此时，你就可以通过耳机聆听助眠音乐啦。\n\n</text>
+
+						<view class="sub1"><text>2. iOS设备连接蓝牙耳机\n\n</text></view>
+						1. 打开蓝牙<br>
+						• 打开“设置”应用。<br>
+						• 滑动屏幕并找到“蓝牙”选项，点击进入。<br>
+						• 开启蓝牙开关，确保蓝牙处于开启状态。<br>
+						2. 进入蓝牙耳机配对模式<br>
+						• 按照蓝牙耳机的使用说明，将耳机置于配对模式，通常是长按电源按钮，直到指示灯闪烁。<br>
+						3. 在iPhone或iPad上选择Minga蓝牙耳机<br><br>
+						• 在蓝牙设置页面下方，找到显示的蓝牙设备列表。<br>
+						4. 完成配对<br>
+						<text>• 配对成功后，耳机指示灯将稳定，表明已连接。此时，你就可以通过耳机聆听助眠音乐。\n\n</text>
+
+						<view>
+							<view class="sub1"><text>常见问题\n\n</text></view>
+							• 耳机未显示在列表中？<br>
+							确保耳机处于配对模式并离手机较近。可以尝试关闭蓝牙并重新开启，或者重新启动耳机。<br>
+							• 配对失败怎么办？<br>
+							确认耳机没有与其他设备连接，并确保设备的蓝牙版本兼容。如果仍无法配对，可以尝试重置蓝牙耳机。<br>
+
+							通过以上步骤，你就可以轻松地在安卓或iOS设备上连接蓝牙耳机了！<br>
+
+						</view>
+					</view>
+				</scroll-view>
+				<view class="health-btn" @click="closeHandler">我知道了</view>
 			</view>
 		</uni-popup>
 	</view>
@@ -260,6 +315,9 @@
 			closeList() {
 				this.$refs.popupSave.close()
 			},
+			closeHandler() {
+				this.$refs.popuptips.close()
+			},
 			playHandle() {
 				if (audio && audio.paused) {
 					audio.play()
@@ -285,6 +343,9 @@
 				uni.navigateTo({
 					url: "/page_subject/step/step"
 				})
+			},
+			tipsHandle() {
+				this.$refs.popuptips.open('center');
 			}
 		}
 	}
@@ -486,18 +547,78 @@
 			}
 		}
 
+		.m-popup {
+			.popup__main {
+				box-sizing: border-box;
+				padding: 50rpx 32rpx 40rpx;
+				width: 578rpx;
+				height: 870rpx;
+				background-color: rgb(254, 254, 254);
+				background-size: 100% auto;
+				background-position: center top;
+				background-repeat: no-repeat;
+				border-radius: 50rpx;
+				color: #003C71;
+				font-size: 26rpx;
+				line-height: 150%;
+				text-align: justify;
+
+			}
+
+			.popup_content {
+				width: 100%;
+				height: 100%;
+				overflow-y: scroll;
+			}
+
+			.rule-title {
+				margin: 0 auto;
+				text-align: center;
+				font-size: 35rpx;
+				line-height: 40rpx;
+				padding-bottom: 50rpx;
+			}
+
+			.popup__t1 {
+				padding-top: 20rpx;
+				font-weight: bold;
+			}
+
+			.popup__body {
+				width: 100%;
+				line-height: 40rpx;
+				white-space: pre-wrap;
+				word-break: break-all;
+				word-wrap: break-word;
+			}
+
+			.popup__close {
+				position: absolute;
+				right: 20rpx;
+				top: 50rpx;
+				width: 56rpx;
+				height: 56rpx;
+
+				/* background-image: url('https://quancode-scan-jdb-prod.oss-cn-beijing.aliyuncs.com/hxnhxp/close-btn.png'); */
+				background-size: 100% auto;
+				background-position: center top;
+				background-repeat: no-repeat;
+			}
+		}
+
 		.opt-part {
 			display: flex;
-			justify-content: space-around;
+			justify-content: space-between;
 			margin-top: 42rpx;
 			margin-bottom: 42rpx;
+			margin: 42rpx;
 			position: absolute;
 			left: 0;
 			right: 0;
 			bottom: 100rpx;
 
 			.opt-btn {
-				width: 484rpx;
+				width: 300rpx;
 				height: 90rpx;
 				display: flex;
 				justify-content: space-around;
@@ -512,6 +633,19 @@
 				background-color: rgb(79, 128, 191);
 			}
 
+		}
+
+		.sub1 {
+			font-weight: bold;
+		}
+
+		.health-btn {
+			background-color: #003C71;
+			padding: 15rpx;
+			color: white;
+			line-height: 50rpx;
+			text-align: center;
+			border-radius: 10rpx;
 		}
 	}
 </style>

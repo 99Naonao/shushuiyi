@@ -15,17 +15,27 @@
 					或者过松，经过三五次佩戴即可精准定位穴位
 				</view>
 			</view>
-			<view class="border">
-				<view class="tips1">
-					<image class="ring" :src="'../static/SMY_07_IconLD.png'">></image><span>听到提示音后助眠程序将自动启动</span>
+			<view class="border flex">
+				<view class="border-left">
+					<image class="ring" :src="'../static/SMY_07_IconLD.png'">></image>
 				</view>
-				<view class="tips2">您可以关闭手机</view>
+				<view class="tips1">
+					<span>听到提示音后助眠程序将自动启动</span>
+					<view class="tips2">您可以关闭手机</view>
+				</view>
 
 			</view>
 		</view>
 		<view class="opt-part">
 			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
-				<label>进阶设置</label>
+				<view>
+
+					<image class="ring2" :src="'../static/SMY_07_IconJJ.png'">></image>
+				</view>
+				<view>
+
+					<label>高级设置</label>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -101,35 +111,48 @@
 			.border {
 				background-color: #eff2f6;
 				border-radius: 38rpx;
-				padding: 91rpx;
-				padding-top: 30rpx;
-				padding-bottom: 30rpx;
+				align-items: center;
 
 				margin: 32rpx;
 
+				.border-left {
+					padding: 31rpx;
+					padding-top: 30rpx;
+					padding-bottom: 30rpx;
+					border-top-left-radius: 38rpx;
+					border-bottom-left-radius: 38rpx;
+					background-color: #E24F36;
+					height: 100%;
+				}
+
 				.ring {
-					width: 33rpx;
-					height: 37rpx;
+					width: 65rpx;
+					height: 72rpx;
 					vertical-align: middle;
 					padding: 10rpx;
 
 				}
 
+
+
 				.tips1 {
 					font-family: YouYuan;
 					font-weight: 400;
 					line-height: 57rpx;
-					font-size: 28rpx;
+					font-size: 32rpx;
 					color: #3D3D3D;
+					text-align: center;
+					flex: 1;
 				}
 
 				.tips2 {
 					font-family: YouYuan;
 					font-weight: 400;
-					font-size: 24rpx;
+					font-size: 28rpx;
 					text-align: center;
 					padding-top: 20rpx;
 					color: #828282;
+					padding: 21rpx;
 				}
 
 
@@ -142,17 +165,27 @@
 
 		}
 
+		.ring2 {
+			width: 44rpx;
+			height: 45rpx;
+			vertical-align: middle;
+			padding: 10rpx;
+
+		}
+
 		.opt-part {
 			display: flex;
-			justify-content: space-around;
+			justify-content: flex-start;
 			margin-top: 42rpx;
 			margin-bottom: 42rpx;
+			margin-left: 30rpx;
 
 			.opt-btn {
-				width: 284rpx;
-				height: 90rpx;
+				width: 184rpx;
+				height: 120rpx;
 				display: flex;
 				justify-content: space-around;
+				flex-direction: column;
 				align-items: center;
 				background-color: rgb(28, 68, 133);
 				border-radius: 30rpx;
