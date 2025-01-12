@@ -12,7 +12,13 @@ const api = {
 	qrCode: '/getWxQrCode',
 	fenxiaoRule: '/ybDictFenxiao/detail',
 	addLog: '/ybUserEyeMask/add',
+	appVersion: '/appVersion',
 	withDrawListApi: '/user/fenxiao/yongjin/detail/page'
+}
+
+/**获取app版本**/
+export function getappVersion(data) {
+	return get_(base.baseUrl + api.appVersion, data);
 }
 /**
  * 同步枕头状态
@@ -237,13 +243,14 @@ function getJson_(url) {
 	})
 }
 
-function get_(url) {
+function get_(url, _data = {}) {
 	return new Promise((resolve, reject) => {
 		console.log('====== url ======')
 		console.log(url)
 		uni.request({
 			url: url,
 			method: 'GET',
+			data: _data,
 			header: {
 				'Content-Type': 'application/json;charset=UTF-8'
 			},

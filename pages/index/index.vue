@@ -36,8 +36,10 @@
 		ab2hex
 	} from "../../common/util.js"
 	import {
-		addLog
+		addLog,
+		getappVersion,
 	} from '../../utils/miniapp';
+	import base from '@/utils/baseUrl';
 	export default {
 		onShow() {
 			let curPages = getCurrentPages()[0]
@@ -59,6 +61,12 @@
 			})
 			this.loginStatus = blue_class.getInstance().loginSuccess;
 			console.log('onShow statusChange:', this.loginStatus)
+
+			getappVersion({
+				appId: base.publicAppId
+			}).then(res => {
+
+			})
 
 			// let name = '平补平泻.qzd';
 			// let status_arraybuffer = utf8toGBK(name);
