@@ -65,7 +65,8 @@
 			getappVersion({
 				appId: base.publicAppId
 			}).then(res => {
-
+				const app = getApp();
+				app.globalData.versionCode = res.versionCode;
 			})
 
 			// let name = '平补平泻.qzd';

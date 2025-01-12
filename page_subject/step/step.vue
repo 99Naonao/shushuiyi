@@ -29,12 +29,15 @@
 		<view class="opt-part">
 			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
 				<view>
-
 					<image class="ring2" :src="'../static/SMY_07_IconJJ.png'">></image>
 				</view>
 				<view>
-
 					<label>高级设置</label>
+				</view>
+			</view>
+			<view class="opt-btn opt-btn-top" @click="navIndexStepHandle">
+				<view>
+					<label>返回首页</label>
 				</view>
 			</view>
 		</view>
@@ -53,6 +56,11 @@
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 50) + 'px');
 		},
 		methods: {
+			navIndexStepHandle() {
+				uni.switchTab({
+					url: "/pages/index/index"
+				})
+			},
 			nextStepHandle() {
 				console.log('nextStepHandle')
 				uni.navigateTo({
@@ -175,10 +183,12 @@
 
 		.opt-part {
 			display: flex;
-			justify-content: flex-start;
+			justify-content: space-between;
+
 			margin-top: 42rpx;
 			margin-bottom: 42rpx;
 			margin-left: 30rpx;
+			margin-right: 30rpx;
 
 			.opt-btn {
 				width: 184rpx;

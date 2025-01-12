@@ -114,6 +114,7 @@
 				serviceId: '', // 连接的服务id
 				findingIndex: 0,
 				deviceIdList: [], // 检测列表
+				testName: '测试专用',
 				// deviceIdList: [],
 				connectList: [], // 连接列表
 				service_1: '0001FFE7-6865-6F6E-652D-7A732D717A10',
@@ -155,6 +156,11 @@
 					this.deviceIdList = [{
 						name: blue_class.getInstance().deviceName
 					}];
+				} else if (app.globalData.versionCode == 0) {
+					this.deviceIdList.push({
+						name: this.testName,
+						deviceId: 'deviceId'
+					});
 				}
 			}
 			uni.$on('xx', this.handleMessage)
@@ -548,6 +554,25 @@
 
 				let app = getApp();
 				let deviceId = item.deviceId;
+				if (app.globalData.versionCode == 0 && deviceId == 'deviceId') {
+					wx.showToast({
+						title: '连接成功',
+						icon: 'success',
+						duration: 1000
+					})
+					this.stopBlueTooth();
+					app.globalData.deviceId = deviceId;
+
+					blue_class.getInstance().deviceId = deviceId;
+					// 链接成功
+					blue_class.getInstance().loginSuccess = true;
+
+					console.log('connectBluetooth success!:', deviceId)
+					uni.switchTab({
+						url: "/pages/index/index"
+					})
+					return;
+				}
 				uni.createBLEConnection({
 					// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
 					deviceId: deviceId,
