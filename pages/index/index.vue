@@ -69,40 +69,6 @@
 				app.globalData.versionCode = res.versionCode;
 			})
 
-			// let name = '平补平泻.qzd';
-			// let status_arraybuffer = utf8toGBK(name);
-			// let unit8array = [];
-			// var dateview = new DataView(status_arraybuffer);
-			// for (var index = 0; index < status_arraybuffer.byteLength; index++) {
-			// 	unit8array.push(dateview.getUint8(index));
-			// }
-			// console.log("[changePlayFile]", name, status_arraybuffer, utf8toGBK(name), ab2hex(unit8array))
-			// let out = utf8to16(status_arraybuffer)
-			// console.log(out);
-			// // c6bdb2b9c6bdd0ba2e717a640a
-			// var gbk = new TextEncoder('gb2312').encode(name);
-			// console.log('gbk:', gbk)
-
-			// const decoded = new TextDecoder('utf-8')
-			// 	.decode(new Uint8Array([
-			// 		0x7A, 0xC2, 0xA2, 0xE6, 0xB0, 0xB4, 0xF0,
-			// 		0x9D, 0x84, 0x9E, 0xF4, 0x8F, 0xBF, 0xBD,
-			// 	]))
-			// console.log(decoded)
-
-			// const decoded1 = new TextDecoder('utf-8').decode(new Uint8Array([104, 101, 108, 108, 111, 32, 119, 111, 114,
-			// 	108, 100
-			// ]));
-			// console.log(decoded1)
-
-			// addLog({
-			// 	'time': 300,
-			// 	'handStyle': '平补平泻.qzd',
-			// 	'battery': 80,
-			// 	'press': 1,
-			// 	'streath': 3,
-			// 	'music': ''
-			// });
 		},
 		data() {
 			return {
@@ -163,7 +129,7 @@
 					uni.showToast({
 						title: '先选择时长'
 					})
-				} else {
+				} else { 
 
 					wx.openSystemBluetoothSetting({
 						success(res) {

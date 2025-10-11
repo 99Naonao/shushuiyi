@@ -13,7 +13,7 @@
 					<view class="usernameInfo">
 						<view class="userNickNameInfo" v-if="nickNameInputFlag">
 							<text class="username">{{ userInfo.nickName || '点此登录' }}</text>
-							<image v-if="false" class="edit-icon" src="../../static/icon/edit.png"></image>
+							<!-- <im age v-if="false" class="edit-icon" src="../../static/icon/edit.png"></image> -->
 						</view>
 						<view class="username" v-else>
 							<input class="username" type="text" placeholder="请输入新的昵称" @blur="inputClose()"

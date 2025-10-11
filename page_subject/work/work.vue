@@ -26,52 +26,16 @@
 					</view>
 					<!-- 				<image :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn">
 				</image> -->
-				</view>
+				</view> 
 			</view>
 		</view>
 		<view class="spetips">
 			<div class="item" style="margin-left: 42rpx;">特别说明:</div>
 			<div class="item flex align-center" style="padding-bottom: 60rpx;">
-				<image class="iconblue" mode="widthFix" src="../static/SY_01_IconLY.png"></image>
+				<image class="iconblue" mode="widthFix" src="../../static/SY_01_IconLY.png"></image>
 				<div>要使用助眠仪的基本功能，需要用到蓝牙连接</div>
 			</div>
 		</view>
-		<!-- 		<view class="device-item">
-			<image mode="widthFix" :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn"
-				@click="adjustLowSleepHandler(item)">
-			</image>
-			<image mode="widthFix" :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn"
-				@click="adjustHighSleepHandler(item)">
-			</image>
-		</view> -->
-
-
-		<uni-popup ref="ppp" style="z-index: 10000; position: absolute;" border-radius="40rpx 40rpx 0rpx 0rpx"
-			background-color='white' safe-area="false" class="popup" :mask-click="false" @change="change">
-			<view class="container">
-				<image class="close-btn" @click="closePopUpHandle"
-					src="@/page_subject/static/adjust/SY_05_buttonCOLa.png" mode="widthFix">
-				</image>
-				<image class="tip" src="@/static/adjust/SY_05_B001.png" mode="widthFix"></image>
-				<view class="touch">
-					<view class="item" @click="autoHandler">
-						<!-- <image class="item-btn" src="@/page_subject/static/adjust/SY_02_button01a.png"></image> -->
-						<!-- <image class="icon1" src="@/page_subject/static/adjust/SY_02_Icon01.png" mode=""></image> -->
-						<label>AI识别全自动设置</label>
-					</view>
-					<view class="item" @click="showAdjustHandler">
-						<!-- <image class="item-btn" src="@/page_subject/static/adjust/SY_02_button01a.png"></image> -->
-						<!-- <image class="icon2" src="@/page_subject/static/adjust/SY_02_Icon02.png" mode=""></image> -->
-						<label>手动调整</label>
-					</view>
-					<view class="item" @click="showModeHandler">
-						<!-- <image class="item-btn" src="@/page_subject/static/adjust/SY_02_button01a.png"></image> -->
-						<!-- <image class="icon3" src="@/page_subject/static/adjust/SY_02_Icon03.png" mode=""></image> -->
-						<label>选择已有数据</label>
-					</view>
-				</view>
-			</view>
-		</uni-popup>
 	</view>
 </template>
 
@@ -139,10 +103,6 @@
 			let app = getApp();
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 80) + 'px');
 			this.loginStatus = blue_class.getInstance().loginSuccess
-			// let app = getApp();
-			// this.deviceId = app.globalData.deviceId;
-			// this.characteristicId = app.globalData.characteristicId;
-			// this.serviceId = app.globalData.serviceId;
 
 			// 如果正在搜索中
 			if (this.searching) {
@@ -171,18 +131,6 @@
 			// uni.offBLECharacteristicValueChange(this.handleMessage)
 			this.onShowing = false;
 			uni.$off('xx', this.handleMessage)
-			// if (this.searching) {
-			// uni.stopBluetoothDevicesDiscovery({
-			// 	success: function(res) {
-			// 		that.searching = false
-			// 	}
-			// })
-			// uni.closeBluetoothAdapter({
-			// 	complete: () => {
-			// 		that.searching = false
-			// 	}
-			// })
-			// }
 		},
 		onLoad() {
 			// 监听设备发现
@@ -207,7 +155,7 @@
 						}
 					}
 					if (isnotexist && result.devices[0].name != '') {
-						if (result.devices[0].name.indexOf('Minga') > -1) {
+						if (result.devices[0].name.indexOf('zzZMinga') > -1) {
 							that.deviceIdList.push(result.devices[0])
 						}
 						console.log('result.devices[0].name:', result.devices[0].name)
@@ -229,7 +177,7 @@
 							isnotexist = false
 						}
 					}
-					if (isnotexist && result[0].name != '' && result[0].name.indexOf('Minga') > -1) {
+					if (isnotexist && result[0].name != '' && result[0].name.indexOf('zzZMinga') > -1) {
 						that.deviceIdList.push(result[0])
 					}
 				}
@@ -260,21 +208,11 @@
 							console.log('getBluetoothAdapterState success!', res)
 						}
 					})
-					// //  50s扫描结束
-					// setTimeout(function() {
-					// 	that.stopBlueTooth()
-					// }, 500000);
 				},
 				fail(res) {
-					// if (res.errCode == 10001) {
-					// 	uni.showToast({
-					// 		duration: 3000,
-					// 		title: '请打开蓝牙'
-					// 	})
-					// }
 					uni.showModal({
-						title: '提示',
-						content: '请检查手机蓝牙是否打开',
+						title: '权限不足提示',
+						content: '请检查小程序是否授予蓝牙权限',
 						showCancel: false,
 						success: (res) => {
 							this.searching = false
@@ -884,69 +822,5 @@
 			margin-left: -161rpx;
 		}
 
-		.close-btn {
-			width: 26rpx;
-			height: 27rpx;
-			right: 30rpx;
-			top: 20rpx;
-			position: absolute;
-		}
-
-
-
-
-
-		.touch {
-			text-align: center;
-			padding-top: 100rpx;
-
-
-			.item {
-				text-align: center;
-				color: white;
-				background-color: #5B7897;
-				border-radius: 30rpx;
-				margin-top: 10rpx;
-				margin-bottom: 10rpx;
-				margin-left: 35rpx;
-				margin-right: 35rpx;
-				line-height: 100rpx;
-				position: relative;
-
-				.item-btn {
-					width: 713rpx;
-					height: 100rpx;
-					margin: 0 auto;
-				}
-
-				.icon1 {
-					width: 81rpx;
-					height: 81rpx;
-					left: 20rpx;
-					top: 10rpx;
-					position: absolute;
-
-				}
-
-				.icon2 {
-					left: 20rpx;
-					top: 10rpx;
-					width: 81rpx;
-					height: 81rpx;
-					position: absolute;
-				}
-
-				.icon3 {
-					left: 20rpx;
-					top: 10rpx;
-					width: 81rpx;
-					height: 81rpx;
-					position: absolute;
-				}
-
-			}
-
-
-		}
 	}
 </style>

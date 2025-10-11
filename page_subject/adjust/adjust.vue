@@ -139,6 +139,7 @@
 				deviceId: '', // 连接的蓝牙id
 				serviceId: '', // 连接的服务id
 				time: 10 * 60,
+				loginStatus:false //助眠仪蓝牙连接状态
 			}
 		},
 		computed: {
@@ -228,6 +229,7 @@
 				console.log('value:', value)
 			},
 			nextStepHandle() {
+
 				if (this.time == 0) {
 					uni.showToast({
 						title: '先选择时长'
@@ -235,6 +237,14 @@
 					return;
 				}
 				if (this.mode_one || this.mode_four || this.mode_three || this.mode_two) {
+					if(!blue_class.getInstance().loginSuccess){
+						uni.showModal({
+							title:"未连接设备提示",
+							content:"请检查设备是否已连接",
+							showCancel:false
+						});
+						return;
+					}
 					uni.navigateTo({
 						url: "/page_subject/play/play"
 					})

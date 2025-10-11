@@ -1,14 +1,13 @@
 {
-  "id": "uni-transition",
-  "displayName": "uni-transition 过渡动画",
-  "version": "1.3.2",
-  "description": "元素的简单过渡动画",
+  "id": "uni-collapse",
+  "displayName": "uni-collapse 折叠面板",
+  "version": "1.4.4",
+  "description": "Collapse 组件，可以折叠 / 展开的内容区域。",
   "keywords": [
     "uni-ui",
-    "uniui",
-    "动画",
-    "过渡",
-    "过渡动画"
+    "折叠",
+    "折叠面板",
+    "手风琴"
 ],
   "repository": "https://github.com/dcloudio/uni-ui",
   "engines": {
@@ -38,7 +37,10 @@
     "type": "component-vue"
   },
   "uni_modules": {
-    "dependencies": ["uni-scss"],
+    "dependencies": [
+			"uni-scss",
+      "uni-icons"
+    ],
     "encrypt": [],
     "platforms": {
       "cloud": {
