@@ -1,7 +1,7 @@
 <template>
-	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#000' transparentFixedFontColor='#000'
-		title=''></z-nav-bar>
-	<view class="container">
+	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#1A202C' transparentFixedFontColor='#1A202C'
+		title='音乐播放'></z-nav-bar>
+	<view class="play-page">
 		<view class="top-part" :style="menuStyle">
 			<image mode="widthFix" class="cover" :src="poster"></image>
 			<view class="sound-name">{{soundName}}</view>
@@ -51,13 +51,9 @@
 				</view>
 			</view>
 		</view>
-		<view class="opt-part">
-			<view class="opt-btn opt-btn-top" @click="tipsHandle">
-				<label>如何连接眠加耳机</label>
-			</view>
-			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
-				<label>下一步</label>
-			</view>
+		<view class="play-footer dual">
+			<view class="be-btn-secondary play-btn-half" @click="tipsHandle">连接耳机教程</view>
+			<view class="be-btn-primary play-btn-half" @click="nextStepHandle">下一步</view>
 		</view>
 
 		<uni-popup ref="popupSave" type="bottom" background-color="#fff" border-radius="10px 10px 0 0"
@@ -352,11 +348,12 @@
 </script>
 
 <style lang="scss" scoped>
-	.container {
-		background-color: rgb(221, 224, 226);
+	@import '@/common/theme.scss';
 
-		width: 100%;
-		height: 100%;
+	.play-page {
+		@include be-page-base;
+		min-height: 100vh;
+		padding-bottom: 180rpx;
 
 
 
@@ -428,16 +425,16 @@
 
 
 		.top-part {
-			background-color: rgb(221, 224, 226);
 			padding-top: var(--menuButtonTop);
 
 			.cover {
-				width: 164rpx;
-				height: 164rpx;
+				width: 280rpx;
+				height: 280rpx;
 				border-radius: 50%;
-				background: #3D3D3D;
+				background: $be-surface-soft;
 				margin: 0 auto;
 				display: block;
+				box-shadow: $be-shadow-md;
 			}
 
 			.pause-icon {
@@ -447,11 +444,11 @@
 			}
 
 			.sound-name {
-				font-weight: 400;
-				font-size: 24rpx;
-				color: #3D3D3D;
+				font-weight: 600;
+				font-size: 32rpx;
+				color: $be-text-primary;
 				text-align: center;
-				padding: 10rpx;
+				padding: 20rpx 10rpx 8rpx;
 			}
 
 			.sound-sub-name {
@@ -505,10 +502,9 @@
 
 		.center-part {
 			.border {
-				background-color: #eff2f6;
-				border-radius: 38rpx;
-
+				@include be-card;
 				margin: 32rpx;
+				padding: 24rpx;
 
 				.tip-img {
 					width: 349rpx;
@@ -606,33 +602,26 @@
 			}
 		}
 
-		.opt-part {
-			display: flex;
-			justify-content: space-between;
-			margin-top: 42rpx;
-			margin-bottom: 42rpx;
-			margin: 42rpx;
-			position: absolute;
+		.play-footer {
+			position: fixed;
 			left: 0;
 			right: 0;
-			bottom: 100rpx;
+			bottom: 0;
+			padding: 24rpx 32rpx;
+			padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+			background: $be-surface;
+			box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
+		}
 
-			.opt-btn {
-				width: 300rpx;
-				height: 90rpx;
-				display: flex;
-				justify-content: space-around;
-				align-items: center;
-				background-color: rgb(28, 68, 133);
-				border-radius: 30rpx;
-				line-height: 56rpx;
-				color: white;
-			}
+		.play-footer.dual {
+			display: flex;
+			gap: 24rpx;
+		}
 
-			.opt-btn-top {
-				background-color: rgb(79, 128, 191);
-			}
-
+		.play-btn-half {
+			flex: 1;
+			height: 96rpx;
+			font-size: 28rpx;
 		}
 
 		.sub1 {

@@ -1,9 +1,9 @@
 <template>
-	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#000' transparentFixedFontColor='#000'
+	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#1A202C' transparentFixedFontColor='#1A202C'
 		title='进阶设置'></z-nav-bar>
-	<view class="main">
-		<view class="select-part" :style="menuStyle">
-			<view class="border">
+	<view class="flow-page">
+		<view class="flow-content" :style="menuStyle">
+			<view class="be-card settings-card">
 				<view class="flex">
 					<view>
 						<image class="icon1" mode="widthFix" :src="'../static/selectMore/SMY_08_IconYL.png'"></image>
@@ -33,7 +33,7 @@
 									<view class="sub-title">松</view>
 								</view>
 								<view class="flex1">
-									<slider class="flex1" block-size="18" activeColor="#194a94" :value="press" min="1"
+									<slider class="flex1" block-size="18" activeColor="#4A7FD4" :value="press" min="1"
 										max="5" @change="stressSliderChange" step="1" />
 									<view class="sub-title">默认</view>
 								</view>
@@ -75,7 +75,7 @@
 									<view class="sub-title">弱</view>
 								</view>
 								<view class="flex1">
-									<slider class="flex1" block-size="18" activeColor="#194a94" :value="strength"
+									<slider class="flex1" block-size="18" activeColor="#4A7FD4" :value="strength"
 										min="0" max="32" @change="strongSliderChange" step="1" />
 
 									<view class="sub-title" v-if="false">默认</view>
@@ -90,11 +90,6 @@
 						</view>
 					</view>
 				</view>
-			</view>
-		</view>
-		<view class="opt-part" v-if="false">
-			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
-				<label>进阶设置</label>
 			</view>
 		</view>
 	</view>
@@ -180,355 +175,107 @@
 </script>
 
 <style lang="scss" scoped>
+	@import '@/common/theme.scss';
+
 	slider {
 		display: block;
-		margin: 0px 18px;
+		margin: 0 36rpx;
 		margin-top: 10rpx;
 		padding: 0;
 	}
 
-	.main {
-		background-color: rgb(221, 224, 226);
+	.flow-page {
+		@include be-page-base;
+		min-height: 100vh;
+	}
 
+	.flow-content {
+		padding-top: var(--menuButtonTop);
+		padding-bottom: 48rpx;
+	}
+
+	.settings-card {
+		margin: 24rpx 32rpx;
+		padding: 36rpx 32rpx;
+	}
+
+	.setting-block {
+		padding-bottom: 40rpx;
+		margin-bottom: 40rpx;
+		border-bottom: 1rpx solid #EDF2F7;
+	}
+
+	.setting-block:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+		margin-bottom: 0;
+	}
+
+	.setting-header {
+		display: flex;
+		align-items: flex-start;
+		margin-bottom: 24rpx;
+	}
+
+	.setting-icon {
+		width: 56rpx;
+		height: 56rpx;
+		margin-right: 20rpx;
+		flex-shrink: 0;
+	}
+
+	.title {
+		font-size: 32rpx;
+		font-weight: 600;
+		color: $be-text-primary;
+		line-height: 1.4;
+	}
+
+	.tips {
+		font-size: 24rpx;
+		color: $be-text-secondary;
+		margin-top: 8rpx;
+		line-height: 1.5;
+	}
+
+	.strength-part {
+		position: relative;
+		padding-top: 16rpx;
+	}
+
+	.tick {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		margin: 0 80rpx;
+	}
+
+	.sub-title {
+		font-size: 24rpx;
+		color: $be-text-muted;
+		text-align: center;
+	}
+
+	.info {
 		width: 100%;
-		height: 100%;
-
-		.select-part {
-			background-color: rgb(221, 224, 226);
-			padding-top: var(--menuButtonTop);
-
-			.icon1 {
-				width: 61rpx;
-				padding-right: 45rpx;
-			}
-
-			.icon2 {
-				width: 61rpx;
-				padding-right: 45rpx;
-			}
-
-			.border {
-				background-color: #eff2f6;
-				border-radius: 38rpx;
-				padding: 46rpx 38rpx 46rpx 38rpx;
-
-				margin: 32rpx;
-
-				.top-tips {
-					position: relative;
-				}
-
-				.opt-switch {
-					position: absolute;
-					right: -10rpx;
-					top: 0px;
-				}
-
-				.icon-left {
-					width: 23rpx;
-				}
-
-				.icon-right {
-					width: 25rpx;
-				}
-
-				.border-center {
-					padding-top: 20rpx;
-					padding-bottom: 20rpx;
-				}
-
-				.border-right {
-					border-bottom: #dde0e2 1px solid;
-					margin-bottom: 10rpx;
-					padding-bottom: 10rpx;
-				}
-
-				.tips {
-					font-weight: 400;
-					font-size: 24rpx;
-					line-height: 70rpx;
-					color: #547896;
-				}
-
-				.sub-title {
-					font-weight: 400;
-					font-size: 26rpx;
-					color: #828282;
-					text-align: center;
-				}
-
-
-
-				.title2 {}
-
-				.title {
-					font-family: YouYuan;
-					font-weight: 400;
-					font-size: 30rpx;
-					color: #3D3D3D;
-					line-height: 50rpx;
-				}
-
-				.progress-box {
-					display: flex;
-					height: 50rpx;
-					margin-bottom: 60rpx;
-				}
-
-				.uni-icon {
-					line-height: 1.5;
-				}
-
-				.progress-cancel {
-					margin-left: 40rpx;
-				}
-
-				.progress-control button {
-					margin-top: 20rpx;
-				}
-			}
-
-		}
-
-		.strength-part {
-			position: relative;
-		}
-
-		.tick {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 10rpx;
-			margin: 0 50rpx 0 50rpx;
-		}
-
-		.info {
-			width: 100%;
-			margin-top: 20rpx;
-		}
-
-		.opt-part {
-			display: flex;
-			justify-content: space-around;
-			margin-top: 42rpx;
-			margin-bottom: 42rpx;
-
-			.opt-btn {
-				width: 284rpx;
-				height: 90rpx;
-				display: flex;
-				justify-content: space-around;
-				align-items: center;
-				background-color: rgb(28, 68, 133);
-				border-radius: 30rpx;
-				line-height: 56rpx;
-				color: white;
-			}
-
-			.opt-btn-top {
-				background-color: rgb(79, 128, 191);
-			}
-
-		}
-
-		.info-part {
-			background-color: #eff2f6;
-			border-radius: 38rpx;
-
-			margin: 32rpx;
-			padding-bottom: 20rpx;
-			padding-top: 16rpx;
-
-			.info-second-part {
-				position: relative;
-				margin: 0 auto;
-				width: 634rpx;
-				margin-top: 20rpx;
-				margin-bottom: 20rpx;
-				// padding: 18rpx;
-				color: #5B7897;
-				background-color: #eff2f6;
-
-				.item {
-
-					padding-bottom: 16rpx;
-					padding-top: 16rpx;
-					margin-left: 16rpx;
-					margin-right: 16rpx;
-					border-bottom: #dde0e2 1px solid;
-				}
-
-				.bo {
-					width: 128rpx;
-					height: 76rpx;
-					background-color: rgb(77, 127, 201);
-					color: white;
-					text-align: center;
-					line-height: 76rpx;
-					border-radius: 30rpx 30rpx;
-				}
-
-				.bo-left {
-					position: absolute;
-					left: 55rpx;
-					top: 193rpx;
-					z-index: 10;
-				}
-
-				.bo-right {
-					z-index: 10;
-					position: absolute;
-					right: 130rpx;
-					top: 193rpx;
-				}
-
-				.select {
-					background-color: white;
-					color: rgb(28, 68, 133);
-				}
-
-				.bzb-icon {
-					position: absolute;
-					left: 66rpx;
-					top: 60rpx;
-					width: 358rpx;
-					height: 139rpx;
-				}
-
-				.tzb-icon {
-					position: absolute;
-					right: 66rpx;
-					top: 60rpx;
-					width: 327rpx;
-					height: 125rpx;
-				}
-
-				.human-icon {
-					position: absolute;
-					right: -30rpx;
-					top: -60rpx;
-					width: 476rpx;
-					height: 271rpx;
-				}
-
-				.desc1 {
-					font-size: 30rpx;
-					color: #3D3D3D;
-					line-height: 40rpx;
-					z-index: 11;
-				}
-
-				.desc1size {
-					font-size: 36rpx;
-
-					position: absolute;
-					color: #003C71;
-					right: 388rpx;
-					top: 18rpx;
-					z-index: 11;
-				}
-
-				.desc2 {
-					color: #547896;
-					font-size: 26rpx;
-					line-height: 35rpx;
-					z-index: 11;
-				}
-
-				.desc2size {
-					font-size: 36rpx;
-					color: #003C71;
-					position: absolute;
-					right: 37rpx;
-					top: 43rpx;
-					z-index: 11;
-				}
-
-
-
-
-				@-webkit-keyframes downEffect {
-					0% {
-						transform: translateY(0);
-						opacity: 0.3;
-					}
-
-					30% {
-						transform: translateY(120);
-						opacity: 1;
-
-					}
-
-					100% {
-						transform: translateY(0);
-						top: 70px;
-						opacity: 1;
-					}
-				}
-
-				@keyframes downEffect {
-					0% {
-						transform: translateY(0);
-						opacity: 0.3;
-					}
-
-					30% {
-						transform: translateY(120);
-						opacity: 1;
-
-					}
-
-					100% {
-						transform: translateY(0);
-						top: 70px;
-						opacity: 1;
-					}
-				}
-
-
-				.down-icon-effect {
-					animation: 1s linear 0s infinite downEffect;
-					-webkit-animation: 1s linear 0s infinite downEffect;
-				}
-
-				@-webkit-keyframes upEffect {
-					0% {
-						opacity: 0.3;
-						top: 50px;
-					}
-
-					30% {
-						opacity: 1;
-					}
-
-					100% {
-						top: 20px;
-						opacity: 1;
-					}
-				}
-
-				@keyframes upEffect {
-					0% {
-						opacity: 0.3;
-						top: 50px;
-					}
-
-					30% {
-						opacity: 1;
-					}
-
-					100% {
-						top: 20px;
-						opacity: 1;
-					}
-				}
-
-				.up-icon-effect {
-					animation: 1s linear 0s infinite upEffect;
-					-webkit-animation: 1s linear 0s infinite upEffect;
-				}
-			}
-		}
+		margin-top: 20rpx;
+	}
+
+	.icon-left {
+		width: 28rpx;
+	}
+
+	.icon-right {
+		width: 28rpx;
+	}
+
+	.icon1, .icon2 {
+		width: 56rpx;
+		padding-right: 20rpx;
+	}
+
+	.border-right {
+		border-bottom: none;
 	}
 </style>

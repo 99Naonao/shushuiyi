@@ -1,40 +1,39 @@
 <template>
-	<view class="container">
-		<z-nav-bar :bgColor="bgColorList" backState=2000 home='false' bgColorAngle="90"></z-nav-bar>
-		<view class="info">
-			<view class="user_info">
-				<view class="top_info">
-					<view class="avatar_bg">
-						<image v-if="hasLogin" class="avatar" :src="userInfo.avatar || '/static/default-avatar.png'"
-							@click="navTo('/pages/my/set/userInfo')"></image>
-						<image v-else class="avatar" :src="userInfo.avatar || '/static/default-avatar.png'"
-							@click="clickWxLogin"></image>
+	<view class="mine-page">
+		<view class="mine-hero">
+			<view class="user-card">
+				<view class="avatar-wrap">
+					<image v-if="hasLogin" class="avatar" :src="userInfo.avatar || '/static/default-avatar.png'"
+						@click="navTo('/pages/my/set/userInfo')"></image>
+					<image v-else class="avatar" :src="userInfo.avatar || '/static/default-avatar.png'"
+						@click="clickWxLogin"></image>
+				</view>
+				<view class="user-meta">
+					<view v-if="nickNameInputFlag">
+						<text class="username">{{ userInfo.nickName || '点此登录' }}</text>
+						<text class="user-hint" v-if="!hasLogin">登录后同步积分数据</text>
 					</view>
-					<view class="usernameInfo">
-						<view class="userNickNameInfo" v-if="nickNameInputFlag">
-							<text class="username">{{ userInfo.nickName || '点此登录' }}</text>
-							<!-- <im age v-if="false" class="edit-icon" src="../../static/icon/edit.png"></image> -->
-						</view>
-						<view class="username" v-else>
-							<input class="username" type="text" placeholder="请输入新的昵称" @blur="inputClose()"
-								v-model="newNickName" />
-						</view>
+					<view v-else>
+						<input class="username-input" type="text" placeholder="请输入新的昵称" @blur="inputClose()"
+							v-model="newNickName" />
 					</view>
 				</view>
 			</view>
-			<view class="score_part">
-				<view class="score_info">
-					<view class="sub_score_info">
-						<image class="icon" src="../../static/score/SY_13_IconJF.png"></image>
-						<view>我的积分</view>
+		</view>
+		<view class="mine-body">
+			<view class="score-card">
+				<view class="score-left">
+					<image class="score-icon" src="../../static/score/SY_13_IconJF.png"></image>
+					<view class="score-info">
+						<text class="score-label">我的积分</text>
+						<text class="score-value">{{score}}</text>
 					</view>
-					<view class="score_txt">{{score}}</view>
 				</view>
-				<view class="btn" @click="go2Use">去使用</view>
+				<view class="be-btn-accent score-btn" @click="go2Use">去使用</view>
 			</view>
-			<view class="desc">
-				<!-- <view class="title">积分说明</view> -->
-				<view class="rule-title">积分活动规则</view>
+			<view class="rules-card">
+				<view class="rules-title">积分活动规则</view>
+				<view class="desc">
 				<view class="popup__body">
 					会员积分是眠加小程序商城针对会员购物、参加会员活动等情况而给予的奖励，积分可在“眠加小程序商城”和“眠加活力健康检测”中使用。您可在眠加会员中心（ 我的> 会员中心>
 					积分）查看所获得的积分。具体的积分获取、使用规则详见如文规定。<br>
@@ -68,6 +67,7 @@
 					4.凡以违反积分规则的方式或采用不正当手段（包括但不限于作弊、恶意刷分、扰乱/破坏系统、恶意利用系统或者规则漏洞）获取、使用积分，我们有权根据其行为恶劣程度决定扣除您帐号内所有或部分积分，对于已使用积分，有权要求您返还已抵扣的订单金额或所兑换的礼品或权益；<br>
 					5. 以上积分规则自2024年8月13日生效。<br>
 				</view>
+			</view>
 			</view>
 		</view>
 		<uni-popup class="m-popup" ref="popup" type="center">
@@ -123,15 +123,6 @@
 	export default {
 		data() {
 			return {
-				bgColorList: [{
-						color: "#1c4485",
-						scale: "0%"
-					},
-					{
-						color: "#1c4485",
-						scale: "100%"
-					}
-				],
 				title: 'Hello12123',
 				hasLogin: false,
 				nickNameInputFlag: true,
@@ -190,217 +181,182 @@
 </script>
 
 <style lang="scss">
-	.container {
-		// background-color: line-gradient(90deg, #5794d2, #607796);
-		background: linear-gradient(90deg, rgb(28, 68, 133), rgb(28, 68, 133));
+	@import '@/common/theme.scss';
 
-		.health-btn {
-			background-color: #003C71;
-			padding: 15rpx;
-			color: white;
-			line-height: 50rpx;
-			text-align: center;
-			border-radius: 10rpx;
+	.mine-page {
+		min-height: 100vh;
+		background: $be-bg-page;
+		padding-bottom: calc(#{$be-tabbar-height} + env(safe-area-inset-bottom));
+	}
+
+	.mine-hero {
+		background: linear-gradient(160deg, $be-primary-dark, $be-primary 70%);
+		padding: 120rpx 40rpx 80rpx;
+	}
+
+	.user-card {
+		display: flex;
+		align-items: center;
+	}
+
+	.avatar-wrap {
+		width: 120rpx;
+		height: 120rpx;
+		border-radius: 50%;
+		border: 4rpx solid rgba(255, 255, 255, 0.3);
+		overflow: hidden;
+		margin-right: 28rpx;
+		flex-shrink: 0;
+	}
+
+	.avatar {
+		width: 120rpx;
+		height: 120rpx;
+		border-radius: 50%;
+	}
+
+	.user-meta {
+		flex: 1;
+	}
+
+	.username {
+		font-size: 36rpx;
+		font-weight: 600;
+		color: $be-text-inverse;
+		display: block;
+	}
+
+	.user-hint {
+		font-size: 24rpx;
+		color: rgba(255, 255, 255, 0.55);
+		margin-top: 8rpx;
+		display: block;
+	}
+
+	.username-input {
+		font-size: 32rpx;
+		color: $be-text-inverse;
+		background: rgba(255, 255, 255, 0.15);
+		border-radius: $be-radius-sm;
+		padding: 12rpx 20rpx;
+	}
+
+	.mine-body {
+		margin-top: -40rpx;
+		padding: 0 32rpx;
+	}
+
+	.score-card {
+		@include be-card;
+		margin: 0 0 24rpx;
+		padding: 32rpx;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.score-left {
+		display: flex;
+		align-items: center;
+		flex: 1;
+	}
+
+	.score-icon {
+		width: 56rpx;
+		height: 52rpx;
+		margin-right: 20rpx;
+	}
+
+	.score-info {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.score-label {
+		font-size: 26rpx;
+		color: $be-text-secondary;
+	}
+
+	.score-value {
+		font-size: 48rpx;
+		font-weight: 700;
+		color: $be-primary;
+		line-height: 1.2;
+	}
+
+	.score-btn {
+		flex-shrink: 0;
+		font-size: 28rpx;
+	}
+
+	.rules-card {
+		@include be-card;
+		margin: 0;
+		padding: 32rpx;
+	}
+
+	.rules-title {
+		font-size: 32rpx;
+		font-weight: 600;
+		color: $be-text-primary;
+		margin-bottom: 24rpx;
+		padding-bottom: 20rpx;
+		border-bottom: 1rpx solid #EDF2F7;
+	}
+
+	.desc {
+		font-size: 26rpx;
+		color: $be-text-secondary;
+		line-height: 1.8;
+		max-height: calc(100vh - 680rpx);
+		overflow: scroll;
+
+		.rule-title {
+			display: none;
+		}
+	}
+
+	.health-btn {
+		background: $be-primary;
+		padding: 20rpx;
+		color: white;
+		line-height: 50rpx;
+		text-align: center;
+		border-radius: $be-radius-md;
+		margin-top: 24rpx;
+	}
+
+	.m-popup {
+		.popup__main {
+			box-sizing: border-box;
+			padding: 50rpx 32rpx 40rpx;
+			width: 620rpx;
+			height: 870rpx;
+			background-color: $be-surface;
+			border-radius: $be-radius-xl;
+			color: $be-primary-dark;
+			font-size: 26rpx;
+			line-height: 1.6;
+		}
+
+		.popup_content {
+			width: 100%;
+			height: 100%;
+			overflow-y: scroll;
 		}
 
 		.rule-title {
-			margin: 0 auto;
 			text-align: center;
-			font-size: 40rpx;
-			padding-bottom: 50rpx;
-		}
-
-		.popup__t1 {
-			padding-top: 20rpx;
-			font-weight: bold;
+			font-size: 36rpx;
+			font-weight: 600;
+			padding-bottom: 32rpx;
+			color: $be-text-primary;
 		}
 
 		.popup__body {
 			text-align: justify;
-			padding: 20rpx;
-		}
-
-		.m-popup {
-			.popup__main {
-				box-sizing: border-box;
-				padding: 50rpx 32rpx 40rpx;
-				width: 578rpx;
-				height: 870rpx;
-				background-color: rgb(254, 254, 254);
-				background-size: 100% auto;
-				background-position: center top;
-				background-repeat: no-repeat;
-				border-radius: 50rpx;
-				color: #003C71;
-				font-size: 26rpx;
-				line-height: 150%;
-
-			}
-
-			.popup_content {
-				width: 100%;
-				height: 100%;
-				overflow-y: scroll;
-			}
-
-			.rule-title {
-				margin: 0 auto;
-				text-align: center;
-				font-size: 40rpx;
-				padding-bottom: 50rpx;
-			}
-
-			.popup__t1 {
-				padding-top: 20rpx;
-				font-weight: bold;
-			}
-
-			.popup__body {
-				text-align: justify;
-				padding: 20rpx;
-			}
-
-			.popup__close {
-				position: absolute;
-				right: 20rpx;
-				top: 50rpx;
-				width: 56rpx;
-				height: 56rpx;
-
-				/* background-image: url('https://quancode-scan-jdb-prod.oss-cn-beijing.aliyuncs.com/hxnhxp/close-btn.png'); */
-				background-size: 100% auto;
-				background-position: center top;
-				background-repeat: no-repeat;
-			}
-		}
-
-		.info {
-			margin: 0 auto;
-			background-color: white;
-			border-top-left-radius: 30rpx;
-			border-top-right-radius: 30rpx;
-			margin-top: 200rpx;
-
-			.user_info {
-				position: relative;
-				height: 150rpx;
-				// overflow: hidden;
-			}
-
-			.top_info {
-				top: -50rpx;
-				margin: 0 auto;
-				// left: 50%;
-				// margin-left: 50%;
-				text-align: center;
-				position: relative;
-			}
-
-			.edit-icon {
-				width: 30rpx;
-			}
-
-			.avatar_bg {
-				width: 114upx;
-				height: 114upx;
-				border-radius: 100%;
-				margin: 0 auto;
-				border: 5px solid #fff;
-				background-color: #FFF4EA;
-
-				.avatar {
-					flex-shrink: 0;
-					width: 114upx;
-					height: 114upx;
-					transform: scale(1);
-					border-radius: 100%;
-					background-color: #FFF4EA;
-				}
-			}
-
-			.username {
-				color: #32455B;
-				font-size: 35rpx;
-			}
-
-			.score_part {
-				width: 700rpx;
-				height: 130rpx;
-				border-radius: 20rpx;
-				margin: 0 auto;
-				display: flex;
-				line-height: 130rpx;
-				font-size: 38rpx;
-				color: #5B7897;
-				justify-content: center;
-				align-items: center;
-				box-shadow: 0px 0px 22px #BBB;
-
-				.sub_score_info {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					padding: 10rpx;
-				}
-
-				.score_txt {
-					flex: 1;
-					text-align: center;
-					line-height: 60rpx;
-					border-radius: 10rpx;
-					margin-left: 10rpx;
-					margin-right: 10rpx;
-					font-size: 36rpx;
-					background-color: #dadada;
-				}
-
-				.icon {
-					width: 54rpx;
-					height: 49rpx;
-					padding: 10rpx;
-				}
-
-				.score_info {
-					flex: 1;
-					display: flex;
-					justify-content: space-around;
-					align-items: center;
-				}
-
-				.btn {
-					width: 202rpx;
-					height: 68rpx;
-					line-height: 68rpx;
-					text-align: center;
-					font-size: 36rpx;
-					background-color: rgb(238, 126, 39);
-					border-radius: 10rpx;
-					color: white;
-					margin-right: 20rpx;
-				}
-			}
-
-			.desc {
-				font-size: 32rpx;
-				color: #5B7897;
-				line-height: 40rpx;
-				padding-left: 66rpx;
-				padding-right: 66rpx;
-				padding-top: 60rpx;
-				height: calc(100vh - 950rpx);
-				overflow: scroll;
-
-				.subtitle {
-					padding-top: 20rpx;
-					padding-bottom: 20rpx;
-				}
-
-				.title {
-					font-size: 40rpx;
-					padding-top: 20rpx;
-					padding-bottom: 20rpx;
-				}
-			}
+			padding: 0 8rpx;
+			color: $be-text-secondary;
 		}
 	}
 </style>

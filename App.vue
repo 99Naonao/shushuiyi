@@ -56,13 +56,16 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	/*每个页面公共css */
 	@import 'common/uni.css';
+	@import 'common/theme.scss';
 
 	page {
 		width: 100%;
 		height: 100%;
+		background-color: #F0F4F8;
+		font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
 	}
 
 	view {

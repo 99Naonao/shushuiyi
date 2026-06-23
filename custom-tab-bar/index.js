@@ -3,42 +3,35 @@ Component({
 	lifetimes: {
 		attached() {
 			this.setData({
-				selected: app.globalData.tabIndex
+				selected: app.globalData.tabIndex || 0
 			})
 		}
 	},
 	data: {
 		selected: 0,
-		color: "#7A7E83",
-		selectedColor: "#3cc51f",
+		color: "#A0AEC0",
+		selectedColor: "#4A7FD4",
 		list: [{
-				"pagePath": "/pages/index/index",
-				"iconPath": "/static/index/SY_00_buttonSYa.png",
-				"selectedIconPath": "/static/index/SY_00_buttonSYb.png",
-				"text": ""
+				pagePath: "/pages/index/index",
+				text: "首页",
+				icon: "home"
 			},
 			{
-				"pagePath": "/pages/product/product",
-				"iconPath": "/static/index/SY_00_buttonCPa.png",
-				"selectedIconPath": "/static/index/SY_00_buttonCPb.png",
-				"text": ""
+				pagePath: "/pages/help/help",
+				text: "帮助",
+				icon: "help"
 			},
 			{
-				"pagePath": "/pages/mine/mine",
-				"iconPath": "/static/index/SY_00_buttonWDa.png",
-				"selectedIconPath": "/static/index/SY_00_buttonWDb.png",
-				"text": ""
+				pagePath: "/pages/mine/mine",
+				text: "我的",
+				icon: "mine"
 			}
 		]
 	},
-	attached() {},
 	methods: {
 		switchTab(e) {
 			const data = e.currentTarget.dataset
 			const url = data.path
-			// this.setData({
-			// 	selected: data.index
-			// })
 			app.globalData.tabIndex = data.index
 			wx.switchTab({
 				url

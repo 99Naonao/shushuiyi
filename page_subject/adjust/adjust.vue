@@ -1,82 +1,79 @@
-<template>
-	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#000' transparentFixedFontColor='#000'
-		title=''></z-nav-bar>
-	<view class="main">
-		<view class="select-part" :style="menuStyle">
-			<view class="border">
-
-				<view class="title">选择助眠模式</view>
-				<view class="flex space-round">
-					<image @click="selectMode(1)" mode="widthFix" class="icon2" :src="timeIndex==1?fiveSelected:five">
-					</image>
-					<image @click="selectMode(2)" mode="widthFix" class="icon2" :src="timeIndex==2?tenSelected:ten">
-					</image>
-					<image @click="selectMode(3)" mode="widthFix" class="icon2"
-						:src="timeIndex==3?twentySelected:twenty">
-					</image>
+﻿<template>
+	<z-nav-bar backState="1000" type='transparentFixed' fontColor='#1A202C' transparentFixedFontColor='#1A202C'
+		title='手动调整'></z-nav-bar>
+	<view class="flow-page">
+		<view class="flow-content" :style="menuStyle">
+			<view class="be-card time-card">
+				<view class="be-card-title">选择助眠时长</view>
+				<view class="be-time-grid">
+					<view class="be-time-pill" :class="{active: timeIndex==1}" @click="selectMode(1)">
+						<text class="be-time-num">5</text>
+						<text class="be-time-unit">分钟</text>
+					</view>
+					<view class="be-time-pill" :class="{active: timeIndex==2}" @click="selectMode(2)">
+						<text class="be-time-num">10</text>
+						<text class="be-time-unit">分钟</text>
+					</view>
+					<view class="be-time-pill" :class="{active: timeIndex==3}" @click="selectMode(3)">
+						<text class="be-time-num">20</text>
+						<text class="be-time-unit">分钟</text>
+					</view>
+				</view>
+			</view>
+			<view class="last-style" v-if="styleName">上次选择：{{styleName}}</view>
+			<view class="be-card mode-card">
+				<view class="be-card-title">选择助眠手法</view>
+				<view class="mode-list">
+					<view class="be-list-item">
+						<view class="flex1">
+							<view class='mode-name'>平补平泻手法</view>
+							<view class='mode-desc'>新手建议模式，本手法非常舒适</view>
+						</view>
+						<switch color='#4A7FD4' :checked="mode_one" @change="(v)=>{
+							closeOthers()
+							mode_one = v.detail.value
+							hand_name = '平补平泻.qzd'
+						}"></switch>
+					</view>
+					<view class="be-list-item">
+						<view class="flex1">
+							<view class='mode-name'>补法</view>
+							<view class='mode-desc'>适合失眠多梦阳气失衡的用户</view>
+						</view>
+						<switch color='#4A7FD4' :checked="mode_two" @change="(v)=>{
+							closeOthers()
+							mode_two = v.detail.value;
+							hand_name = '补法.qzd'
+						}"></switch>
+					</view>
+					<view class="be-list-item">
+						<view class="flex1">
+							<view class='mode-name'>泻法</view>
+							<view class='mode-desc'>适合盗汗气虚怕冷体质的用户</view>
+						</view>
+						<switch color='#4A7FD4' :checked="mode_three" @change="(v)=>{
+							closeOthers()
+							mode_three = v.detail.value
+							hand_name = '泻法.qzd'
+						}"></switch>
+					</view>
+					<view class="be-list-item">
+						<view class="flex1">
+							<view class='mode-name'>专业浅针师手法</view>
+							<view class='mode-desc'>享受中国浅针大师的独特手法</view>
+						</view>
+						<switch color='#4A7FD4' :checked="mode_four" @change="(v)=>{
+							closeOthers()
+							mode_four = v.detail.value
+							hand_name = '手法z.qzs'
+						}"></switch>
+					</view>
 				</view>
 			</view>
 		</view>
-		<view class="" style="text-align: center;">
-			上次选择手法:{{styleName}}
+		<view class="flow-footer">
+			<view class="be-btn-primary flow-btn" @click="nextStepHandle">下一步</view>
 		</view>
-		<view class="info-part">
-			<view class="info-second-part">
-				<view class="item flex">
-					<view class="flex1">
-						<view class='desc1'>平补平泻手法</view>
-						<view class='desc2'>新手建议模式，本手法非常舒适</view>
-					</view>
-					<switch color='#4d7ec9' :checked="mode_one" @change="(v)=>{
-						closeOthers()
-						mode_one = v.detail.value
-						hand_name = '平补平泻.qzd'
-					}"></switch>
-				</view>
-				<view class="item flex">
-					<view class="flex1">
-						<view class='desc1'>补法</view>
-						<view class='desc2'>适合失眠多梦阳气失衡的用户</view>
-					</view>
-					<switch color='#4d7ec9' :checked="mode_two" @change="(v)=>{
-						closeOthers()
-						mode_two = v.detail.value;
-						hand_name = '补法.qzd'
-					}"></switch>
-				</view>
-				<view class="item flex">
-					<view class="flex1">
-						<view class='desc1'>泻法</view>
-						<view class='desc2'>适合盗汗气虚怕冷体质的用户</view>
-					</view>
-					<switch color='#4d7ec9' :checked="mode_three" @change="(v)=>{
-						closeOthers()
-						mode_three = v.detail.value
-						hand_name = '泻法.qzd'
-					}"></switch>
-				</view>
-				<view class="item flex">
-					<view class="flex1">
-						<view class='desc1'>专业浅针师手法</view>
-						<view class='desc2'>享受中国浅针大师的独特手法</view>
-					</view>
-					<switch color='#4d7ec9' :checked="mode_four" @change="(v)=>{
-						closeOthers()
-						mode_four = v.detail.value
-						hand_name = '手法z.qzs'
-					}"></switch>
-				</view>
-			</view>
-
-		</view>
-		<view class="opt-part">
-			<view class="opt-btn opt-btn-top" @click="nextStepHandle">
-				<label>下一步</label>
-			</view>
-		</view>
-
-
-
 	</view>
 
 </template>
@@ -246,7 +243,7 @@
 						return;
 					}
 					uni.navigateTo({
-						url: "/page_subject/play/play"
+						url: "/page_subject/step/step"
 					})
 
 					blue_class.getInstance().changePlayFile(this.hand_name, () => {
@@ -358,452 +355,70 @@
 </script>
 
 <style lang="scss" scoped>
+	@import '@/common/theme.scss';
+
+	.flow-page {
+		@include be-page-base;
+		display: flex;
+		flex-direction: column;
+		min-height: 100vh;
+	}
+
+	.flow-content {
+		flex: 1;
+		padding-top: var(--menuButtonTop);
+		padding-bottom: 160rpx;
+	}
+
+	.time-card, .mode-card {
+		margin: 24rpx 32rpx;
+	}
+
+	.last-style {
+		text-align: center;
+		font-size: 26rpx;
+		color: $be-text-muted;
+		margin: -8rpx 32rpx 16rpx;
+	}
+
+	.mode-list {
+		padding: 0 8rpx;
+	}
+
+	.mode-name {
+		font-size: 30rpx;
+		font-weight: 500;
+		color: $be-text-primary;
+		line-height: 1.4;
+	}
+
+	.mode-desc {
+		font-size: 24rpx;
+		color: $be-text-secondary;
+		margin-top: 6rpx;
+		line-height: 1.5;
+	}
+
+	.flow-footer {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 24rpx 48rpx;
+		padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+		background: $be-surface;
+		box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
+	}
+
+	.flow-btn {
+		width: 100%;
+	}
+
 	::v-deep(.input-part) {
 		bottom: 0 !important;
 	}
 
 	.selected {
 		background-color: #1c4485;
-	}
-
-	.unselect-btn {
-		background-color: #d5e0f7 !important;
-		color: #354D5B !important;
-	}
-
-	.version {
-		width: 100%;
-		text-align: center;
-		font-size: 18rpx;
-	}
-
-	.icon-border {
-		border: #003C71 2px solid;
-		border-radius: 50%;
-	}
-
-	.select-btn {
-		background-color: rgb(28, 68, 133);
-		width: 284rpx;
-		height: 90rpx;
-		border-radius: 20rpx;
-		color: white;
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
-
-		.icon1 {
-			width: 61rpx;
-			height: 36rpx;
-		}
-
-	}
-
-	.icon2 {
-		width: 141rpx;
-		height: 141rpx;
-	}
-
-	.normal-btn {
-		background-color: rgb(255, 255, 255);
-		width: 284rpx;
-		height: 90rpx;
-		border-radius: 20rpx;
-		display: flex;
-		justify-content: space-around;
-		align-items: center;
-
-		.icon1 {
-			width: 61rpx;
-			height: 36rpx;
-		}
-
-		.icon2 {
-			width: 61rpx;
-			height: 41rpx;
-		}
-
-	}
-
-	.resetbtn {
-		padding: 5rpx;
-		color: white;
-		background-color: rgb(109, 0, 1);
-	}
-
-	.main {
-		background-color: rgb(221, 224, 226);
-
-		width: 100%;
-		height: 100%;
-
-		.select-part {
-			background-color: rgb(221, 224, 226);
-			padding-top: var(--menuButtonTop);
-
-			.border {
-				background-color: #eff2f6;
-				border-radius: 38rpx;
-
-				margin: 32rpx;
-
-				.title {
-					padding: 20rpx;
-					text-align: center;
-					width: 100%;
-				}
-			}
-
-		}
-
-		.info-part {
-			background-color: #eff2f6;
-			border-radius: 38rpx;
-
-			margin: 32rpx;
-			padding-bottom: 20rpx;
-			padding-top: 16rpx;
-
-			.info-second-part {
-				position: relative;
-				margin: 0 auto;
-				width: 634rpx;
-				margin-top: 20rpx;
-				margin-bottom: 20rpx;
-				// padding: 18rpx;
-				color: #5B7897;
-				background-color: #eff2f6;
-
-				.item {
-
-					padding-bottom: 16rpx;
-					padding-top: 16rpx;
-					margin-left: 16rpx;
-					margin-right: 16rpx;
-					border-bottom: #dde0e2 1px solid;
-				}
-
-				.bo {
-					width: 128rpx;
-					height: 76rpx;
-					background-color: rgb(77, 127, 201);
-					color: white;
-					text-align: center;
-					line-height: 76rpx;
-					border-radius: 30rpx 30rpx;
-				}
-
-				.bo-left {
-					position: absolute;
-					left: 55rpx;
-					top: 193rpx;
-					z-index: 10;
-				}
-
-				.bo-right {
-					z-index: 10;
-					position: absolute;
-					right: 130rpx;
-					top: 193rpx;
-				}
-
-				.select {
-					background-color: white;
-					color: rgb(28, 68, 133);
-				}
-
-				.bzb-icon {
-					position: absolute;
-					left: 66rpx;
-					top: 60rpx;
-					width: 358rpx;
-					height: 139rpx;
-				}
-
-				.tzb-icon {
-					position: absolute;
-					right: 66rpx;
-					top: 60rpx;
-					width: 327rpx;
-					height: 125rpx;
-				}
-
-				.human-icon {
-					position: absolute;
-					right: -30rpx;
-					top: -60rpx;
-					width: 476rpx;
-					height: 271rpx;
-				}
-
-				.desc1 {
-					font-size: 30rpx;
-					color: #3D3D3D;
-					line-height: 40rpx;
-					z-index: 11;
-				}
-
-				.desc1size {
-					font-size: 36rpx;
-
-					position: absolute;
-					color: #003C71;
-					right: 388rpx;
-					top: 18rpx;
-					z-index: 11;
-				}
-
-				.desc2 {
-					color: #547896;
-					font-size: 26rpx;
-					line-height: 35rpx;
-					z-index: 11;
-				}
-
-				.desc2size {
-					font-size: 36rpx;
-					color: #003C71;
-					position: absolute;
-					right: 37rpx;
-					top: 43rpx;
-					z-index: 11;
-				}
-
-				.main-icon {
-					width: 644rpx;
-					height: 292rpx;
-					position: relative;
-					z-index: 10;
-				}
-
-				.up-icon {
-					width: 24rpx;
-					height: 76rpx;
-					position: absolute;
-					left: 0rpx;
-					top: 190rpx;
-					z-index: 12;
-				}
-
-				.down-icon {
-					width: 24rpx;
-					height: 77rpx;
-					position: absolute;
-					right: 27rpx;
-					top: 190rpx;
-					display: block;
-					z-index: 12;
-				}
-
-				@-webkit-keyframes downEffect {
-					0% {
-						transform: translateY(0);
-						opacity: 0.3;
-					}
-
-					30% {
-						transform: translateY(120);
-						opacity: 1;
-
-					}
-
-					100% {
-						transform: translateY(0);
-						top: 70px;
-						opacity: 1;
-					}
-				}
-
-				@keyframes downEffect {
-					0% {
-						transform: translateY(0);
-						opacity: 0.3;
-					}
-
-					30% {
-						transform: translateY(120);
-						opacity: 1;
-
-					}
-
-					100% {
-						transform: translateY(0);
-						top: 70px;
-						opacity: 1;
-					}
-				}
-
-
-				.down-icon-effect {
-					animation: 1s linear 0s infinite downEffect;
-					-webkit-animation: 1s linear 0s infinite downEffect;
-				}
-
-				@-webkit-keyframes upEffect {
-					0% {
-						opacity: 0.3;
-						top: 50px;
-					}
-
-					30% {
-						opacity: 1;
-					}
-
-					100% {
-						top: 20px;
-						opacity: 1;
-					}
-				}
-
-				@keyframes upEffect {
-					0% {
-						opacity: 0.3;
-						top: 50px;
-					}
-
-					30% {
-						opacity: 1;
-					}
-
-					100% {
-						top: 20px;
-						opacity: 1;
-					}
-				}
-
-				.up-icon-effect {
-					animation: 1s linear 0s infinite upEffect;
-					-webkit-animation: 1s linear 0s infinite upEffect;
-				}
-			}
-		}
-
-
-
-
-		.opt-part {
-			display: flex;
-			justify-content: space-around;
-			margin-top: 42rpx;
-			margin-bottom: 42rpx;
-
-			.opt-tips-con {
-				display: flex;
-				justify-content: space-around;
-				position: relative;
-			}
-
-			.opt-tip1 {
-
-				top: 95rpx;
-				left: 50rpx;
-				text-align: center;
-				color: #676767;
-			}
-
-			.opt-tip2 {
-
-				top: 95rpx;
-				right: 50rpx;
-				text-align: center;
-				color: #676767;
-			}
-
-			.opt-btn {
-				width: 284rpx;
-				height: 90rpx;
-				display: flex;
-				justify-content: space-around;
-				align-items: center;
-				background-color: rgb(28, 68, 133);
-				border-radius: 30rpx;
-				line-height: 56rpx;
-				color: white;
-			}
-
-			.opt-btn-top {
-				background-color: rgb(79, 128, 191);
-			}
-
-
-			.icon {
-				width: 56rpx;
-				height: 56rpx;
-			}
-		}
-	}
-
-	.popup-container {
-		position: relative;
-		margin: 20rpx;
-
-		.titleimg {
-			width: 106rpx;
-			height: 95rpx;
-			position: absolute;
-			left: 50%;
-			top: -50rpx;
-			margin-left: -53rpx;
-		}
-
-		.send-btn {
-			background-color: #ff8000;
-			margin: 20rpx;
-			color: white;
-			line-height: 80rpx;
-			padding-left: 50rpx;
-			padding-right: 50rpx;
-			border-radius: 15rpx;
-			text-align: center;
-		}
-
-		.close-btn {
-			width: 26rpx;
-			height: 27rpx;
-			right: 30rpx;
-			top: 20rpx;
-			position: absolute;
-		}
-
-		.icon {
-			width: 42rpx;
-			height: 42rpx;
-		}
-
-		.input-area {
-			margin-left: 20rpx;
-			letter-spacing: 2rpx;
-			background-color: #DEDEDE;
-			padding: 20rpx;
-			color: rgba(91, 120, 151, 1)
-		}
-
-		.icon-text {
-			// line-height: 42rpx;
-			margin-left: 20rpx;
-			letter-spacing: 5rpx;
-		}
-	}
-
-	.bottom-part {
-		background-color: white;
-		height: 300rpx;
-		width: 100%;
-		position: fixed;
-		bottom: 0rpx;
-		border-radius: 50rpx 50rpx 0rpx 0rpx;
-
-		.save {
-			width: 670rpx;
-			height: 102rpx;
-			background-color: rgb(28, 68, 133);
-			margin: 0 auto;
-			line-height: 102rpx;
-			text-align: center;
-			color: white;
-			margin-top: 80rpx;
-			border-radius: 50rpx;
-
-		}
 	}
 </style>

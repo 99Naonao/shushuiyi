@@ -1,29 +1,31 @@
 <template>
-	<view class="">
-		<image class="topKV" :style="menuStyle" mode="widthFix" src="/static/SY_01_000.png"></image>
-		<uni-popup ref="ppp" style="z-index: 10; position: absolute;" border-radius="40rpx 40rpx 0rpx 0rpx"
-			background-color='white' safe-area="true" class="popup" :mask-click="false" @change="change">
-			<view class="container">
-				<image class="tip" :src="'/static/adjust/SY_05_B001.png'" mode="widthFix"></image>
+	<view class="help-page">
+		<view class="help-hero" :style="menuStyle">
+			<view class="help-hero-title">使用帮助</view>
+			<view class="help-hero-desc">常见问题与操作指南</view>
+		</view>
+		<scroll-view class="help-body" scroll-y>
+			<view class="help-content">
+				<view class="section-title">常见问题</view>
 				<uni-collapse ref="collapse" v-model="value" @change="change">
-					<uni-collapse-item title="1.如何连接设备">
-						<view class="content">
-							<text class="text">{{content}}</text>
+					<uni-collapse-item title="1. 如何连接设备">
+						<view class="collapse-content">
+							<text class="collapse-text">{{content}}</text>
 						</view>
 					</uni-collapse-item>
-					<uni-collapse-item title="2.如何测量我的头型">
-						<view class="content">
-							<text class="text">测量头型具体内容</text>
+					<uni-collapse-item title="2. 如何测量我的头型">
+						<view class="collapse-content">
+							<text class="collapse-text">打开助眠仪后，在首页点击「连接主机」，确保手机蓝牙已开启。扫描到设备后点击连接，连接成功后即可开始使用。</text>
 						</view>
 					</uni-collapse-item>
-					<uni-collapse-item title="3.其他疑问">
-						<view class="content">
-							<text class="text">其他疑问内容</text>
+					<uni-collapse-item title="3. 其他疑问">
+						<view class="collapse-content">
+							<text class="collapse-text">如遇到连接失败，请确认设备已开机并靠近手机，或尝试关闭后重新打开蓝牙。佩戴时请调整绑带松紧，经过几次使用即可精准定位穴位。</text>
 						</view>
 					</uni-collapse-item>
 				</uni-collapse>
 			</view>
-		</uni-popup>
+		</scroll-view>
 	</view>
 </template>
 
@@ -37,7 +39,7 @@
 				title: 'Hello112123',
 				value: [],
 				accordionVal: '1',
-				content: '连接设备具体内容',
+				content: '长按助眠仪电源键 3 秒开启蓝牙，然后在小程序首页点击「连接主机」，从设备列表中选择您的助眠仪进行连接。',
 				extraIcon: {
 					color: '#4cd964',
 					size: '26',
@@ -52,10 +54,9 @@
 					selected: 1
 				});
 			}
-			this.$refs.ppp.open('bottom')
 
 			let app = getApp();
-			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 80) + 'px');
+			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 24) + 'px');
 		},
 		onLoad() {
 
@@ -69,9 +70,53 @@
 </script>
 
 <style lang="scss">
-	.topKV {
+	@import '@/common/theme.scss';
+
+	.help-page {
+		height: 100vh;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		background: $be-bg-page;
+		padding-bottom: calc(#{$be-tabbar-height} + env(safe-area-inset-bottom));
+		box-sizing: border-box;
+	}
+
+	.help-hero {
+		flex-shrink: 0;
+		background: linear-gradient(160deg, $be-primary-dark 0%, $be-primary 60%, $be-primary-light 100%);
+		padding: var(--menuButtonTop) 48rpx 48rpx;
+	}
+
+	.help-hero-title {
+		font-size: 44rpx;
+		font-weight: 700;
+		color: $be-text-inverse;
+		letter-spacing: 4rpx;
+	}
+
+	.help-hero-desc {
+		font-size: 26rpx;
+		color: rgba(255, 255, 255, 0.65);
+		margin-top: 12rpx;
+	}
+
+	.help-body {
+		flex: 1;
+		min-height: 0;
 		width: 100%;
-		padding-top: var(--menuButtonTop);
+	}
+
+	.help-content {
+		padding: 32rpx 32rpx 48rpx;
+		box-sizing: border-box;
+	}
+
+	.section-title {
+		font-size: 32rpx;
+		font-weight: 600;
+		color: $be-text-primary;
+		margin-bottom: 24rpx;
 	}
 
 	.uni-collapse-item__title-text {
@@ -80,8 +125,9 @@
 
 	.uni-collapse-item__title-box {
 		background: none !important;
-		color: #5B7897 !important;
-		font-size: 32rpx !important;
+		color: $be-text-primary !important;
+		font-size: 30rpx !important;
+		font-weight: 500 !important;
 	}
 
 	.uni-collapse-item__wrap-content.uni-collapse-item--border {
@@ -93,8 +139,9 @@
 	}
 
 	.uni-collapse-item__wrap-content {
-		color: #5B7897 !important;
-		font-size: 32rpx !important;
+		color: $be-text-secondary !important;
+		font-size: 28rpx !important;
+		line-height: 1.7 !important;
 	}
 
 	.uni-collapse-item__title.uni-collapse-item-border {
@@ -102,32 +149,21 @@
 	}
 
 	.uni-collapse-item {
-		border: 1rpx solid #ebeef5;
-		border-radius: 30rpx;
-		margin-bottom: 50rpx;
-		margin-left: 50rpx;
-		margin-right: 50rpx;
-
+		border: none;
+		border-radius: $be-radius-md;
+		margin-bottom: 20rpx;
+		background: $be-surface;
+		overflow: hidden;
+		box-shadow: $be-shadow-sm;
 	}
 
-	.container {
-		margin-bottom: 200rpx;
-		background-color: white;
-		border-radius: 50rpx 50rpx 0rpx 0rpx;
-		text-align: center;
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
-
-		.tip {
-			width: 106rpx;
-			height: 95rpx;
-
-			margin: 0 auto;
-			margin-top: -50rpx;
-		}
-
-
+	.collapse-content {
+		padding: 8rpx 24rpx 24rpx;
 	}
 
-	.popup {}
+	.collapse-text {
+		color: $be-text-secondary;
+		font-size: 28rpx;
+		line-height: 1.7;
+	}
 </style>

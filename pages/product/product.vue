@@ -33,24 +33,24 @@
 		methods: {
 			productMallHandler(e) {
 				wx.navigateToMiniProgram({
-					appId: 'wxadc17399e1b28d8b',
+					appId: 'wx041bde7c633d4ec0',
 				})
 			},
 			productHandler(e) {
 				wx.navigateToMiniProgram({
-					appId: 'wxadc17399e1b28d8b',
-					path: 'pages/shop/shopDetail?id=10030',
+					appId: 'wx041bde7c633d4ec0',
+					path: 'pages/order_detail/order_detail?id=10073',
 					extraData: {
-						id: 10030
+						id: 10073
 					}
 				})
 			},
 			productSleepHandler(e) {
 				wx.navigateToMiniProgram({
-					appId: 'wxadc17399e1b28d8b',
-					path: 'pages/shop/shopDetail?id=10031',
+					appId: 'wx041bde7c633d4ec0',
+					path: 'pages/order_detail/order_detail?id=10071',
 					extraData: {
-						id: 10031
+						id: 10071
 					}
 				})
 			},
@@ -61,7 +61,7 @@
 
 				// const url3 =
 				// 	'https://mp.weixin.qq.com/mp/profile_ext?action=home&__biz=MzkyMDQ5NTk0OQ&scene=124#wechat_redirect';
-				const url5 = 'https://sleep.zsyl.cc/sleeph5/miniIndex.html'
+				const url5 = 'https://sleep.xinglu.shop/sleeph5'
 				const navtitle = '健康检测'
 				console.log('go2use:', url5)
 				wx.navigateTo({

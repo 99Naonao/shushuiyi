@@ -140,17 +140,57 @@ class blue_class {
 	// 初始化蓝牙适配器  
 	// 注意：这个方法应该是公开的，但不应该在构造函数中调用  
 	initBluetoothAdapter() {
-		// 这里使用uni.openBluetoothAdapter等API来初始化蓝牙适配器  
-		uni.openBluetoothAdapter({
-			success: (res) => {
-				console.log('蓝牙适配器初始化成功', res);
-				this.bluetoothStatus = 'open'; // 更新蓝牙状态  
-			},
-			fail: (err) => {
-				console.error('蓝牙适配器初始化失败', err);
-				this.bluetoothStatus = 'error'; // 更新蓝牙状态  
-			}
+		this.ensureBluetoothAdapter().catch((err) => {
+			console.error('蓝牙适配器初始化失败', err);
 		});
+	}
+
+	ensureBluetoothAdapter() {
+		return new Promise((resolve, reject) => {
+			if (this.bluetoothStatus === 'open') {
+				resolve()
+				return
+			}
+			uni.getBluetoothAdapterState({
+				success: (res) => {
+					if (res.available) {
+						this.bluetoothStatus = 'open'
+						resolve(res)
+					} else {
+						this.openBluetoothAdapter().then(resolve).catch(reject)
+					}
+				},
+				fail: () => {
+					this.openBluetoothAdapter().then(resolve).catch(reject)
+				}
+			})
+		})
+	}
+
+	openBluetoothAdapter() {
+		return new Promise((resolve, reject) => {
+			if (this.bluetoothStatus === 'open') {
+				resolve()
+				return
+			}
+			uni.openBluetoothAdapter({
+				success: (res) => {
+					console.log('蓝牙适配器初始化成功', res)
+					this.bluetoothStatus = 'open'
+					resolve(res)
+				},
+				fail: (err) => {
+					if (err.errCode === -1) {
+						this.bluetoothStatus = 'open'
+						resolve()
+						return
+					}
+					console.error('蓝牙适配器初始化失败', err)
+					this.bluetoothStatus = 'error'
+					reject(err)
+				}
+			})
+		})
 	}
 
 	// ArrayBuffer转16进度字符串示例

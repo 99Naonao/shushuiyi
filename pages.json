@@ -12,7 +12,8 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		}, {
 			"path": "pages/mine/webview",
@@ -23,7 +24,8 @@
 		{
 			"path": "pages/help/help",
 			"style": {
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"disableScroll": true
 			}
 		},
 		{
@@ -97,25 +99,19 @@
 				"pagePath": "pages/index/index",
 				"iconPath": "./static/index/SY_00_buttonSYa.png",
 				"selectedIconPath": "./static/index/SY_00_buttonSYb.png",
-				"text": ""
+				"text": "首页"
 			},
 			{
 				"pagePath": "pages/help/help",
 				"iconPath": "./static/index/SY_00_buttonBZa.png",
 				"selectedIconPath": "./static/index/SY_00_buttonBZb.png",
-				"text": ""
-			},
-			{
-				"pagePath": "pages/product/product",
-				"iconPath": "./static/index/SY_00_buttonCPa.png",
-				"selectedIconPath": "./static/index/SY_00_buttonCPb.png",
-				"text": ""
+				"text": "帮助"
 			},
 			{
 				"pagePath": "pages/mine/mine",
 				"iconPath": "./static/index/SY_00_buttonWDa.png",
 				"selectedIconPath": "./static/index/SY_00_buttonWDb.png",
-				"text": ""
+				"text": "我的"
 			}
 		]
 	}

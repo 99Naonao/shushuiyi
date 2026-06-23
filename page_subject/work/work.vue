@@ -3,38 +3,40 @@
 		title='连接设备'></z-nav-bar>
 	<public-module></public-module>
 	<!-- <page-meta :page-style="'overflow:'+(show?'hidden':'visible')"></page-meta> -->
-	<view class="main-container">
-		<image class="topKV" :style="menuStyle" mode="widthFix" src="/static/work/SMY_04_01.png"></image>
-		<view class="info-part">
-
-			<view class="tips" for="">监测到以下设备</view>
-			<view class="tips" v-if="deviceIdList.length == 0">暂无设备</view>
-			<view v-for="(item,index) in deviceIdList" :key="index">
-				<view class="device-item">
-					<image class="device-icon" mode="widthFix" src="/page_subject/static/work/SMY_04_IconYJ.png">
-					</image>
-					<view class="item-name">
-						{{item.name}}
+	<view class="work-page" :style="menuStyle">
+		<view class="work-hero">
+			<view class="work-hero-title">连接设备</view>
+			<view class="work-hero-desc">请确保助眠仪已开机并靠近手机</view>
+		</view>
+		<view class="work-body">
+			<view class="section-header">
+				<text class="section-title">附近设备</text>
+				<text class="section-count" v-if="deviceIdList.length">{{ deviceIdList.length }} 台</text>
+			</view>
+			<view class="empty-state" v-if="deviceIdList.length == 0">
+				<view class="empty-icon">◎</view>
+				<text class="empty-text">正在搜索设备...</text>
+				<text class="empty-hint">长按震动键 3 秒开启蓝牙</text>
+			</view>
+			<view v-for="(item,index) in deviceIdList" :key="index" class="device-card">
+				<view class="device-left">
+					<image class="device-icon" mode="widthFix" src="/page_subject/static/work/SMY_04_IconYJ.png"></image>
+				</view>
+				<view class="device-info">
+					<text class="device-name">{{item.name}}</text>
+					<view class="device-status">
+						<image class="ble-icon" mode="widthFix" :src="checkConnectList(item)"></image>
+						<text>蓝牙设备</text>
 					</view>
-					<view class="blue-tooth">
-						<image mode="widthFix" :src="checkConnectList(item)">
-						</image>
-					</view>
-					<!-- 				<view class="wifi" v-if="false">
-				</view> -->
-					<view class="connect-btn" @click="connectBlueToothSleepHandler(item)">{{loginStatus?'已连接':'未连接'}}
-					</view>
-					<!-- 				<image :src="'../static/SY_01WIEI_buttonTJa.png'" class="connect-btn">
-				</image> -->
-				</view> 
+				</view>
+				<view class="device-connect" :class="{connected: loginStatus}" @click="connectBlueToothSleepHandler(item)">
+					{{loginStatus?'已连接':'连接'}}
+				</view>
 			</view>
 		</view>
-		<view class="spetips">
-			<div class="item" style="margin-left: 42rpx;">特别说明:</div>
-			<div class="item flex align-center" style="padding-bottom: 60rpx;">
-				<image class="iconblue" mode="widthFix" src="../../static/SY_01_IconLY.png"></image>
-				<div>要使用助眠仪的基本功能，需要用到蓝牙连接</div>
-			</div>
+		<view class="work-footer">
+			<image class="footer-icon" mode="widthFix" src="../../static/SY_01_IconLY.png"></image>
+			<text class="footer-text">助眠仪基本功能需要通过蓝牙连接使用</text>
 		</view>
 	</view>
 </template>
@@ -81,6 +83,9 @@
 				testName: '测试专用',
 				// deviceIdList: [],
 				connectList: [], // 连接列表
+				connecting: false, // 是否正在连接
+				maxConnectRetry: 2, // 连接失败最大重试次数
+				rescanTimer: null,
 				service_1: '0001FFE7-6865-6F6E-652D-7A732D717A10',
 				service_charactor1: '0001FFE7-6865-6F6E-652D-7A732D717A11',
 				service_charactor2: '0001FFE7-6865-6F6E-652D-7A732D717A12',
@@ -101,128 +106,117 @@
 		onShow() {
 			this.onShowing = true;
 			let app = getApp();
+			app.globalData.activeWorkPage = this
 			this.$set(this.menuStyle, '--menuButtonTop', (app.globalData.top + 80) + 'px');
 			this.loginStatus = blue_class.getInstance().loginSuccess
 
-			// 如果正在搜索中
-			if (this.searching) {
-				uni.closeBluetoothAdapter({
-					complete: () => {
-						this.searching = false
-					}
-				})
-			} else {
-				if (blue_class.getInstance().deviceName != '') {
-					this.deviceIdList = [{
-						name: blue_class.getInstance().deviceName
-					}];
-				} else if (app.globalData.versionCode == 0) {
-					this.deviceIdList.push({
-						name: this.testName,
-						deviceId: 'deviceId'
-					});
-				}
+			if (blue_class.getInstance().deviceName != '' && this.deviceIdList.length === 0) {
+				this.deviceIdList = [{
+					name: blue_class.getInstance().deviceName,
+					deviceId: blue_class.getInstance().deviceId
+				}];
+			} else if (app.globalData.versionCode == 0 && this.deviceIdList.length === 0) {
+				this.deviceIdList.push({
+					name: this.testName,
+					deviceId: 'deviceId'
+				});
+			}
+			if (!this.loginStatus) {
+				this.startBluetoothScan()
 			}
 			uni.$on('xx', this.handleMessage)
 			// 监听低功耗蓝牙设备的特征值变化事件.必须先启用 notifyBLECharacteristicValueChange 接口才能接收到设备推送的 notification。
 			// uni.onBLECharacteristicValueChange(this.handleMessage)
 		},
 		onHide() {
-			// uni.offBLECharacteristicValueChange(this.handleMessage)
 			this.onShowing = false;
+			this.stopBlueTooth()
 			uni.$off('xx', this.handleMessage)
 		},
+		onUnload() {
+			this.clearRescanTimer()
+			this.connecting = false
+			this.stopBlueTooth()
+			const app = getApp()
+			if (app.globalData.activeWorkPage === this) {
+				app.globalData.activeWorkPage = null
+			}
+		},
 		onLoad() {
-			// 监听设备发现
-			let that = this
-			uni.onBluetoothDeviceFound((result) => {
-				//剔除重复设备，兼容不同设备API的不同返回值
-				var isnotexist = true
-				let devices = result.devices
-				// 1
-				if (result.deviceId) {
-
-				} else if (result.devices) {
-					if (result.devices[0].advertisData) {
-						result.devices[0].advertisData = ab2hex(result.devices[0].advertisData)
-					} else {
-						result.devices[0].advertisData = ''
+			const app = getApp()
+			if (!app.globalData.bleDeviceFoundRegistered) {
+				app.globalData.bleDeviceFoundRegistered = true
+				uni.onBluetoothDeviceFound((result) => {
+					const page = app.globalData.activeWorkPage
+					if (page && page.onShowing) {
+						page.handleDeviceFound(result)
 					}
-
-					for (var i = 0; i < that.deviceIdList.length; i++) {
-						if (result.devices[0].deviceId == that.deviceIdList[i].deviceId) {
-							isnotexist = false
-						}
-					}
-					if (isnotexist && result.devices[0].name != '') {
-						if (result.devices[0].name.indexOf('zzZMinga') > -1) {
-							that.deviceIdList.push(result.devices[0])
-						}
-						console.log('result.devices[0].name:', result.devices[0].name)
-						// }
-					}
-					// if (isnotexist && result.devices[0].name != '' && result.devices[0].name.indexOf('Minga') > -
-					// 	1) {
-					// 	that.deviceIdList.push(result.devices[0])
-					// }
-				} else if (result[0]) {
-					if (result[0].advertisData) {
-						result[0].advertisData = ab2hex(result[0].advertisData)
-					} else {
-						result[0].advertisData = ''
-					}
-
-					for (var i = 0; i < that.deviceIdList.length; i++) {
-						if (result[0].deviceId == that.deviceIdList[i].deviceId) {
-							isnotexist = false
-						}
-					}
-					if (isnotexist && result[0].name != '' && result[0].name.indexOf('zzZMinga') > -1) {
-						that.deviceIdList.push(result[0])
-					}
-				}
-
-				let first_device = devices[0]
-				for (var i = 0; i < that.deviceIdList.length; i++) {
-					if (devices.deviceId == that.deviceIdList[i].deviceId) {
-						isnotexist = false
-					}
-				}
-				console.log('new device list has founded', devices.length, devices)
-			})
-
-			uni.openBluetoothAdapter({
-				success: (res) => {
-					console.log('startBluetoothDevicesDiscovery')
-					// 开始搜索蓝牙设备
-					uni.startBluetoothDevicesDiscovery({
-						services: [],
-						success(res) {
-							console.log('startBluetoothDevicesDiscovery success:', res)
-							this.searching = true
-						}
-					})
-
-					uni.getBluetoothAdapterState({
-						success: (res) => {
-							console.log('getBluetoothAdapterState success!', res)
-						}
-					})
-				},
-				fail(res) {
-					uni.showModal({
-						title: '权限不足提示',
-						content: '请检查小程序是否授予蓝牙权限',
-						showCancel: false,
-						success: (res) => {
-							this.searching = false
-						}
-					})
-				}
-			})
+				})
+			}
 		},
 
 		methods: {
+			handleDeviceFound(result) {
+				let isnotexist = true
+				let devices = result.devices || []
+				if (result.devices && result.devices.length) {
+					const device = result.devices[0]
+					if (device.advertisData) {
+						device.advertisData = ab2hex(device.advertisData)
+					} else {
+						device.advertisData = ''
+					}
+					for (let i = 0; i < this.deviceIdList.length; i++) {
+						if (device.deviceId == this.deviceIdList[i].deviceId) {
+							isnotexist = false
+						}
+					}
+					if (isnotexist && device.name != '' && device.name.indexOf('zzZMinga') > -1) {
+						this.deviceIdList.push(device)
+					}
+				} else if (result[0]) {
+					const device = result[0]
+					if (device.advertisData) {
+						device.advertisData = ab2hex(device.advertisData)
+					} else {
+						device.advertisData = ''
+					}
+					for (let i = 0; i < this.deviceIdList.length; i++) {
+						if (device.deviceId == this.deviceIdList[i].deviceId) {
+							isnotexist = false
+						}
+					}
+					if (isnotexist && device.name != '' && device.name.indexOf('zzZMinga') > -1) {
+						this.deviceIdList.push(device)
+					}
+				}
+				console.log('new device list has founded', devices.length, devices)
+			},
+			startBluetoothScan() {
+				if (this.searching || this.loginStatus) return
+				blue_class.getInstance().ensureBluetoothAdapter().then(() => {
+					uni.startBluetoothDevicesDiscovery({
+						services: [],
+						allowDuplicatesKey: true,
+						success: () => {
+							console.log('startBluetoothDevicesDiscovery success')
+							this.searching = true
+						},
+						fail: (err) => {
+							console.log('startBluetoothDevicesDiscovery fail', err)
+							if (err.errCode === -1) {
+								this.searching = true
+							}
+						}
+					})
+				}).catch(() => {
+					uni.showModal({
+						title: '权限不足提示',
+						content: '请检查小程序是否授予蓝牙权限',
+						showCancel: false
+					})
+				})
+			},
 			handlePressMessage(characteristic) {
 				// 处理压力
 				switch (characteristic.characteristicId) {
@@ -440,133 +434,186 @@
 					}
 				})
 			},
-
-			reconnect() {
-				uni.openBluetoothAdapter({
+			clearRescanTimer() {
+				if (this.rescanTimer) {
+					clearInterval(this.rescanTimer)
+					this.rescanTimer = null
+				}
+			},
+			prepareBleConnection(deviceId) {
+				return new Promise((resolve) => {
+					uni.stopBluetoothDevicesDiscovery({
+						complete: () => {
+							this.searching = false
+							uni.closeBLEConnection({
+								deviceId,
+								complete: () => {
+									setTimeout(resolve, 300)
+								}
+							})
+						}
+					})
+				})
+			},
+			rescanDevice(deviceId) {
+				return new Promise((resolve, reject) => {
+					this.clearRescanTimer()
+					blue_class.getInstance().ensureBluetoothAdapter().then(() => {
+					uni.startBluetoothDevicesDiscovery({
+						services: [],
+						allowDuplicatesKey: true,
+						success: () => {
+							this.searching = true
+							let elapsed = 0
+							this.rescanTimer = setInterval(() => {
+								uni.getBluetoothDevices({
+									success: (res) => {
+										const found = (res.devices || []).find(item => item.deviceId === deviceId)
+										if (found) {
+											this.clearRescanTimer()
+											uni.stopBluetoothDevicesDiscovery({
+												complete: () => {
+													this.searching = false
+													resolve(found)
+												}
+											})
+										}
+									}
+								})
+								elapsed += 500
+								if (elapsed >= 5000) {
+									this.clearRescanTimer()
+									uni.stopBluetoothDevicesDiscovery({
+										complete: () => {
+											this.searching = false
+											reject({
+												errMsg: '未搜索到设备，请确认设备已开机并在附近'
+											})
+										}
+									})
+								}
+							}, 500)
+						},
+						fail: (err) => {
+							reject(err)
+						}
+					})
+					}).catch(reject)
+				})
+			},
+			showConnectFailModal(content) {
+				uni.showModal({
+					title: '连接失败',
+					content: content || '请确认助眠仪已开机、距离手机较近，并重试',
+					showCancel: false
+				})
+			},
+			onBleConnectSuccess(deviceId, item) {
+				let app = getApp()
+				wx.showToast({
+					title: '连接成功',
+					icon: 'success',
+					duration: 1000
+				})
+				this.stopBlueTooth()
+				app.globalData.deviceId = deviceId
+				if (item && item.name) {
+					blue_class.getInstance().updateDeviceName(item.name)
+				}
+				blue_class.getInstance().deviceId = deviceId
+				blue_class.getInstance().loginSuccess = true
+				this.loginStatus = true
+				this.connecting = false
+				console.log('connectBluetooth success!:', deviceId)
+				this.findingIndex = 0
+				uni.getBLEDeviceServices({
+					deviceId,
 					success: (res) => {
-						console.log('startBluetoothDevicesDiscovery')
-						// 开始搜索蓝牙设备
-						uni.startBluetoothDevicesDiscovery({
-							services: [],
-							success(res) {
-								console.log('startBluetoothDevicesDiscovery success:', res)
-								this.searching = true
+						console.log('getBLEDeviceServices res.services:', res.services)
+						for (let i = 0; i < res.services.length; i++) {
+							console.log("service:", res.services[i])
+							blue_class.getInstance().startValueChange()
+							if (res.services[i].isPrimary) {
+								this.getBLEDeviceCharacteristics(deviceId, this.service_1)
+								this.getBLEDeviceCharacteristics(deviceId, this.service_2)
+								this.getBLEDeviceCharacteristics(deviceId, this.service_3)
+								this.getBLEDeviceCharacteristics(deviceId, this.service_battery)
+								break
 							}
-						})
-
-						uni.getBluetoothAdapterState({
-							success: (res) => {
-								console.log('getBluetoothAdapterState success!', res)
-							}
-						})
-						// //  50s扫描结束
-						// setTimeout(function() {
-						// 	that.stopBlueTooth()
-						// }, 500000);
+						}
 					},
-					fail(res) {
-						// if (res.errCode == 10001) {
-						// 	uni.showToast({
-						// 		duration: 3000,
-						// 		title: '请打开蓝牙'
-						// 	})
-						// }
-						uni.showModal({
-							title: '提示',
-							content: '请检查手机蓝牙是否打开',
-							showCancel: false,
-							success: (res) => {
-								this.searching = false
-							}
-						})
+					fail: (res) => {
+						console.log('getBLEDeviceServices fail:', res)
 					}
 				})
 			},
+			doCreateBLEConnection(deviceId, item, retryCount = 0) {
+				uni.showLoading({
+					title: retryCount > 0 ? `正在重试连接(${retryCount}/${this.maxConnectRetry})...` : '连接蓝牙设备中...',
+				})
+				uni.createBLEConnection({
+					deviceId,
+					timeout: 10000,
+					success: () => {
+						uni.hideLoading()
+						this.onBleConnectSuccess(deviceId, item)
+					},
+					fail: (res) => {
+						console.log("connectBluetooth fail: ", res, 'retryCount:', retryCount)
+						if ((res.errCode === 10003 || res.errCode === 10012) && retryCount < this.maxConnectRetry) {
+							uni.hideLoading()
+							this.prepareBleConnection(deviceId).then(() => {
+								return this.rescanDevice(deviceId)
+							}).then(() => {
+								this.doCreateBLEConnection(deviceId, item, retryCount + 1)
+							}).catch((err) => {
+								this.connecting = false
+								uni.hideLoading()
+								this.showConnectFailModal(err && err.errMsg)
+							})
+							return
+						}
+						if (res.errCode === -1) {
+							uni.hideLoading()
+							this.onBleConnectSuccess(deviceId, item)
+							return
+						}
+						this.connecting = false
+						uni.hideLoading()
+						this.showConnectFailModal()
+					}
+				})
+			},
+
+			reconnect() {
+				this.startBluetoothScan()
+			},
 			// 连接蓝牙
 			connectBlueToothSleepHandler(item) {
-				if (this.loginStatus) return;
-				uni.showLoading({
-					title: '连接蓝牙设备中...',
-				})
+				if (this.loginStatus || this.connecting) return
 
-
-				let app = getApp();
-				let deviceId = item.deviceId;
+				let app = getApp()
+				let deviceId = item.deviceId
 				if (app.globalData.versionCode == 0 && deviceId == 'deviceId') {
 					wx.showToast({
 						title: '连接成功',
 						icon: 'success',
 						duration: 1000
 					})
-					this.stopBlueTooth();
-					app.globalData.deviceId = deviceId;
-
-					blue_class.getInstance().deviceId = deviceId;
-					// 链接成功
-					blue_class.getInstance().loginSuccess = true;
-
+					this.stopBlueTooth()
+					app.globalData.deviceId = deviceId
+					blue_class.getInstance().deviceId = deviceId
+					blue_class.getInstance().loginSuccess = true
+					this.loginStatus = true
 					console.log('connectBluetooth success!:', deviceId)
 					uni.switchTab({
 						url: "/pages/index/index"
 					})
-					return;
+					return
 				}
-				uni.createBLEConnection({
-					// 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
-					deviceId: deviceId,
-					success: (res) => {
-						wx.showToast({
-							title: '连接成功',
-							icon: 'success',
-							duration: 1000
-						})
-						this.stopBlueTooth();
-						app.globalData.deviceId = deviceId;
-
-						blue_class.getInstance().deviceId = deviceId;
-						// 链接成功
-						blue_class.getInstance().loginSuccess = true;
-
-						console.log('connectBluetooth success!:', deviceId, res)
-
-						this.findingIndex = 0;
-
-						uni.getBLEDeviceServices({
-							deviceId,
-							success: (res) => {
-								console.log('getBLEDeviceServices res.services:', res
-									.services)
-								for (let i = 0; i < res.services.length; i++) {
-									console.log("service:", res.services[i])
-									// 监听变化
-									blue_class.getInstance().startValueChange();
-									if (res.services[i].isPrimary) {
-										this.getBLEDeviceCharacteristics(deviceId,
-											this.service_1)
-										this.getBLEDeviceCharacteristics(deviceId,
-											this.service_2)
-										this.getBLEDeviceCharacteristics(deviceId,
-											this.service_3)
-										this.getBLEDeviceCharacteristics(deviceId,
-											this.service_battery)
-										break;
-									}
-								}
-
-
-
-							},
-							fail: (res) => {
-								console.log('getBLEDeviceServices fail:', res)
-							}
-						})
-					},
-					fail: (res) => {
-						console.log("connectBluetooth fail: ", res)
-					},
-					complete: () => {
-						uni.hideLoading()
-					}
+				this.connecting = true
+				this.prepareBleConnection(deviceId).then(() => {
+					this.doCreateBLEConnection(deviceId, item, 0)
 				})
 			},
 			// 获取蓝牙设备某个服务中所有特征值(characteristic)。
@@ -655,172 +702,179 @@
 	}
 </script>
 <style lang="scss">
-	.main-container {
-		background-color: rgb(34, 49, 73);
-		height: 100%;
+	@import '@/common/theme.scss';
 
-		.topKV {
-			width: 100%;
-			padding-top: var(--menuButtonTop);
-			display: block;
-		}
-
-		.info-part {
-			margin-top: -160rpx;
-		}
+	.work-page {
+		min-height: 100vh;
+		background: $be-bg-page;
+		padding-top: var(--menuButtonTop);
 	}
 
-
-	.header {
-		height: 80rpx;
+	.work-hero {
+		background: linear-gradient(160deg, $be-primary-dark, $be-primary);
+		margin: 0 32rpx;
+		border-radius: $be-radius-lg;
+		padding: 40rpx 36rpx;
+		box-shadow: $be-shadow-md;
 	}
 
-	.tips {
+	.work-hero-title {
+		font-size: 40rpx;
+		font-weight: 700;
+		color: $be-text-inverse;
+	}
+
+	.work-hero-desc {
+		font-size: 26rpx;
+		color: rgba(255, 255, 255, 0.65);
+		margin-top: 12rpx;
+	}
+
+	.work-body {
+		padding: 32rpx;
+	}
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 24rpx;
+	}
+
+	.section-title {
+		font-size: 30rpx;
+		font-weight: 600;
+		color: $be-text-primary;
+	}
+
+	.section-count {
+		font-size: 24rpx;
+		color: $be-text-muted;
+	}
+
+	.empty-state {
+		@include be-card;
+		margin: 0;
+		padding: 64rpx 32rpx;
 		text-align: center;
-		color: #fff;
-		font-size: 32rpx;
-		padding: 20rpx;
 	}
 
-	.spetips {
-		text-align: left;
-		font-size: 32rpx;
-		padding: 30rpx;
-
-		position: absolute;
-		left: 0;
-		right: 0;
-		background-color: #ffffff;
-		box-shadow: 0rpx 0rpx 20rpx #5B7897;
-		border-top-left-radius: 15rpx;
-		border-top-right-radius: 15rpx;
-		bottom: 0rpx;
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
-
-		.item {
-			line-height: 32rpx;
-			padding: 5rpx;
-			letter-spacing: 1rpx;
-			padding-bottom: 20rpx;
-		}
-
-		.iconblue {
-			width: 30rpx;
-			padding: 5rpx;
-			margin-right: 10rpx;
-		}
-
+	.empty-icon {
+		font-size: 64rpx;
+		color: $be-primary-light;
+		opacity: 0.5;
+		margin-bottom: 16rpx;
+		animation: spin 2s linear infinite;
 	}
 
-	.device-item {
-		border: 1px solid #5B7897;
-		border-radius: 20rpx;
-		margin-left: 41rpx;
-		margin-right: 41rpx;
-		height: 118rpx;
-		line-height: 118rpx;
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+
+	.empty-text {
+		display: block;
+		font-size: 30rpx;
+		color: $be-text-secondary;
+		margin-bottom: 8rpx;
+	}
+
+	.empty-hint {
+		display: block;
+		font-size: 24rpx;
+		color: $be-text-muted;
+	}
+
+	.device-card {
+		@include be-card;
+		margin: 0 0 20rpx;
+		padding: 24rpx 28rpx;
 		display: flex;
 		align-items: center;
-		background-color: rgb(213, 224, 247);
-
-		.connect-btn {
-			width: 225rpx;
-			height: 78rpx;
-			text-align: center;
-			background-color: #5B7897;
-			line-height: 78rpx;
-			color: white;
-			margin: 20rpx;
-			border-radius: 25rpx;
-		}
-
-		.item-name {
-			line-height: 38rpx;
-			color: #5B7897;
-			font-size: 32rpx;
-			padding-left: 30rpx;
-			padding-right: 30rpx;
-			flex: 1;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			margin-right: auto;
-		}
-
-		.blue-tooth {
-			width: 80rpx;
-			height: 80rpx;
-			background-color: white;
-			border-radius: 30rpx;
-			box-shadow: 0rpx 0rpx 20rpx #5B7897;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			// margin-right: 30rpx;
-
-			image {
-				display: inline-block;
-				width: 28rpx;
-				height: 43rpx;
-			}
-		}
-
-		.wifi {
-			background-color: white;
-			border-radius: 30rpx;
-			box-shadow: 0rpx 0rpx 20rpx #5B7897;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-
-			width: 80rpx;
-			height: 80rpx;
-
-			image {
-				display: inline-block;
-				width: 42rpx;
-				height: 29rpx;
-			}
-		}
 	}
 
-	.uni-popup__wrapper-box {
-
-		display: block;
-
-		position: relative;
-		/* iphonex 等安全区设置，底部安全区适配 */
-
-		padding-bottom: constant(safe-area-inset-bottom);
-		padding-bottom: env(safe-area-inset-bottom);
-
+	.device-left {
+		width: 80rpx;
+		height: 80rpx;
+		background: $be-surface-soft;
+		border-radius: $be-radius-md;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 20rpx;
 	}
 
 	.device-icon {
-		width: 73rpx;
-		height: 47rpx;
-		margin-left: 5rpx;
+		width: 56rpx;
+		height: 36rpx;
 	}
 
-	.container {
-		background-color: white;
-		border-radius: 50rpx 50rpx 0rpx 0rpx;
-		position: relative;
+	.device-info {
+		flex: 1;
+		min-width: 0;
+	}
 
-		::after {
-			content: '';
-			display: block;
-			clear: both;
-		}
+	.device-name {
+		font-size: 30rpx;
+		font-weight: 600;
+		color: $be-text-primary;
+		display: block;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
-		.tip {
-			width: 322rpx;
-			height: 161rpx;
-			position: absolute;
-			left: 50%;
-			top: -60rpx;
-			margin-left: -161rpx;
-		}
+	.device-status {
+		display: flex;
+		align-items: center;
+		margin-top: 8rpx;
+		font-size: 24rpx;
+		color: $be-text-muted;
+	}
 
+	.ble-icon {
+		width: 20rpx;
+		height: 28rpx;
+		margin-right: 8rpx;
+	}
+
+	.device-connect {
+		flex-shrink: 0;
+		padding: 16rpx 32rpx;
+		background: linear-gradient(135deg, $be-primary-light, $be-primary);
+		color: $be-text-inverse;
+		font-size: 26rpx;
+		font-weight: 500;
+		border-radius: $be-radius-pill;
+	}
+
+	.device-connect.connected {
+		background: $be-success;
+	}
+
+	.work-footer {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: $be-surface;
+		padding: 24rpx 40rpx;
+		padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+		display: flex;
+		align-items: center;
+		box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.05);
+	}
+
+	.footer-icon {
+		width: 28rpx;
+		height: 36rpx;
+		margin-right: 16rpx;
+		flex-shrink: 0;
+	}
+
+	.footer-text {
+		font-size: 24rpx;
+		color: $be-text-secondary;
+		line-height: 1.5;
 	}
 </style>

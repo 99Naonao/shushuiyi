@@ -1,28 +1,40 @@
 <template>
-	<view class="content">
-		<image class="back" mode="widthFix" src="../../static/SMY_01_bg.png"></image>
-		<view class="battery">
-			<image class="back-img" mode="widthFix" src="../../static/index/SMY_02_DCyanjing.png"></image>
-			<view class="info">
-				<view class="fillprogress" :style="menuInfo"></view>
-				<image class="battery-icon" mode="widthFix" src="../../static/index/SMY_02_IconDC1.png"></image>
-				<view class="battery-info">{{(battery)}}%</view>
+	<view class="home">
+		<view class="home-hero">
+			<view class="home-header" :style="{ paddingTop: headerPaddingTop }">
+				<view class="battery-card">
+					<view class="battery-icon-wrap">
+						<view class="battery-body">
+							<view class="battery-fill" :style="menuInfo"></view>
+						</view>
+						<view class="battery-cap"></view>
+					</view>
+					<text class="battery-text">{{ battery }}%</text>
+				</view>
+			</view>
+			<view class="device-visual">
+				<image class="device-img" mode="aspectFill" src="../../static/SMY_01_bg.png"></image>
 			</view>
 		</view>
-		<view class="connect-btn" @click="connectHandler" v-if="!loginStatus">连接主机</view>
-		<view class="connect-btn" @click="useHandler" v-else>开始使用</view>
-		<view class="bar">
-			<view class="bar-left flex just-center align-center">
-				<image class="soundicon" mode="widthFix" src="../../static/index/SMY_02_IconYZ.png"></image>
+
+		<view class="home-body">
+			<view class="status-card" @click="enterDetailHandle">
+				<view class="status-left">
+					<image class="status-icon" mode="widthFix" src="../../static/index/SMY_02_IconYZ.png"></image>
+				</view>
+				<view class="status-right">
+					<view class="status-name">助眠仪主机</view>
+					<view class="status-row">
+						<view class="be-status-dot" :class="loginStatus ? 'online' : 'offline'"></view>
+						<text class="status-label">{{ loginStatus ? '已连接' : '未连接' }}</text>
+					</view>
+				</view>
+				<view class="status-arrow">›</view>
 			</view>
-			<view class="bar-right" @click="enterDetailHandle">
-				<view class="subtitle">
-					助眠仪
-				</view>
-				<view class="flex align-center just-center next-part">
-					<image class="blueicon" mode="widthFix" src="../../static/index/SMY_02_IconLY.png"></image>
-					{{loginStatus?'已连接':'未连接'}}
-				</view>
+
+			<view class="action-area">
+				<view class="be-btn-primary action-btn" @click="connectHandler" v-if="!loginStatus">连接主机</view>
+				<view class="be-btn-primary action-btn" @click="useHandler" v-else>开始使用</view>
 			</view>
 		</view>
 	</view>
@@ -54,13 +66,10 @@
 			uni.$on('status_change', this.statusChange);
 			this.updateInfo(false)
 
-			const deviceInfo = uni.getDeviceInfo();
-			this.system = deviceInfo.system;
-			console.log({
-				deviceInfo
-			})
 			this.loginStatus = blue_class.getInstance().loginSuccess;
 			console.log('onShow statusChange:', this.loginStatus)
+
+			this.updateSafeArea()
 
 			getappVersion({
 				appId: base.publicAppId
@@ -73,17 +82,15 @@
 		data() {
 			return {
 				menuInfo: {
-					'--menuButtonTop': '30px',
-					'--bateryWidth': '0rpx',
+					'--bateryWidth': '0%',
 				},
+				headerPaddingTop: '44px',
 				battery: 10,
 				loginStatus: false,
-				system: '',
 			}
 		},
 		onLoad() {
-			// let test = utf8to16([228, 184, 173, 230, 150, 135, 97, 98, 99]);
-			// console.log("onload!!!", test)
+			this.updateSafeArea()
 		},
 		onHide() {
 			uni.$off('update_pillow_info', this.updateInfo);
@@ -93,6 +100,24 @@
 
 		},
 		methods: {
+			updateSafeArea() {
+				const sys = uni.getSystemInfoSync()
+				const statusBarHeight = sys.statusBarHeight || 20
+				let menuTop = statusBarHeight + 4
+				if (sys.platform === 'ios') {
+					menuTop = statusBarHeight + 4
+				} else {
+					const menuButton = uni.getMenuButtonBoundingClientRect()
+					if (menuButton && menuButton.top) {
+						menuTop = menuButton.top
+					}
+				}
+				const app = getApp()
+				if (app.globalData && app.globalData.top) {
+					menuTop = app.globalData.top
+				}
+				this.headerPaddingTop = menuTop + 'px'
+			},
 			statusChange() {
 				this.loginStatus = blue_class.getInstance().loginSuccess;
 				console.log('statusChange:', this.loginStatus)
@@ -108,7 +133,7 @@
 
 				// this.$set(this.menuInfo, '--bateryWidth', (blue_class.getInstance().pillowPower * 50 / 1000) + 'rpx');
 				this.battery = blue_class.getInstance().getBattery();
-				this.$set(this.menuInfo, '--bateryWidth', (Number(this.battery) / 100) * 50 + 'rpx');
+				this.$set(this.menuInfo, '--bateryWidth', (Number(this.battery)) + '%');
 				console.log('updateInfo!', this.menuInfo)
 
 				if (needlog) {
@@ -124,18 +149,10 @@
 				}
 			},
 			enterDetailHandle() {
-				console.log(':', this.system)
-				if (this.system.indexOf('IOS') > -1) {
-					uni.showToast({
-						title: '先选择时长'
-					})
-				} else { 
-
-					wx.openSystemBluetoothSetting({
-						success(res) {
-							console.log(res)
-						}
-					})
+				if (this.loginStatus) {
+					this.useHandler()
+				} else {
+					this.connectHandler()
 				}
 			},
 			connectHandler() {
@@ -148,142 +165,171 @@
 </script>
 
 <style lang="scss">
-	.content {
-		background-color: rgb(5, 12, 21);
-		height: 100%;
-		position: relative;
-	}
+	@import '@/common/theme.scss';
 
-	.battery {
-		position: absolute;
-		top: 120rpx;
-		left: 40rpx;
-
-		.back-img {
-			width: 120rpx;
-		}
-
-		.info {
-			margin-top: -80rpx;
-			margin-left: 30rpx;
-			overflow: hidden;
-		}
-
-		.battery-info {
-			font-size: 22rpx;
-			color: #FFFFFF;
-			line-height: 22rpx;
-		}
-
-
-		.fillprogress {
-			position: absolute;
-			width: 50rpx;
-			height: 20rpx;
-			top: 18rpx;
-			left: 28rpx;
-			width: var(--bateryWidth);
-			background-color: green;
-			border-radius: 2rpx;
-			z-index: 99;
-		}
-
-		.battery-icon {
-			width: 55rpx;
-			position: relative;
-			z-index: 100;
-		}
-	}
-
-	.back {
-		width: 100%;
-	}
-
-	.text-area {
-		display: flex;
-		justify-content: center;
-	}
-
-	.title {
-		font-size: 36rpx;
-		color: #8f8f94;
-	}
-
-
-
-
-	.connect-btn {
-		width: 467rpx;
-		height: 91rpx;
-		text-align: center;
-		background-color: rgb(28, 68, 133);
-		line-height: 91rpx;
-		color: white;
-		margin: 20rpx;
-		border-radius: 25rpx;
-		position: absolute;
-		bottom: 290rpx;
-		left: 50%;
-		margin-left: -232rpx;
-	}
-
-	.bar {
-		width: 315rpx;
-		height: 117rpx;
-		/* background-color: white; */
+	.home {
+		height: 100vh;
 		overflow: hidden;
-		position: relative;
-		bottom: 160rpx;
-		left: 50%;
-		margin-left: -157rpx;
-		border-radius: 15rpx;
 		display: flex;
-		justify-content: space-between;
+		flex-direction: column;
+		background: $be-bg-dark;
+		padding-bottom: calc(#{$be-tabbar-height} + env(safe-area-inset-bottom));
+		box-sizing: border-box;
+	}
+
+	.home-hero {
+		flex: 1;
+		min-height: 0;
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	.home-header {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		z-index: 2;
+		padding-left: 32rpx;
+		padding-right: 32rpx;
+		padding-bottom: 16rpx;
+		box-sizing: border-box;
+	}
+
+	.battery-card {
+		display: inline-flex;
 		align-items: center;
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: $be-radius-pill;
+		padding: 12rpx 24rpx;
+		border: 1rpx solid rgba(255, 255, 255, 0.15);
+	}
 
+	.battery-icon-wrap {
+		display: flex;
+		align-items: center;
+		margin-right: 12rpx;
+	}
 
-		.bar-right {
-			height: 100%;
-			width: 215rpx;
+	.battery-body {
+		width: 48rpx;
+		height: 24rpx;
+		border: 2rpx solid rgba(255, 255, 255, 0.6);
+		border-radius: 4rpx;
+		padding: 2rpx;
+		overflow: hidden;
+	}
 
-			margin-left: 10rpx;
-			background-color: rgb(213, 223, 247);
+	.battery-fill {
+		height: 100%;
+		width: var(--bateryWidth);
+		background: linear-gradient(90deg, $be-success, #68D391);
+		border-radius: 2rpx;
+	}
 
-			.subtitle {
-				height: 30rpx;
-				font-weight: normal;
-				font-size: 32rpx;
-				color: #3D3D3D;
-				text-align: center;
-				width: 100%;
-				margin-top: 10rpx;
-			}
+	.battery-cap {
+		width: 4rpx;
+		height: 12rpx;
+		background: rgba(255, 255, 255, 0.6);
+		border-radius: 0 2rpx 2rpx 0;
+		margin-left: 2rpx;
+	}
 
-			.next-part {
-				margin-top: 20rpx;
-			}
-		}
+	.battery-text {
+		font-size: 24rpx;
+		color: rgba(255, 255, 255, 0.9);
+		font-weight: 500;
+	}
 
-		.bar-left {
-			width: 115rpx;
-			height: 100%;
-			background-color: rgb(159, 169, 187);
-			// background-color: antiquewhite;
-		}
+	.device-visual {
+		flex: 1;
+		min-height: 0;
+		width: 100%;
+		overflow: hidden;
+	}
 
+	.device-img {
+		width: 100%;
+		height: 100%;
+		display: block;
+	}
 
-		.blueicon {
-			width: 36rpx;
-			height: 41rpx;
-		}
+	.home-body {
+		flex-shrink: 0;
+		width: 100%;
+		box-sizing: border-box;
+		background: $be-bg-page;
+		border-radius: 40rpx 40rpx 0 0;
+		padding: 32rpx 32rpx 24rpx;
+	}
 
-		.soundicon {
-			width: 57rpx;
-			height: 45rpx;
-		}
+	.status-card {
+		background: $be-surface;
+		border-radius: $be-radius-lg;
+		box-shadow: $be-shadow-sm;
+		margin: 0 0 24rpx;
+		padding: 24rpx 28rpx;
+		display: flex;
+		align-items: center;
+	}
 
+	.status-left {
+		width: 80rpx;
+		height: 80rpx;
+		background: linear-gradient(135deg, $be-primary-light, $be-primary);
+		border-radius: $be-radius-md;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-right: 20rpx;
+		flex-shrink: 0;
+	}
 
+	.status-icon {
+		width: 44rpx;
+		height: 36rpx;
+	}
 
+	.status-right {
+		flex: 1;
+		min-width: 0;
+	}
 
+	.status-name {
+		font-size: 30rpx;
+		font-weight: 600;
+		color: $be-text-primary;
+		margin-bottom: 6rpx;
+	}
+
+	.status-row {
+		display: flex;
+		align-items: center;
+	}
+
+	.status-label {
+		font-size: 24rpx;
+		color: $be-text-secondary;
+	}
+
+	.status-arrow {
+		font-size: 36rpx;
+		color: $be-text-muted;
+		font-weight: 300;
+		flex-shrink: 0;
+	}
+
+	.action-area {
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.action-btn {
+		width: 100%;
+		box-sizing: border-box;
+		font-size: 32rpx;
+		letter-spacing: 4rpx;
 	}
 </style>
